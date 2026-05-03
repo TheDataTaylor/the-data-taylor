@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Building Your First Tableau Dashboard — The Data Taylor</title>
+    <meta name="description" content="A complete guide to building a maintainable Tableau dashboard." />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/Logos/TDT_Logo_with_Background.png" alt="The Data Taylor" width="200" height="60" />
+        </a>
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open menu"
+        >
+          <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="blog.html" class="active">Blog</a>
+          <a href="about.html">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <article class="article-wrap">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> · <a href="blog.html">Blog</a> · <span>Article</span>
+        </nav>
+
+        <header class="article-header">
+          <h1>Building Your First Tableau Dashboard: A Complete Guide</h1>
+          <div class="article-meta">
+            <span>Published 28 Apr 2026</span>
+            <span class="tag tag-tableau">Tableau</span>
+            <span>12 min read</span>
+          </div>
+        </header>
+
+        <div class="article-hero-img"><span>Image</span></div>
+
+        <div class="prose">
+          <p>
+            A strong dashboard is not a collection of charts — it is an argument. This guide walks through a repeatable
+            process: clarify the decision, shape the data model, design the layout, and bake in maintainability before
+            you publish.
+          </p>
+
+          <h2>Start with the question, not the viz type</h2>
+          <p>
+            Write the stakeholder question in a single sentence. If you cannot, pause. The most common failure mode is
+            a beautiful grid that answers nothing decisively. Your first artefact should be a sketch — boxes and labels —
+            not a worksheet.
+          </p>
+
+          <h3>Checklist before you connect</h3>
+          <ul>
+            <li>Primary metric and grain (daily, weekly, customer, region)</li>
+            <li>Comparison baseline: prior period, target, or peer group</li>
+            <li>Known exceptions: seasonality, launches, data quality gaps</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Tip:</strong> Name calculated fields for how analysts speak, not how the formula reads. Future-you
+            will search by intent.
+          </div>
+
+          <h2>Layout like an editor</h2>
+          <p>
+            Use consistent padding, align titles to a grid, and limit type styles. Reserve saturated colour for meaning
+            — variance to plan, alerts, or a single hero series. Everything else should recede so the eye finds the
+            insight in seconds.
+          </p>
+
+          <h3>Example: normalised contribution</h3>
+          <p>
+            The snippet below shows a compact calculated field pattern for share-of-total within a pane — useful when
+            you need percentages without exporting to Excel.
+          </p>
+
+          <div class="code-block-wrap">
+            <button type="button" class="code-copy" data-code-copy>Copy</button>
+            <pre><code><span class="code-cmt">// Share of window — adjust PARTITION fields to match your view</span>
+<span class="code-kw">SUM</span>([<span class="code-str">Revenue</span>]) / <span class="code-kw">TOTAL</span>(<span class="code-kw">SUM</span>([<span class="code-str">Revenue</span>]))</code></pre>
+          </div>
+
+          <h2>Ship with a maintenance story</h2>
+          <p>
+            Document data sources, refresh cadence, and the three people who can approve changes. Dashboards age quickly;
+            a short README in your team wiki prevents “mystery sheets” six months later.
+          </p>
+        </div>
+
+        <aside class="author-box">
+          <div class="author-avatar" role="img" aria-label="Author avatar placeholder"></div>
+          <div>
+            <h3>The Data Taylor</h3>
+            <p>
+              Independent analytics lead focused on visualisation craft, reliable pipelines, and decisions that stick.
+            </p>
+            <div class="author-social">
+              <a href="https://linkedin.com">LinkedIn</a>
+              <a href="https://github.com">GitHub</a>
+              <a href="https://twitter.com">X</a>
+            </div>
+          </div>
+        </aside>
+
+        <section class="related-section" aria-labelledby="related-heading">
+          <h2 id="related-heading">Related Posts</h2>
+          <div class="grid-cards cols-3">
+            <article class="card-post">
+              <span class="tag tag-tableau">Tableau</span>
+              <h3><a href="post.html">5 Tableau Calculated Fields Every Analyst Should Know</a></h3>
+              <p class="excerpt">Recipes you will reuse across almost every dashboard.</p>
+              <div class="meta-row"><span>8 min read</span></div>
+              <a class="read-more" href="post.html">Read More</a>
+            </article>
+            <article class="card-post">
+              <span class="tag tag-tableau">Tableau</span>
+              <h3><a href="post.html">Designing Executive Dashboards That Get Used</a></h3>
+              <p class="excerpt">Hierarchy and annotation patterns for leadership views.</p>
+              <div class="meta-row"><span>10 min read</span></div>
+              <a class="read-more" href="post.html">Read More</a>
+            </article>
+            <article class="card-post">
+              <span class="tag tag-strategy">Strategy</span>
+              <h3><a href="post.html">From Metric Chaos to a Trusted Glossary</a></h3>
+              <p class="excerpt">Lightweight governance that pairs definitions with owners.</p>
+              <div class="meta-row"><span>6 min read</span></div>
+              <a class="read-more" href="post.html">Read More</a>
+            </article>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/Logos/TDT_Logo_with_Background.png" alt="The Data Taylor" width="160" height="48" />
+          <p>Crafted Insights — data analytics with editorial clarity.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <div class="social-row">
+            <a href="https://linkedin.com" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="https://github.com" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a href="https://twitter.com" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+          </div>
+        </div>
+        <p class="footer-copy">© 2025 The Data Taylor. Crafted Insights.</p>
+      </div>
+    </footer>
+
+    <script src="assets/js/main.js" defer></script>
+  </body>
+</html>
