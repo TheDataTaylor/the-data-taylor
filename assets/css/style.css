@@ -583,7 +583,7 @@ a.btn {
 
 .hero-logo {
   max-width: min(38rem, 100%);
-  margin: 0;
+  margin: 40px 0 0 0;
   padding: 0;
   animation: fade-up 0.6s var(--transition-slow) both;
 }
