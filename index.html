@@ -8,7 +8,7 @@
       name="description"
       content="Data analytics, tutorials and portfolio — Tableau, Alteryx, Databricks and data strategy."
     />
-    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/style.css?v=4" />
   </head>
   <body>
     <header class="site-header">
@@ -101,18 +101,20 @@
             aria-roledescription="carousel"
             aria-label="Rotating Tableau Public thumbnails"
           >
-            <div class="hero-carousel-viewport">
-              <img class="hero-carousel-slide is-visible" alt="" decoding="async" />
-              <img class="hero-carousel-slide" alt="" decoding="async" />
-              <a
-                class="hero-carousel-link"
-                data-carousel-link
-                hidden
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open workbook on Tableau Public"
-              ></a>
+            <div class="hero-carousel-frame">
+              <div class="hero-carousel-viewport">
+                <img class="hero-carousel-slide is-visible" alt="" decoding="async" />
+                <img class="hero-carousel-slide" alt="" decoding="async" />
+                <a
+                  class="hero-carousel-link"
+                  data-carousel-link
+                  hidden
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open workbook on Tableau Public"
+                ></a>
+              </div>
               <div class="hero-carousel-nav" data-carousel-nav hidden>
                 <button type="button" class="hero-carousel-btn hero-carousel-btn--prev" data-carousel-prev aria-label="Previous workbook">
                   <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -319,6 +321,6 @@
       </div>
     </footer>
 
-    <script src="assets/js/main.js" defer></script>
+    <script src="assets/js/main.js?v=4" defer></script>
   </body>
 </html>

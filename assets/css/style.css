@@ -560,8 +560,15 @@ a.btn {
   }
 }
 
+/* Wraps viewport + nav so controls sit above the viewport (and its ::before ring), not inside its stacking context */
+.hero-carousel-frame {
+  position: relative;
+  width: 100%;
+}
+
 .hero-carousel-viewport {
   position: relative;
+  z-index: 0;
   aspect-ratio: 736 / 454;
   width: 100%;
   max-height: min(63vh, calc(56rem * 0.7));
@@ -625,12 +632,12 @@ a.btn {
 .hero-carousel-nav {
   position: absolute;
   inset: 0;
-  /* Above .hero-carousel-link (5) and viewport ::before gradient ring (10) so controls stay visible */
-  z-index: 12;
+  z-index: 2;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.25rem;
+  padding: 0 0.35rem;
   pointer-events: none;
 }
 
@@ -643,11 +650,11 @@ a.btn {
   height: 2.75rem;
   margin: 0;
   padding: 0;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
   color: var(--color-accent, #00c853);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -669,11 +676,14 @@ a.btn {
 @media (prefers-color-scheme: dark) {
   .hero-carousel-btn {
     color: var(--color-accent, #00c853);
-    background: rgba(30, 30, 30, 0.82);
+    /* Light disc so arrows stay visible on both light thumbnails and dark hero chrome */
+    background: rgba(252, 252, 252, 0.96);
+    border-color: rgba(0, 0, 0, 0.14);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.25) inset;
   }
 
   .hero-carousel-btn:hover {
-    background: rgba(45, 45, 45, 0.95);
+    background: #fff;
   }
 }
 
