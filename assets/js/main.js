@@ -138,6 +138,9 @@
     var favVal = carouselRoot.querySelector("[data-carousel-favourites]");
     var viewsVal = carouselRoot.querySelector("[data-carousel-views]");
     var statSep = carouselRoot.querySelector("[data-carousel-stat-sep]");
+    var navEl = carouselRoot.querySelector("[data-carousel-nav]");
+    var prevBtn = carouselRoot.querySelector("[data-carousel-prev]");
+    var nextBtn = carouselRoot.querySelector("[data-carousel-next]");
     var imgA = slides[0];
     var imgB = slides[1];
 
@@ -210,8 +213,25 @@
             syncMeta(entry);
           }
 
-          function step() {
-            pos = (pos + 1) % entries.length;
+          var tickTimer = null;
+          var isAnimating = false;
+
+          function restartAutoplay() {
+            if (tickTimer) {
+              clearInterval(tickTimer);
+              tickTimer = null;
+            }
+            if (entries.length > 1) {
+              tickTimer = setInterval(function () {
+                goToRelative(1);
+              }, intervalMs);
+            }
+          }
+
+          function goToRelative(delta) {
+            if (entries.length <= 1 || isAnimating) return;
+            isAnimating = true;
+            pos = (pos + delta + entries.length) % entries.length;
             var nextEntry = entries[pos];
             var front = frontIsA ? imgA : imgB;
             var back = frontIsA ? imgB : imgA;
@@ -222,6 +242,7 @@
               back.classList.add("is-visible");
               frontIsA = !frontIsA;
               syncChrome(nextEntry);
+              isAnimating = false;
             };
             applySlide(back, nextEntry);
             if (back.complete && back.naturalWidth) {
@@ -235,7 +256,20 @@
           syncChrome(entries[0]);
 
           if (entries.length > 1) {
-            setInterval(step, intervalMs);
+            if (navEl) navEl.hidden = false;
+            restartAutoplay();
+            if (prevBtn) {
+              prevBtn.addEventListener("click", function () {
+                goToRelative(-1);
+                restartAutoplay();
+              });
+            }
+            if (nextBtn) {
+              nextBtn.addEventListener("click", function () {
+                goToRelative(1);
+                restartAutoplay();
+              });
+            }
           }
         })
         .catch(function () {
