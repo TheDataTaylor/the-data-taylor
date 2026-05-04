@@ -625,7 +625,8 @@ a.btn {
 .hero-carousel-nav {
   position: absolute;
   inset: 0;
-  z-index: 6;
+  /* Above .hero-carousel-link (5) and viewport ::before gradient ring (10) so controls stay visible */
+  z-index: 12;
   display: flex;
   align-items: center;
   justify-content: space-between;

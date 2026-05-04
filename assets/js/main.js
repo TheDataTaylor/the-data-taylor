@@ -256,7 +256,9 @@
           syncChrome(entries[0]);
 
           if (entries.length > 1) {
-            if (navEl) navEl.hidden = false;
+            if (navEl) {
+              navEl.removeAttribute("hidden");
+            }
             restartAutoplay();
             if (prevBtn) {
               prevBtn.addEventListener("click", function () {
