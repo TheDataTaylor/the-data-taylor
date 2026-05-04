@@ -79,6 +79,49 @@
     return arr;
   }
 
+  function parseNonNegInt(v) {
+    if (v == null || v === "") return null;
+    var n = parseInt(String(v), 10);
+    if (isNaN(n) || n < 0) return null;
+    return n;
+  }
+
+  function formatStat(n) {
+    if (n == null) return "";
+    return n.toLocaleString("en-GB");
+  }
+
+  function normalizeCarouselEntry(raw, dir) {
+    if (typeof raw === "string") {
+      var altStr = altFromFilename(raw);
+      var titleFromFile = altStr.replace(/\s*—\s*Tableau workbook preview\s*$/i, "").trim();
+      return {
+        src: thumbnailUrl(dir, raw),
+        alt: altStr,
+        href: null,
+        title: titleFromFile,
+        favourites: null,
+        views: null,
+      };
+    }
+    if (raw && typeof raw === "object" && raw.image) {
+      var imgPath = String(raw.image);
+      var base = imgPath.split("/").pop() || "";
+      var altText = typeof raw.alt === "string" && raw.alt ? raw.alt : altFromFilename(base);
+      var hrefVal = raw.href != null && String(raw.href).trim() ? String(raw.href).trim() : null;
+      var titleVal = typeof raw.title === "string" && raw.title ? raw.title : "";
+      return {
+        src: imgPath,
+        alt: altText,
+        href: hrefVal,
+        title: titleVal,
+        favourites: parseNonNegInt(raw.numberOfFavorites),
+        views: parseNonNegInt(raw.viewCount),
+      };
+    }
+    return null;
+  }
+
   var carouselRoot = document.querySelector("[data-carousel]");
   if (carouselRoot) {
     var manifestUrl = carouselRoot.getAttribute("data-carousel-manifest") || "";
@@ -86,6 +129,15 @@
     var intervalMs = parseInt(carouselRoot.getAttribute("data-carousel-interval") || "5500", 10);
     var slides = carouselRoot.querySelectorAll(".hero-carousel-slide");
     var fallbackEl = carouselRoot.querySelector("[data-carousel-fallback]");
+    var linkEl = carouselRoot.querySelector("[data-carousel-link]");
+    var metaEl = carouselRoot.querySelector("[data-carousel-meta]");
+    var titleEl = carouselRoot.querySelector("[data-carousel-title]");
+    var statsEl = carouselRoot.querySelector("[data-carousel-stats]");
+    var favWrap = carouselRoot.querySelector("[data-carousel-favourites-wrap]");
+    var viewsWrap = carouselRoot.querySelector("[data-carousel-views-wrap]");
+    var favVal = carouselRoot.querySelector("[data-carousel-favourites]");
+    var viewsVal = carouselRoot.querySelector("[data-carousel-views]");
+    var statSep = carouselRoot.querySelector("[data-carousel-stat-sep]");
     var imgA = slides[0];
     var imgB = slides[1];
 
@@ -95,21 +147,72 @@
           if (!r.ok) throw new Error("manifest " + r.status);
           return r.json();
         })
-        .then(function (files) {
-          if (!Array.isArray(files) || files.length === 0) throw new Error("empty manifest");
-          shuffleInPlace(files);
+        .then(function (rawList) {
+          if (!Array.isArray(rawList) || rawList.length === 0) throw new Error("empty manifest");
+          var entries = rawList
+            .map(function (item) {
+              return normalizeCarouselEntry(item, thumbDir);
+            })
+            .filter(Boolean);
+          if (entries.length === 0) throw new Error("empty manifest");
+          shuffleInPlace(entries);
 
           var pos = 0;
           var frontIsA = true;
 
-          function applySlide(img, file) {
-            img.src = thumbnailUrl(thumbDir, file);
-            img.alt = altFromFilename(file);
+          function applySlide(img, entry) {
+            img.src = entry.src;
+            img.alt = entry.alt;
+          }
+
+          function syncLink(entry) {
+            if (!linkEl) return;
+            if (entry && entry.href) {
+              linkEl.href = entry.href;
+              linkEl.hidden = false;
+              var name = entry.title || entry.alt.replace(/^Tableau Public thumbnail for\s*/i, "") || "workbook";
+              linkEl.setAttribute("aria-label", "Open " + name + " on Tableau Public (opens in new tab)");
+            } else {
+              linkEl.hidden = true;
+              linkEl.removeAttribute("href");
+              linkEl.setAttribute("aria-label", "Open workbook on Tableau Public");
+            }
+          }
+
+          function syncMeta(entry) {
+            if (!metaEl || !titleEl) return;
+            metaEl.hidden = false;
+            var vizName =
+              (entry.title && String(entry.title).trim()) ||
+              (entry.alt && entry.alt.replace(/^Tableau Public thumbnail for\s*/i, "").trim()) ||
+              "Tableau workbook";
+            titleEl.textContent = vizName;
+
+            var hasFav = entry.favourites != null;
+            var hasViews = entry.views != null;
+            if (statsEl && favWrap && viewsWrap && favVal && viewsVal) {
+              if (hasFav || hasViews) {
+                statsEl.hidden = false;
+                favWrap.hidden = !hasFav;
+                viewsWrap.hidden = !hasViews;
+                if (statSep) statSep.hidden = !(hasFav && hasViews);
+                if (hasFav) favVal.textContent = formatStat(entry.favourites);
+                if (hasViews) viewsVal.textContent = formatStat(entry.views);
+              } else {
+                statsEl.hidden = true;
+                if (statSep) statSep.hidden = true;
+              }
+            }
+          }
+
+          function syncChrome(entry) {
+            syncLink(entry);
+            syncMeta(entry);
           }
 
           function step() {
-            pos = (pos + 1) % files.length;
-            var nextFile = files[pos];
+            pos = (pos + 1) % entries.length;
+            var nextEntry = entries[pos];
             var front = frontIsA ? imgA : imgB;
             var back = frontIsA ? imgB : imgA;
 
@@ -118,18 +221,20 @@
               front.classList.remove("is-visible");
               back.classList.add("is-visible");
               frontIsA = !frontIsA;
+              syncChrome(nextEntry);
             };
-            applySlide(back, nextFile);
+            applySlide(back, nextEntry);
             if (back.complete && back.naturalWidth) {
               back.onload();
             }
           }
 
-          applySlide(imgA, files[0]);
+          applySlide(imgA, entries[0]);
           imgA.classList.add("is-visible");
           imgB.classList.remove("is-visible");
+          syncChrome(entries[0]);
 
-          if (files.length > 1) {
+          if (entries.length > 1) {
             setInterval(step, intervalMs);
           }
         })
