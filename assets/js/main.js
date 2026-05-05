@@ -81,6 +81,12 @@
     return encodePathSegments(dir) + "/" + encodeURIComponent(filename);
   }
 
+  function jpgFallbackFromPng(src) {
+    if (typeof src !== "string") return null;
+    if (!/\.png(\?.*)?$/i.test(src)) return null;
+    return src.replace(/\.png(\?.*)?$/i, ".jpg$1");
+  }
+
   function altFromFilename(name) {
     var cleaned = name
       .replace(/^\d+_Workbook thumbnail,\s*/i, "")
@@ -184,6 +190,17 @@
           var frontIsA = true;
 
           function applySlide(img, entry) {
+            img.onerror = null;
+            img.removeAttribute("data-jpg-fallback-tried");
+            var fallbackSrc = jpgFallbackFromPng(entry.src);
+            if (fallbackSrc) {
+              img.onerror = function () {
+                if (img.getAttribute("data-jpg-fallback-tried") === "true") return;
+                img.setAttribute("data-jpg-fallback-tried", "true");
+                img.onerror = null;
+                img.src = fallbackSrc;
+              };
+            }
             img.src = entry.src;
             img.alt = entry.alt;
           }
