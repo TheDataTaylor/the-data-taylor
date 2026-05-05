@@ -27,6 +27,7 @@
   if (filterBar) {
     var buttons = filterBar.querySelectorAll(".filter-btn");
     var cards = document.querySelectorAll("[data-project-card]");
+    var primaryFilters = ["tableau", "alteryx", "databricks"];
 
     buttons.forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -37,9 +38,28 @@
         });
 
         cards.forEach(function (card) {
-          var c = card.getAttribute("data-category");
-          var show = cat === "all" || c === cat;
+          var c = (card.getAttribute("data-category") || "").toLowerCase();
+          var techTagEls = Array.from(card.querySelectorAll(".tech-tag:not(.tech-tag-action)"));
+          var techTags = techTagEls.map(function (tag) {
+            return (tag.textContent || "").trim().toLowerCase();
+          });
+
+          var matchesPrimary = c === cat || techTags.indexOf(cat) !== -1;
+          var hasOtherTech = techTags.some(function (tag) {
+            return primaryFilters.indexOf(tag) === -1;
+          });
+          var show =
+            cat === "all" ||
+            (cat === "other" ? hasOtherTech : matchesPrimary);
           card.classList.toggle("is-hidden", !show);
+
+          techTagEls.forEach(function (tagEl, index) {
+            var tagText = techTags[index];
+            var shouldHighlight =
+              cat !== "all" &&
+              (cat === "other" ? primaryFilters.indexOf(tagText) === -1 : tagText === cat);
+            tagEl.classList.toggle("is-highlighted", shouldHighlight);
+          });
         });
       });
     });

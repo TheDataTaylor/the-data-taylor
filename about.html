@@ -37,30 +37,61 @@
       <header class="page-hero">
         <div class="container">
           <h1>About</h1>
-          <p>Precision in analysis, restraint in presentation — and always a thread tying numbers to decisions.</p>
+          <p class="about-hero-line">Precision in analysis, restraint in presentation and always a thread tying numbers to decisions.</p>
         </div>
       </header>
 
-      <svg class="thread-divider" viewBox="0 0 200 24" aria-hidden="true">
-        <path d="M0 12 Q 50 20 100 12 T 200 12" />
-      </svg>
-
       <div class="about-grid">
-        <div class="about-portrait"><span>Image</span></div>
+        <svg
+          class="about-bars-svg"
+          viewBox="0 0 360 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <g class="hero-bars__group" fill="#00C853" opacity="0.045">
+            <rect class="hero-bars__bar" style="--i: 0" x="8" y="52" width="3" height="48" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 1" x="22" y="65" width="3" height="35" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 2" x="36" y="40" width="3" height="60" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 3" x="50" y="57" width="3" height="43" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 4" x="64" y="70" width="3" height="30" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 5" x="78" y="45" width="3" height="55" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 6" x="92" y="62" width="3" height="38" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 7" x="106" y="34" width="3" height="66" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 8" x="120" y="58" width="3" height="42" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 9" x="134" y="47" width="3" height="53" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 10" x="148" y="38" width="3" height="62" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 11" x="162" y="69" width="3" height="31" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 12" x="176" y="50" width="3" height="50" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 13" x="190" y="61" width="3" height="39" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 14" x="204" y="36" width="3" height="64" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 15" x="218" y="54" width="3" height="46" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 16" x="232" y="42" width="3" height="58" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 17" x="246" y="67" width="3" height="33" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 18" x="260" y="49" width="3" height="51" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 19" x="274" y="35" width="3" height="65" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 20" x="288" y="59" width="3" height="41" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 21" x="302" y="44" width="3" height="56" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 22" x="316" y="63" width="3" height="37" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 23" x="330" y="39" width="3" height="61" rx="0.4" />
+            <rect class="hero-bars__bar" style="--i: 24" x="344" y="55" width="3" height="45" rx="0.4" />
+          </g>
+        </svg>
+        <div class="about-portrait">
+          <img src="assets/Logos/About_Me_Image.png" alt="Portrait of Robert Taylor" width="640" height="800" />
+        </div>
         <div class="about-content">
-          <h2>The Data Taylor</h2>
+          <h2><span class="about-name">Rob Taylor</span> <span class="about-tagline">(The Data Taylor)</span></h2>
           <p class="lead">
-            I help teams stitch disparate sources into coherent stories — from executive dashboards to lakehouse
-            foundations — with the same care a tailor brings to fit and finish.
+            15+ years in data. Senior Analytics Specialist at JLL on the Rolls-Royce account. 2x Tableau Ambassador. 8x Viz of the Day. Iron Viz Top 10. Alteryx die-hard. And yes, I named my site after a sewing pun.
           </p>
           <p>
-            My work sits at the intersection of analytics engineering and visual communication: rigorous models,
-            documented assumptions, and interfaces that respect the reader’s time. I write tutorials so practitioners
-            can reuse patterns without rediscovering them the hard way.
+            I've spent my career automating the boring stuff so people can focus on the interesting stuff. If there's a manual process, there's almost certainly a better way 
           </p>
           <p>
-            When I am not building, I am usually sketching layouts, reviewing query plans, or refining a metric
-            glossary until it earns trust across departments.
+            When I'm not solving complex data problems for some of the world's most prestigious organisations, I'm building vizzes that are just... fun. Maps with too many layers. Calculated fields nobody asked for. Dashboards about John Wick kill counts and All Blacks win rates.
+          </p>
+          <p>
+            This site is where I write up what I know, show what I've built, and occasionally share strong opinions about Alteryx layout conventions. 
           </p>
           <div class="hero-ctas" style="margin-top: var(--space-6)">
             <a class="btn btn-primary" href="portfolio.html">View portfolio</a>
@@ -74,7 +105,7 @@
       <div class="footer-inner">
         <div class="footer-brand">
           <img src="assets/Logos/Logo_Square.png" alt="The Data Taylor" width="200" height="60" />
-          <p>Crafted Insights — data analytics with editorial clarity.</p>
+          <p>Crafted Insights: data analytics with editorial clarity.</p>
         </div>
         <div class="footer-col">
           <h4>Explore</h4>
