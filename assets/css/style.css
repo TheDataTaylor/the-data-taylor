@@ -1195,18 +1195,6 @@ a.btn {
   display: block;
 }
 
-.page-hero::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: clamp(120px, 16vh, 180px);
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(to bottom, transparent 0%, var(--color-bg) 100%);
-}
-
 @media (min-width: 768px) {
   .page-hero {
     padding: var(--space-10) var(--page-gutter) var(--space-8);
