@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
+from PIL import Image
+from io import BytesIO
 
 import requests
 from slugify import slugify
@@ -100,7 +102,24 @@ def tableau_viz_url(profile_name: str, default_view_repo_url: str) -> str:
     return f"https://public.tableau.com/app/profile/{profile_name}/viz/{view_path}"
 
 
-def download_image(session: requests.Session, image_url: str, output_path: Path) -> None:
+#def download_image(session: requests.Session, image_url: str, output_path: Path) -> None:
+#    response = session.get(image_url, timeout=45)
+#    response.raise_for_status()
+
+#    content_type = response.headers.get("content-type", "")
+#    if "image" not in content_type.lower():
+#        raise ValueError(f"Expected an image from {image_url}, got content-type {content_type!r}")
+
+#    output_path.parent.mkdir(parents=True, exist_ok=True)
+#    output_path.write_bytes(response.content)
+
+def download_image(
+    session: requests.Session,
+    image_url: str,
+    output_path: Path,
+    *,
+    quality: int = 75,
+) -> None:
     response = session.get(image_url, timeout=45)
     response.raise_for_status()
 
@@ -109,8 +128,10 @@ def download_image(session: requests.Session, image_url: str, output_path: Path)
         raise ValueError(f"Expected an image from {image_url}, got content-type {content_type!r}")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_bytes(response.content)
 
+    img = Image.open(BytesIO(response.content))
+    img = img.convert("RGB")
+    img.save(output_path, "JPEG", quality=quality, optimize=True)
 
 def build_carousel(
     *,
@@ -121,6 +142,7 @@ def build_carousel(
     max_items: int | None,
     delay: float,
     dry_run: bool,
+    jpg_quality: int,
 ) -> list[CarouselItem]:
     session = requests.Session()
     session.headers.update({"User-Agent": "Mozilla/5.0 Tableau carousel builder"})
@@ -151,12 +173,14 @@ def build_carousel(
 
             image_url = tableau_thumbnail_url(workbook_repo_url, default_view_repo_url)
             href = tableau_viz_url(profile_name, default_view_repo_url)
-            filename = f"{order:03d}-{slugify(title) or 'tableau-viz'}.png"
+            #filename = f"{order:03d}-{slugify(title) or 'tableau-viz'}.png"
+            filename = f"{order:03d}-{slugify(title) or 'tableau-viz'}.jpg"
             image_output_path = output_dir / filename
 
             if not dry_run:
                 try:
-                    download_image(session, image_url, image_output_path)
+                    #download_image(session, image_url, image_output_path)
+                    download_image(session, image_url, image_output_path, quality=jpg_quality)
                 except Exception as exc:
                     print(f"Skipping {title!r}: could not download thumbnail: {exc}")
                     continue
@@ -201,20 +225,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-items", type=int, default=None)
     parser.add_argument("--delay", type=float, default=0.4)
     parser.add_argument("--dry-run", action="store_true", help="Create manifest entries without downloading images.")
+    parser.add_argument("--jpg-quality", type=int, default=75)
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     authors = load_authors(args.authors_file)
+
+    # 👇 ADD THIS BLOCK
+    BASE_DIR = Path(__file__).resolve().parent.parent
+
+    output_dir = (BASE_DIR / args.output_dir).resolve()
+    manifest_path = (BASE_DIR / args.manifest).resolve()
+
     build_carousel(
         authors=authors,
-        output_dir=args.output_dir,
-        manifest_path=args.manifest,
+        output_dir=output_dir,
+        manifest_path=manifest_path,
         min_favourites=args.min_favourites,
         max_items=args.max_items,
         delay=args.delay,
         dry_run=args.dry_run,
+        jpg_quality=args.jpg_quality,
     )
 
 
