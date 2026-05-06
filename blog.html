@@ -88,7 +88,7 @@
 
       <div class="blog-layout">
         <div class="blog-main">
-          <article class="featured-post">
+          <article class="featured-post" data-blog-post data-category="tableau">
             <div class="featured-thumb">
               <img src="assets/Blogs/001_iron_viz_logo.jpeg" alt="Iron Viz logo for featured post" />
             </div>
@@ -106,14 +106,14 @@
           </article>
 
           <div class="post-grid">
-            <article class="card-post">
+            <article class="card-post" data-blog-post data-category="alteryx">
               <span class="tag tag-alteryx">Alteryx</span>
               <h3>Alteryx Macros: When and How to Use Them</h3>
               <p class="excerpt">Batch patterns, interface design, and the checklist before you publish a macro to the team gallery.</p>
               <div class="meta-row"><span>22 Apr 2026</span><span>9 min read</span></div>
               <span class="read-more" aria-disabled="true">Coming soon</span>
             </article>
-            <article class="card-post">
+            <article class="card-post" data-blog-post data-category="databricks">
               <span class="tag tag-databricks">Databricks</span>
               <h3>Getting Started with Delta Lake in Databricks</h3>
               <p class="excerpt">Create tables, merge slowly changing dimensions, and reason about isolation without drowning in jargon.</p>
@@ -132,10 +132,11 @@
           <div class="sidebar-block">
             <h3>Categories</h3>
             <ul class="cat-list">
-              <li><a href="blog.html">Tableau</a><span class="cat-count">5</span></li>
-              <li><a href="blog.html">Alteryx</a><span class="cat-count">3</span></li>
-              <li><a href="blog.html">Databricks</a><span class="cat-count">4</span></li>
-              <li><a href="blog.html">Strategy</a><span class="cat-count">1</span></li>
+              <li><a href="#" data-blog-category="all">All</a><span class="cat-count" data-blog-count="all">0</span></li>
+              <li><a href="#" data-blog-category="tableau">Tableau</a><span class="cat-count" data-blog-count="tableau">0</span></li>
+              <li><a href="#" data-blog-category="alteryx">Alteryx</a><span class="cat-count" data-blog-count="alteryx">0</span></li>
+              <li><a href="#" data-blog-category="databricks">Databricks</a><span class="cat-count" data-blog-count="databricks">0</span></li>
+              <li><a href="#" data-blog-category="other">Other</a><span class="cat-count" data-blog-count="other">0</span></li>
             </ul>
           </div>
         </aside>
@@ -183,6 +184,6 @@
       </div>
     </footer>
 
-    <script src="assets/js/main.js" defer></script>
+    <script src="assets/js/main.js?v=6" defer></script>
   </body>
 </html>

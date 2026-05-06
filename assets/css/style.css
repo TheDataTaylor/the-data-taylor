@@ -1040,6 +1040,10 @@ a.btn {
   display: none;
 }
 
+[data-blog-post].is-hidden {
+  display: none !important;
+}
+
 .project-thumb {
   aspect-ratio: 16 / 10;
   background: var(--color-bg-elevated);

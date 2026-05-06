@@ -65,6 +65,71 @@
     });
   }
 
+  /* Blog search + category filter */
+  var blogSearch = document.querySelector("#blog-search");
+  var categoryList = document.querySelector(".cat-list");
+  if (blogSearch && categoryList) {
+    var blogPosts = Array.from(document.querySelectorAll("[data-blog-post]"));
+    var categoryLinks = Array.from(categoryList.querySelectorAll("a[data-blog-category]"));
+    var countEls = Array.from(categoryList.querySelectorAll("[data-blog-count]"));
+    var primaryBlogCategories = ["tableau", "alteryx", "databricks"];
+    var activeCategory = "all";
+
+    function postText(post) {
+      return (post.textContent || "").toLowerCase();
+    }
+
+    function syncCounts() {
+      var totals = { all: blogPosts.length, other: 0 };
+      blogPosts.forEach(function (post) {
+        var category = (post.getAttribute("data-category") || "").toLowerCase();
+        if (!category) return;
+        if (primaryBlogCategories.indexOf(category) !== -1) {
+          totals[category] = (totals[category] || 0) + 1;
+        } else {
+          totals.other += 1;
+        }
+      });
+
+      countEls.forEach(function (el) {
+        var key = (el.getAttribute("data-blog-count") || "").toLowerCase();
+        el.textContent = String(totals[key] || 0);
+      });
+    }
+
+    function applyBlogFilters() {
+      var query = (blogSearch.value || "").trim().toLowerCase();
+      blogPosts.forEach(function (post) {
+        var category = (post.getAttribute("data-category") || "").toLowerCase();
+        var categoryMatch =
+          activeCategory === "all" ||
+          (activeCategory === "other"
+            ? primaryBlogCategories.indexOf(category) === -1
+            : category === activeCategory);
+        var queryMatch = !query || postText(post).indexOf(query) !== -1;
+        post.classList.toggle("is-hidden", !(categoryMatch && queryMatch));
+      });
+    }
+
+    categoryLinks.forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        activeCategory = (link.getAttribute("data-blog-category") || "all").toLowerCase();
+        categoryLinks.forEach(function (item) {
+          item.classList.toggle("active", item === link);
+        });
+        applyBlogFilters();
+      });
+    });
+
+    ["input", "keyup", "search", "change"].forEach(function (evt) {
+      blogSearch.addEventListener(evt, applyBlogFilters);
+    });
+
+    syncCounts();
+    applyBlogFilters();
+  }
+
   /* Hero thumbnail carousel (manifest JSON + Public Thumbnails folder) */
   function encodePathSegments(dir) {
     return dir
