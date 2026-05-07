@@ -968,6 +968,17 @@ a.btn {
   margin-left: var(--space-1);
 }
 
+.read-more-disabled {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+  pointer-events: none;
+  cursor: default;
+}
+
+.read-more-disabled::after {
+  content: "";
+}
+
 /* ——— Thread divider ——— */
 .thread-divider {
   display: block;
@@ -1100,6 +1111,24 @@ a.btn {
   color: var(--color-text-muted);
   flex: 1;
   margin-bottom: var(--space-4);
+}
+
+.project-pink-link {
+  color: #ea93c5;
+}
+
+.project-pink-link:hover,
+.project-pink-link:focus-visible {
+  color: #d96ab0;
+}
+
+.blog-accent-link {
+  color: var(--color-accent);
+}
+
+.blog-accent-link:hover,
+.blog-accent-link:focus-visible {
+  color: #7ac990;
 }
 
 .project-meta-row {
@@ -1737,6 +1766,22 @@ a.btn {
   max-width: none;
   margin: 0;
   padding: var(--space-8) var(--page-gutter) var(--space-12);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-grid::before {
+  content: "";
+  position: absolute;
+  width: 26rem;
+  height: 26rem;
+  left: clamp(-7rem, -2vw, -2rem);
+  top: clamp(4rem, 11vw, 8rem);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(0, 200, 83, 0.14) 0%, rgba(0, 200, 83, 0) 70%);
+  filter: blur(2px);
+  z-index: 0;
 }
 
 @media (min-width: 768px) {
@@ -1758,7 +1803,20 @@ a.btn {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
   overflow: hidden;
+  z-index: 1;
+}
+
+.about-portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(to right, rgba(44, 35, 35, 0.55) 0%, transparent 12%, transparent 88%, rgba(44, 35, 35, 0.55) 100%),
+    linear-gradient(to bottom, rgba(44, 35, 35, 0.55) 0%, transparent 12%, transparent 88%, rgba(44, 35, 35, 0.55) 100%);
 }
 
 .about-portrait img {
@@ -1773,6 +1831,12 @@ a.btn {
   margin-bottom: var(--space-4);
 }
 
+.about-content {
+  position: relative;
+  z-index: 1;
+}
+
+
 .about-name {
   color: var(--color-accent);
 }
@@ -1784,6 +1848,54 @@ a.btn {
 .about-content .lead {
   font-size: var(--text-lg);
   color: var(--color-text-muted);
+}
+
+.about-badges {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  max-width: 24rem;
+  overflow: visible;
+}
+
+@media (min-width: 640px) {
+  .about-badges {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    max-width: 34rem;
+  }
+}
+
+.about-badge-placeholder {
+  aspect-ratio: 1 / 1;
+  min-height: 4.8rem;
+  border: 1px dashed rgba(0, 200, 83, 0.35);
+  border-radius: var(--radius-md);
+  background: rgba(245, 245, 245, 0.04);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.08rem;
+  position: relative;
+  z-index: 1;
+  transform-origin: center;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.about-badge-placeholder:hover {
+  transform: scale(2);
+  z-index: 20;
+  box-shadow: 0 0.75rem 1.4rem rgba(0, 0, 0, 0.45);
+}
+
+.about-badge-placeholder img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
 }
 
 /* ——— Footer ——— */

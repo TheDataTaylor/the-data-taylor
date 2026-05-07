@@ -83,7 +83,7 @@
         <div class="container">
           <h1>Portfolio</h1>
           <p>
-            A selection of dashboards, workflows, and lakehouse work — filter by stack to find relevant examples.
+            A selection of dashboards, workflows, and lakehouse work. Filter by stack to find relevant examples.
           </p>
         </div>
       </header>
@@ -99,6 +99,7 @@
           </div>
 
           <div class="project-grid">
+            <!-- From Empire to Identity -->
             <article class="project-card" data-project-card data-category="tableau">
               <div class="project-thumb">
                 <img
@@ -124,20 +125,32 @@
                     <a class="tech-tag tech-tag-action tech-tag-action--active" href="blog001.html">View Blog</a>
                   </div>
                 </div>
-                <a class="btn btn-primary" href="https://public.tableau.com/app/profile/rob.taylor6175/viz/FromEmpireToIdentityIronViz2026/FETI" target="_blank" rel="noopener noreferrer">View Project</a>
+                <a class="btn btn-primary" href="https://public.tableau.com/app/profile/rob.taylor6175/viz/FromEmpireToIdentityIronViz2026/FETI" 
+                target="_blank" rel="noopener noreferrer">View on Tableau Public</a>
               </div>
             </article>
 
+            <!-- Hop n Paint -->
             <article class="project-card" data-project-card data-category="alteryx">
-              <div class="project-thumb"><span class="project-thumb-label">Alteryx</span></div>
+              <div class="project-thumb">
+                <img
+                  src="assets/Public Thumbnails/029-hop-n-paint-mar-collab.jpg"
+                  alt="Hop 'n' Paint MAR Collab thumbnail"
+                  width="1600"
+                  height="1000"
+                />
+              </div>
               <div class="project-body">
-                <h3>Customer File Standardisation</h3>
-                <p>Batch ETL with validation rules, exception routing, and documented macro interfaces for analysts.</p>
+                <h3>Hop n Paint</h3>
+                <p>Can you make an interactive Paint by numbers on Tableau? That was the question <a class="project-pink-link" href="https://datavizfairy.co.uk/" target="_blank" rel="noopener noreferrer">Shreya</a> and I tackled. 
+                  So much fun to collaborate on and share learnings and skills with each other</p>
                 <div class="project-meta-row">
                   <div class="tech-tags">
-                    <span class="tech-tag">Alteryx</span>
-                    <span class="tech-tag">Macros</span>
-                    <span class="tech-tag">Regex</span>
+                    <span class="tech-tag">Tableau</span>
+                    <span class="tech-tag">SQL</span>
+                    <span class="tech-tag">Parameters</span>
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Figma</span>
                   </div>
                   <!--
                   <div class="project-inline-actions">
@@ -145,31 +158,44 @@
                   </div>
                   -->
                 </div>
-                <a class="btn btn-primary" href="#">View Project</a>
+                <a class="btn btn-primary" href="https://public.tableau.com/app/profile/rob.taylor6175/viz/HopnPaint-MarCollab/HopnPaint" 
+                target="_blank" rel="noopener noreferrer">View on Tableau Public</a>
               </div>
             </article>
 
-            <article class="project-card" data-project-card data-category="databricks">
-              <div class="project-thumb"><span class="project-thumb-label">Databricks</span></div>
+            <!-- Paper Planes --> 
+            <article class="project-card" data-project-card data-category="tableau">
+              <div class="project-thumb">
+                <img
+                  src="assets/Public Thumbnails/045-votd-paper-planes.jpg"
+                  alt="VOTD Paper Planes thumbnail"
+                  width="1600"
+                  height="1000"
+                />
+              </div>
               <div class="project-body">
-                <h3>Lakehouse Sales Mart</h3>
-                <p>Medallion-style pipelines with Delta merges, incremental loads, and curated dimensions for BI tools.</p>
+                <h3>Paper Planes</h3>
+                <p>A Tableau Viz of the Day project exploring paper planes with playful storytelling and interactive design.
+                  I designed and built this with my 10 year old son. We collated the data ourselves and brought his drawing to life.
+                </p>
                 <div class="project-meta-row">
                   <div class="tech-tags">
-                    <span class="tech-tag">PySpark</span>
-                    <span class="tech-tag">Delta Lake</span>
-                    <span class="tech-tag">Unity Catalog</span>
+                    <span class="tech-tag">Tableau</span>
+                    <span class="tech-tag">Parameters</span>
+                    <span class="tech-tag">Canva</span>
                   </div>
                   <!--
                   <div class="project-inline-actions">
                     <span class="tech-tag tech-tag-action is-disabled">View Blog</span>
                   </div>
                   -->
+                  
                 </div>
-                <a class="btn btn-primary" href="#">View Project</a>
+                <a class="btn btn-primary" href="https://public.tableau.com/app/profile/rob.taylor6175/viz/PaperPlanes/PaperPlanes" target="_blank" rel="noopener noreferrer">View on Tableau Public</a>
               </div>
             </article>
 
+            <!-- Cohort Retention Explorer -->
             <article class="project-card" data-project-card data-category="tableau">
               <div class="project-thumb"><span class="project-thumb-label">Tableau</span></div>
               <div class="project-body">
@@ -191,6 +217,7 @@
               </div>
             </article>
 
+            <!-- Measurement Framework Playbook -->
             <article class="project-card" data-project-card data-category="other">
               <div class="project-thumb"><span class="project-thumb-label">Other</span></div>
               <div class="project-body">
@@ -212,6 +239,7 @@
               </div>
             </article>
 
+            <!-- Streaming Events to Curated Facts -->
             <article class="project-card" data-project-card data-category="databricks">
               <div class="project-thumb"><span class="project-thumb-label">Databricks</span></div>
               <div class="project-body">
@@ -222,9 +250,11 @@
                     <span class="tech-tag">Spark Structured Streaming</span>
                     <span class="tech-tag">Delta</span>
                   </div>
+                  <!--
                   <div class="project-inline-actions">
                     <span class="tech-tag tech-tag-action is-disabled">View Blog</span>
                   </div>
+                  -->
                 </div>
                 <a class="btn btn-primary" href="#">View Project</a>
               </div>
@@ -249,6 +279,8 @@
             <li><a href="about.html">About</a></li>
           </ul>
         </div>
+
+        <!-- Connect -->
         <div class="footer-col">
           <h4>Connect</h4>
           <div class="social-row">
