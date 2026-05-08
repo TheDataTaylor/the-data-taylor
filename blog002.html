@@ -9,6 +9,160 @@
       content="A practical guide to unpivoting in Databricks SQL using UNPIVOT, CROSS JOIN + CASE, and LATERAL VIEW + STACK."
     />
     <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      .sql-annotator {
+        margin: var(--space-6) 0;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: var(--color-bg-code);
+      }
+
+      .sql-annotator-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      }
+
+      .sql-annotator-code {
+        border-right: 1px solid var(--color-border);
+      }
+
+      .sql-annotator-panel-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .sql-annotator-dots {
+        display: inline-flex;
+        gap: 0.35rem;
+      }
+
+      .sql-annotator-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+      }
+
+      .sql-annotator-dot--r { background: #ff5f57; }
+      .sql-annotator-dot--y { background: #ffbd2e; }
+      .sql-annotator-dot--g { background: #28ca41; }
+
+      .sql-annotator-file {
+        margin-left: var(--space-2);
+        font-family: var(--font-mono);
+        letter-spacing: 0.02em;
+      }
+
+      .sql-annotator-lines {
+        padding: var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        line-height: 1.7;
+      }
+
+      .sql-annotator-line {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-3);
+        margin: 0;
+        padding: 0 var(--space-2);
+        border-left: 2px solid transparent;
+        border-radius: var(--radius-sm);
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+      }
+
+      .sql-annotator-line-num {
+        width: 1.6rem;
+        flex-shrink: 0;
+        text-align: right;
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+      }
+
+      .sql-annotator-line-text {
+        flex: 1;
+        white-space: pre;
+        color: #d8e2d6;
+      }
+
+      .sql-annotator-line--annotated {
+        cursor: pointer;
+        border-left-color: rgba(0, 200, 83, 0.24);
+      }
+
+      .sql-annotator-line--annotated:hover,
+      .sql-annotator-line--active {
+        background: rgba(0, 200, 83, 0.12);
+        border-left-color: var(--color-accent);
+      }
+
+      .sql-annotator-badge {
+        margin-left: auto;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-accent);
+        color: #0f1a13;
+        font-size: 0.68rem;
+        font-weight: 700;
+      }
+
+      .sql-annotator-hint {
+        margin-top: var(--space-3);
+        margin-bottom: 0;
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .sql-annotator-note-list {
+        padding: var(--space-4);
+        min-height: 11rem;
+      }
+
+      .sql-annotator-note {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+        display: none;
+      }
+
+      .sql-annotator-note--active {
+        display: block;
+        border-color: var(--color-accent);
+        background: rgba(0, 200, 83, 0.08);
+      }
+
+      .sql-annotator-note-title {
+        margin: 0;
+        font-size: var(--text-base);
+        color: var(--color-accent);
+      }
+
+      .sql-annotator-note-body {
+        margin: var(--space-2) 0 0;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      @media (max-width: 860px) {
+        .sql-annotator-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sql-annotator-code {
+          border-right: 0;
+          border-bottom: 1px solid var(--color-border);
+        }
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -47,7 +201,7 @@
           <div class="article-meta">
             <span>Published 08 May 2026</span>
             <span class="tag tag-databricks">Databricks</span>
-            <span>10 min read</span>
+            <span>8-12 min read</span>
           </div>
         </header>
 
@@ -90,18 +244,128 @@
           <p>
             <code>UNPIVOT</code> is the most readable option for standard transformations. It is purpose-built and very clear to maintain.
           </p>
-          <div class="code-block-wrap">
-            <pre><code>SELECT
-  reference_number,
-  cso_name,
-  sp_name,
-  question_number,
-  response
-FROM your data location
-UNPIVOT (
-  response FOR question_number IN (q1, q2, q3, q4, q5, q6, q7, q8, q9, q10)
-)
-ORDER BY reference_number, question_number;</code></pre>
+          <p class="sql-annotator-hint">Tip: click a highlighted SQL line or its note to focus that explanation.</p>
+          <div class="sql-annotator" id="sql-annotator-unpivot" data-default-ann="1">
+            <div class="sql-annotator-grid">
+              <div class="sql-annotator-code">
+                <div class="sql-annotator-panel-header">
+                  <span class="sql-annotator-dots" aria-hidden="true">
+                    <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                  </span>
+                  <span class="sql-annotator-file">survey_unpivot.sql</span>
+                </div>
+                <div class="sql-annotator-lines">
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                    <span class="sql-annotator-line-num">1</span>
+                    <span class="sql-annotator-line-text">SELECT</span>
+                    <span class="sql-annotator-badge">1</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">2</span>
+                    <span class="sql-annotator-line-text">  reference_number,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">3</span>
+                    <span class="sql-annotator-line-text">  cso_name,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">4</span>
+                    <span class="sql-annotator-line-text">  sp_name,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">5</span>
+                    <span class="sql-annotator-line-text">  question_number,</span>
+                    <span class="sql-annotator-badge">2</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">6</span>
+                    <span class="sql-annotator-line-text">  response</span>
+                    <span class="sql-annotator-badge">3</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="4">
+                    <span class="sql-annotator-line-num">7</span>
+                    <span class="sql-annotator-line-text">FROM your_data_location</span>
+                    <span class="sql-annotator-badge">4</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="5">
+                    <span class="sql-annotator-line-num">8</span>
+                    <span class="sql-annotator-line-text">UNPIVOT (</span>
+                    <span class="sql-annotator-badge">5</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">9</span>
+                    <span class="sql-annotator-line-text">  response FOR question_number IN (q1, q2, q3, q4, q5, q6, q7, q8, q9, q10)</span>
+                    <span class="sql-annotator-badge">6</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">10</span>
+                    <span class="sql-annotator-line-text">)</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="7">
+                    <span class="sql-annotator-line-num">11</span>
+                    <span class="sql-annotator-line-text">ORDER BY reference_number, question_number;</span>
+                    <span class="sql-annotator-badge">7</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sql-annotator-notes">
+                <div class="sql-annotator-panel-header">Line Notes</div>
+                <div class="sql-annotator-note-list">
+                  <article class="sql-annotator-note" data-ann="1">
+                    <h4 class="sql-annotator-note-title">SELECT: choosing your columns</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>SELECT</code> tells the database which columns you want in your result. Only these fields appear, and
+                      everything else in the table is ignored.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="2">
+                    <h4 class="sql-annotator-note-title">question_number (generated by UNPIVOT)</h4>
+                    <p class="sql-annotator-note-body">
+                      This column <strong>does not exist in the original wide table</strong>. <code>UNPIVOT</code> creates it to hold
+                      labels like <code>q1</code>, <code>q2</code>, and so on, so each row clearly indicates which question it belongs to.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="3">
+                    <h4 class="sql-annotator-note-title">response (generated by UNPIVOT)</h4>
+                    <p class="sql-annotator-note-body">
+                      Also created by <code>UNPIVOT</code>. This is the answer value associated with the
+                      <code>question_number</code> on that row; one row equals one answer to one question.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="4">
+                    <h4 class="sql-annotator-note-title">FROM: your data source</h4>
+                    <p class="sql-annotator-note-body">
+                      Replace <code>your_data_location</code> with the real table or view name in your Databricks environment
+                      (for example <code>survey_responses</code>).
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="5">
+                    <h4 class="sql-annotator-note-title">UNPIVOT: the core transformation</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>UNPIVOT</code> reshapes a <em>wide</em> table into a <em>long</em> table. Instead of one row with many
+                      question columns, you get one row per question response, which is easier to filter, aggregate, and visualize.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="6">
+                    <h4 class="sql-annotator-note-title">response FOR question_number IN (...)</h4>
+                    <p class="sql-annotator-note-body">
+                      This line defines the unpivot mapping: <code>response</code> becomes the new value column,
+                      <code>question_number</code> stores the original column name (<code>q1</code> to <code>q10</code>), and
+                      <code>IN (...)</code> lists which columns to collapse.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="7">
+                    <h4 class="sql-annotator-note-title">ORDER BY: sorting the result</h4>
+                    <p class="sql-annotator-note-body">
+                      Sorts output first by <code>reference_number</code> (grouping each respondent), then by
+                      <code>question_number</code> so responses appear in question order.
+                    </p>
+                  </article>
+                </div>
+              </div>
+            </div>
           </div>
           <p><strong>Best for:</strong> clear, maintainable, standard unpivoting with minimal custom logic.</p>
 
@@ -110,29 +374,178 @@ ORDER BY reference_number, question_number;</code></pre>
             This approach is verbose but highly flexible. You explicitly generate row combinations and map values with a
             <code>CASE</code> expression.
           </p>
-          <div class="code-block-wrap">
-            <pre><code>SELECT
-  reference_number,
-  cso_name,
-  sp_name,
-  question_number,
-  CASE question_number
-    WHEN 'q1' THEN q1
-    WHEN 'q2' THEN q2
-    WHEN 'q3' THEN q3
-    WHEN 'q4' THEN q4
-    WHEN 'q5' THEN q5
-    WHEN 'q6' THEN q6
-    WHEN 'q7' THEN q7
-    WHEN 'q8' THEN q8
-    WHEN 'q9' THEN q9
-    WHEN 'q10' THEN q10
-  END AS response
-FROM your data location
-CROSS JOIN (
-  VALUES ('q1'), ('q2'), ('q3'), ('q4'), ('q5'), ('q6'), ('q7'), ('q8'), ('q9'), ('q10')
-) AS questions(question_number)
-ORDER BY reference_number, question_number;</code></pre>
+          <div class="sql-annotator" data-default-ann="1">
+            <div class="sql-annotator-grid">
+              <div class="sql-annotator-code">
+                <div class="sql-annotator-panel-header">
+                  <span class="sql-annotator-dots" aria-hidden="true">
+                    <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                  </span>
+                  <span class="sql-annotator-file">cross_join_case.sql</span>
+                </div>
+                <div class="sql-annotator-lines">
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                    <span class="sql-annotator-line-num">1</span>
+                    <span class="sql-annotator-line-text">SELECT</span>
+                    <span class="sql-annotator-badge">1</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">2</span>
+                    <span class="sql-annotator-line-text">  reference_number,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">3</span>
+                    <span class="sql-annotator-line-text">  cso_name,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">4</span>
+                    <span class="sql-annotator-line-text">  sp_name,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">5</span>
+                    <span class="sql-annotator-line-text">  question_number,</span>
+                    <span class="sql-annotator-badge">2</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">6</span>
+                    <span class="sql-annotator-line-text">  CASE question_number</span>
+                    <span class="sql-annotator-badge">3</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">7</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q1' THEN q1</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">8</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q2' THEN q2</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">9</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q3' THEN q3</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">10</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q4' THEN q4</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">11</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q5' THEN q5</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">12</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q6' THEN q6</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">13</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q7' THEN q7</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">14</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q8' THEN q8</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">15</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q9' THEN q9</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">16</span>
+                    <span class="sql-annotator-line-text">    WHEN 'q10' THEN q10</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="4">
+                    <span class="sql-annotator-line-num">17</span>
+                    <span class="sql-annotator-line-text">  END AS response</span>
+                    <span class="sql-annotator-badge">4</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="5">
+                    <span class="sql-annotator-line-num">18</span>
+                    <span class="sql-annotator-line-text">FROM your_data_location</span>
+                    <span class="sql-annotator-badge">5</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">19</span>
+                    <span class="sql-annotator-line-text">CROSS JOIN (</span>
+                    <span class="sql-annotator-badge">6</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">20</span>
+                    <span class="sql-annotator-line-text">  VALUES ('q1'), ('q2'), ('q3'), ('q4'), ('q5'), ('q6'), ('q7'), ('q8'), ('q9'), ('q10')</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="7">
+                    <span class="sql-annotator-line-num">21</span>
+                    <span class="sql-annotator-line-text">) AS questions(question_number)</span>
+                    <span class="sql-annotator-badge">7</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="8">
+                    <span class="sql-annotator-line-num">22</span>
+                    <span class="sql-annotator-line-text">ORDER BY reference_number, question_number;</span>
+                    <span class="sql-annotator-badge">8</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sql-annotator-notes">
+                <div class="sql-annotator-panel-header">Line Notes</div>
+                <div class="sql-annotator-note-list">
+                  <article class="sql-annotator-note" data-ann="1">
+                    <h4 class="sql-annotator-note-title">SELECT: choosing your columns</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>SELECT</code> tells the database which columns you want in your results. Everything listed here appears in
+                      the output and anything else is excluded.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="2">
+                    <h4 class="sql-annotator-note-title">question_number: comes from the CROSS JOIN</h4>
+                    <p class="sql-annotator-note-body">
+                      This is created by the <code>CROSS JOIN</code> section. It gives each row a label like <code>'q1'</code> or
+                      <code>'q7'</code> so you know which question that row represents.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="3">
+                    <h4 class="sql-annotator-note-title">CASE: picking the right answer column</h4>
+                    <p class="sql-annotator-note-body">
+                      This is the manual lookup replacement for <code>UNPIVOT</code>. For each row, the value in
+                      <code>question_number</code> is checked against each <code>WHEN</code> branch and returns the matching column
+                      value. If <code>question_number = 'q3'</code>, the row returns the value from column <code>q3</code>.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="4">
+                    <h4 class="sql-annotator-note-title">END AS response: naming the result</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>END</code> closes the <code>CASE</code> expression. <code>AS response</code> gives the result a clean
+                      output name.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="5">
+                    <h4 class="sql-annotator-note-title">FROM: your data source</h4>
+                    <p class="sql-annotator-note-body">
+                      Replace <code>your_data_location</code> with your actual table or view name that stores the wide-format responses.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="6">
+                    <h4 class="sql-annotator-note-title">CROSS JOIN VALUES(...): generating question labels</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>CROSS JOIN</code> pairs each respondent row with every label listed in <code>VALUES</code>. That duplicates
+                      each respondent row 10 times (q1 to q10), producing the tall row shape needed for analysis.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="7">
+                    <h4 class="sql-annotator-note-title">AS questions(question_number): naming the inline table</h4>
+                    <p class="sql-annotator-note-body">
+                      The inline <code>VALUES</code> table needs an alias (<code>questions</code>) and a column name
+                      (<code>question_number</code>) so it can be referenced in <code>SELECT</code> and <code>CASE</code>.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="8">
+                    <h4 class="sql-annotator-note-title">ORDER BY: sorting the output</h4>
+                    <p class="sql-annotator-note-body">
+                      Sorts first by <code>reference_number</code> to keep each respondent together, then by
+                      <code>question_number</code> so q1 to q10 appear in order.
+                    </p>
+                  </article>
+                </div>
+              </div>
+            </div>
           </div>
           <p><strong>Best for:</strong> custom transformation logic and cross-platform SQL portability.</p>
 
@@ -140,28 +553,178 @@ ORDER BY reference_number, question_number;</code></pre>
           <p>
             In Spark and Databricks environments, <code>STACK</code> is compact and performant, especially with many columns.
           </p>
-          <div class="code-block-wrap">
-            <pre><code>SELECT
-  reference_number,
-  cso_name,
-  sp_name,
-  question_number,
-  response
-FROM your data location
-LATERAL VIEW stack(
-  10,
-  'q1', q1,
-  'q2', q2,
-  'q3', q3,
-  'q4', q4,
-  'q5', q5,
-  'q6', q6,
-  'q7', q7,
-  'q8', q8,
-  'q9', q9,
-  'q10', q10
-) AS question_number, response
-ORDER BY reference_number, question_number;</code></pre>
+          <div class="sql-annotator" data-default-ann="1">
+            <div class="sql-annotator-grid">
+              <div class="sql-annotator-code">
+                <div class="sql-annotator-panel-header">
+                  <span class="sql-annotator-dots" aria-hidden="true">
+                    <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                  </span>
+                  <span class="sql-annotator-file">lateral_stack.sql</span>
+                </div>
+                <div class="sql-annotator-lines">
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                    <span class="sql-annotator-line-num">1</span>
+                    <span class="sql-annotator-line-text">SELECT</span>
+                    <span class="sql-annotator-badge">1</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">2</span>
+                    <span class="sql-annotator-line-text">  reference_number,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">3</span>
+                    <span class="sql-annotator-line-text">  cso_name,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">4</span>
+                    <span class="sql-annotator-line-text">  sp_name,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">5</span>
+                    <span class="sql-annotator-line-text">  question_number,</span>
+                    <span class="sql-annotator-badge">2</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">6</span>
+                    <span class="sql-annotator-line-text">  response</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">7</span>
+                    <span class="sql-annotator-line-text">FROM your data location</span>
+                    <span class="sql-annotator-badge">3</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="4">
+                    <span class="sql-annotator-line-num">8</span>
+                    <span class="sql-annotator-line-text">LATERAL VIEW</span>
+                    <span class="sql-annotator-badge">4</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="5">
+                    <span class="sql-annotator-line-num">9</span>
+                    <span class="sql-annotator-line-text">stack(</span>
+                    <span class="sql-annotator-badge">5</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="5">
+                    <span class="sql-annotator-line-num">10</span>
+                    <span class="sql-annotator-line-text">  10,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">11</span>
+                    <span class="sql-annotator-line-text">  'q1', q1,</span>
+                    <span class="sql-annotator-badge">6</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">12</span>
+                    <span class="sql-annotator-line-text">  'q2', q2,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">13</span>
+                    <span class="sql-annotator-line-text">  'q3', q3,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">14</span>
+                    <span class="sql-annotator-line-text">  'q4', q4,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">15</span>
+                    <span class="sql-annotator-line-text">  'q5', q5,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">16</span>
+                    <span class="sql-annotator-line-text">  'q6', q6,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">17</span>
+                    <span class="sql-annotator-line-text">  'q7', q7,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">18</span>
+                    <span class="sql-annotator-line-text">  'q8', q8,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">19</span>
+                    <span class="sql-annotator-line-text">  'q9', q9,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">20</span>
+                    <span class="sql-annotator-line-text">  'q10', q10</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="7">
+                    <span class="sql-annotator-line-num">21</span>
+                    <span class="sql-annotator-line-text">) AS question_number, response</span>
+                    <span class="sql-annotator-badge">7</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="8">
+                    <span class="sql-annotator-line-num">22</span>
+                    <span class="sql-annotator-line-text">ORDER BY reference_number, question_number;</span>
+                    <span class="sql-annotator-badge">8</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sql-annotator-notes">
+                <div class="sql-annotator-panel-header">Line Notes</div>
+                <div class="sql-annotator-note-list">
+                  <article class="sql-annotator-note" data-ann="1">
+                    <h4 class="sql-annotator-note-title">SELECT</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>SELECT</code> tells the database which columns you want in your results. Only these columns appear in the
+                      output; everything else in the table is ignored.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="2">
+                    <h4 class="sql-annotator-note-title">question_number and response: generated columns</h4>
+                    <p class="sql-annotator-note-body">
+                      These columns do not exist in your original table. They are produced by <code>LATERAL VIEW stack()</code>; each row
+                      gets a question label (for example <code>'q4'</code>) and the matching answer value.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="3">
+                    <h4 class="sql-annotator-note-title">FROM: your data source</h4>
+                    <p class="sql-annotator-note-body">
+                      Replace <code>your_data_location</code> with the real table or view name in your database, such as
+                      <code>survey_responses</code>. This is where the original wide-format data lives.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="4">
+                    <h4 class="sql-annotator-note-title">LATERAL VIEW: connecting generated rows to the main table</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>LATERAL VIEW</code> applies a table-generating function to each row of the main table, then joins the output
+                      back automatically. This is what expands each respondent row into 10 rows.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="5">
+                    <h4 class="sql-annotator-note-title">stack(10, ...): the transformation engine</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>stack()</code> does the heavy lifting. The first argument (<code>10</code>) tells SQL to produce 10 rows per
+                      respondent from the following label/value pairs.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="6">
+                    <h4 class="sql-annotator-note-title">'q1', q1 ... 'q10', q10: label/value pairs</h4>
+                    <p class="sql-annotator-note-body">
+                      Each pair maps a hardcoded label (like <code>'q1'</code>) to its corresponding data column
+                      (<code>q1</code>). The label goes to <code>question_number</code>; the value goes to <code>response</code>.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="7">
+                    <h4 class="sql-annotator-note-title">AS question_number, response: naming generated columns</h4>
+                    <p class="sql-annotator-note-body">
+                      This aliases the two columns returned by <code>stack()</code>. The names must match what you reference in the
+                      <code>SELECT</code> list.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="8">
+                    <h4 class="sql-annotator-note-title">ORDER BY: sorting the output</h4>
+                    <p class="sql-annotator-note-body">
+                      Sorts first by <code>reference_number</code> (keeping respondent rows together), then by
+                      <code>question_number</code> so q1 through q10 appear in order.
+                    </p>
+                  </article>
+                </div>
+              </div>
+            </div>
           </div>
           <p><strong>Best for:</strong> Databricks/Spark-first workloads where performance and compact syntax matter.</p>
 
@@ -170,24 +733,167 @@ ORDER BY reference_number, question_number;</code></pre>
             Some models store grouped columns by stage (for example, stage 1 and stage 2 approval fields). Both
             <code>UNPIVOT</code> and <code>STACK</code> can reshape these while preserving field relationships.
           </p>
-          <div class="code-block-wrap">
-            <pre><code>SELECT
-  created,
-  transaction_id,
-  transaction_type,
-  approval_stage,
-  approval_name,
-  approval_email,
-  approval_date,
-  approval_status,
-  approval_comments
-FROM jll_azara_catalog.jll_azara_0096814123_azarawdtes_custom.etl_session_data2_22_04_26
-LATERAL VIEW stack(
-  2,
-  'Stage_1', 1_approval_name, 1_approval_email, 1_approval_date, 1_approval_status, 1_approval_comments,
-  'Stage_2', 2_approval_name, 2_approval_email, 2_approval_date, 2_approval_status, 2_approval_comments
-) AS approval_stage, approval_name, approval_email, approval_date, approval_status, approval_comments
-ORDER BY transaction_id;</code></pre>
+          <div class="sql-annotator" data-default-ann="1">
+            <div class="sql-annotator-grid">
+              <div class="sql-annotator-code">
+                <div class="sql-annotator-panel-header">
+                  <span class="sql-annotator-dots" aria-hidden="true">
+                    <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                    <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                  </span>
+                  <span class="sql-annotator-file">approval_stage_stack.sql</span>
+                </div>
+                <div class="sql-annotator-lines">
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                    <span class="sql-annotator-line-num">1</span>
+                    <span class="sql-annotator-line-text">SELECT</span>
+                    <span class="sql-annotator-badge">1</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">2</span>
+                    <span class="sql-annotator-line-text">  created,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">3</span>
+                    <span class="sql-annotator-line-text">  transaction_id,</span>
+                  </div>
+                  <div class="sql-annotator-line">
+                    <span class="sql-annotator-line-num">4</span>
+                    <span class="sql-annotator-line-text">  transaction_type,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">5</span>
+                    <span class="sql-annotator-line-text">  approval_stage,</span>
+                    <span class="sql-annotator-badge">2</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">6</span>
+                    <span class="sql-annotator-line-text">  approval_name,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">7</span>
+                    <span class="sql-annotator-line-text">  approval_email,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">8</span>
+                    <span class="sql-annotator-line-text">  approval_date,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">9</span>
+                    <span class="sql-annotator-line-text">  approval_status,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                    <span class="sql-annotator-line-num">10</span>
+                    <span class="sql-annotator-line-text">  approval_comments</span>
+                  </div>
+
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                    <span class="sql-annotator-line-num">11</span>
+                    <span class="sql-annotator-line-text">FROM your data location</span>
+                    <span class="sql-annotator-badge">3</span>
+                  </div>
+
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="4">
+                    <span class="sql-annotator-line-num">12</span>
+                    <span class="sql-annotator-line-text">LATERAL VIEW</span>
+                    <span class="sql-annotator-badge">4</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="5">
+                    <span class="sql-annotator-line-num">13</span>
+                    <span class="sql-annotator-line-text">stack(</span>
+                    <span class="sql-annotator-badge">5</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="5">
+                    <span class="sql-annotator-line-num">14</span>
+                    <span class="sql-annotator-line-text">  2,</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">15</span>
+                    <span class="sql-annotator-line-text">  'Stage_1', 1_approval_name, 1_approval_email, 1_approval_date, 
+                      1_approval_status, 1_approval_comments,</span>
+                    <span class="sql-annotator-badge">6</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
+                    <span class="sql-annotator-line-num">16</span>
+                    <span class="sql-annotator-line-text">  'Stage_2', 2_approval_name, 2_approval_email, 2_approval_date, 
+                      2_approval_status, 2_approval_comments</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="7">
+                    <span class="sql-annotator-line-num">17</span>
+                    <span class="sql-annotator-line-text">) AS approval_stage, approval_name, approval_email, approval_date, 
+                      approval_status, approval_comments</span>
+                    <span class="sql-annotator-badge">7</span>
+                  </div>
+                  <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="8">
+                    <span class="sql-annotator-line-num">18</span>
+                    <span class="sql-annotator-line-text">ORDER BY transaction_id;</span>
+                    <span class="sql-annotator-badge">8</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sql-annotator-notes">
+                <div class="sql-annotator-panel-header">Line Notes</div>
+                <div class="sql-annotator-note-list">
+                  <article class="sql-annotator-note" data-ann="1">
+                    <h4 class="sql-annotator-note-title">SELECT</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>SELECT</code> tells the database which columns you want in your results. Only these columns appear in the
+                      output; everything else in the table is ignored.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="2">
+                    <h4 class="sql-annotator-note-title">approval_stage, approval_name, approval_email, approval_date, approval_status, approval_comments: generated columns</h4>
+                    <p class="sql-annotator-note-body">
+                      These six columns do not exist in the original table. They are produced by <code>LATERAL VIEW stack()</code> so each
+                      output row carries one stage label and the full set of approval details for that stage.
+                    </p>
+                  </article>
+
+                  <article class="sql-annotator-note" data-ann="3">
+                    <h4 class="sql-annotator-note-title">FROM: your data source</h4>
+                    <p class="sql-annotator-note-body">
+                      Replace <code>your_data_location</code> with your actual table or view name that stores the wide-format responses.
+                    </p>
+                  </article>
+
+                  <article class="sql-annotator-note" data-ann="4">
+                    <h4 class="sql-annotator-note-title">LATERAL VIEW: connecting generated rows to the main table</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>LATERAL VIEW</code> applies a table-generating function to each source row and stitches the result back
+                      alongside it. Here it expands each transaction into two rows, one for each approval stage.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="5">
+                    <h4 class="sql-annotator-note-title">stack(2, ...): the transformation engine</h4>
+                    <p class="sql-annotator-note-body">
+                      <code>stack()</code> reshapes a flat list into multiple rows. The first argument (<code>2</code>) tells SQL to
+                      produce two rows per transaction, one for each stage group.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="6">
+                    <h4 class="sql-annotator-note-title">'Stage_1' ... and 'Stage_2' ...: the two stage groups</h4>
+                    <p class="sql-annotator-note-body">
+                      Each group maps a hardcoded stage label to its corresponding approval columns. The label becomes
+                      <code>approval_stage</code> and the other fields become approver details for that stage.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="7">
+                    <h4 class="sql-annotator-note-title">AS approval_stage, approval_name, ...: naming generated columns</h4>
+                    <p class="sql-annotator-note-body">
+                      This aliases all columns returned by <code>stack()</code>. These names must match what is referenced in the
+                      <code>SELECT</code> list.
+                    </p>
+                  </article>
+                  <article class="sql-annotator-note" data-ann="8">
+                    <h4 class="sql-annotator-note-title">ORDER BY transaction_id</h4>
+                    <p class="sql-annotator-note-body">
+                      Sorts output by <code>transaction_id</code> so both stage rows for each transaction stay grouped together.
+                    </p>
+                  </article>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="callout">
@@ -261,6 +967,44 @@ ORDER BY transaction_id;</code></pre>
       </div>
     </footer>
 
+    <script>
+      (() => {
+        const annotators = [...document.querySelectorAll(".sql-annotator")];
+        if (!annotators.length) return;
+
+        annotators.forEach((root) => {
+          const lines = [...root.querySelectorAll(".sql-annotator-line--annotated")];
+          const notes = [...root.querySelectorAll(".sql-annotator-note")];
+          if (!lines.length || !notes.length) return;
+
+          notes.forEach((note) => {
+            const title = note.querySelector(".sql-annotator-note-title");
+            if (!title) return;
+            const ann = note.dataset.ann;
+            if (!title.textContent.trim().startsWith(`${ann} · `)) {
+              title.textContent = `${ann} · ${title.textContent.trim()}`;
+            }
+          });
+
+          function setActive(key) {
+            lines.forEach((line) => line.classList.toggle("sql-annotator-line--active", line.dataset.ann === key));
+            notes.forEach((note) => {
+              const isActive = note.dataset.ann === key;
+              note.classList.toggle("sql-annotator-note--active", isActive);
+              note.style.display = isActive ? "block" : "none";
+            });
+          }
+
+          function bindSelection(el) {
+            el.addEventListener("click", () => setActive(el.dataset.ann));
+          }
+
+          lines.forEach(bindSelection);
+          notes.forEach(bindSelection);
+          setActive(root.dataset.defaultAnn || lines[0].dataset.ann);
+        });
+      })();
+    </script>
     <script src="assets/js/main.js" defer></script>
   </body>
 </html>

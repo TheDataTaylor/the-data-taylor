@@ -1988,8 +1988,8 @@ a.btn {
 
 @media (min-width: 640px) {
   .about-badges {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    max-width: 40rem;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    max-width: 46rem;
   }
 }
 
