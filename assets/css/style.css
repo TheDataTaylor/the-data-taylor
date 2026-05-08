@@ -313,6 +313,16 @@ main {
   }
 }
 
+.section[aria-labelledby="featured-heading"] {
+  padding-top: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .section[aria-labelledby="featured-heading"] {
+    padding-top: var(--space-8);
+  }
+}
+
 .container {
   width: 100%;
   max-width: none;
@@ -1028,7 +1038,7 @@ a.btn {
 .thread-divider {
   display: block;
   max-width: 12rem;
-  margin: var(--space-8) auto;
+  margin: var(--space-5) auto;
   opacity: 0.45;
 }
 
