@@ -15,6 +15,7 @@
   --color-tag-tableau: #00c853;
   --color-tag-alteryx: #26a69a;
   --color-tag-databricks: #42a5f5;
+  --color-tag-build: #e0b36a;
 
   /* Typography */
   --font-display: "Playfair Display", Georgia, serif;
@@ -972,6 +973,11 @@ a.btn {
 .tag-databricks {
   background: rgba(66, 165, 245, 0.15);
   color: var(--color-tag-databricks);
+}
+
+.tag-build {
+  background: rgba(224, 179, 106, 0.15);
+  color: var(--color-tag-build);
 }
 
 .tag-strategy {

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Building The Data Taylor: From Idea to Live Site with AI</title>
+    <meta
+      name="description"
+      content="A non-developer's honest account of building a personal website with Claude, Cursor, GitHub Pages, and what I learned along the way."
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      .build-stack-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: var(--space-3);
+        margin: var(--space-5) 0 var(--space-6);
+        padding: 0;
+        list-style: none;
+      }
+
+      .build-stack-grid li {
+        margin: 0;
+        padding: var(--space-4);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-bg-elevated);
+      }
+
+      .build-stack-grid strong {
+        display: block;
+        color: var(--color-accent);
+        margin-bottom: var(--space-1);
+        font-size: var(--text-base);
+      }
+
+      .build-stack-grid span {
+        font-size: var(--text-sm);
+        color: var(--color-text-muted);
+      }
+
+      .cost-table {
+        margin: var(--space-5) 0 var(--space-6);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--color-bg-elevated);
+      }
+
+      .cost-table-row {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        align-items: center;
+      }
+
+      .cost-table-row:last-child {
+        border-bottom: 0;
+      }
+
+      .cost-table-row--head {
+        background: rgba(0, 200, 83, 0.08);
+        color: var(--color-accent);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: var(--text-xs);
+      }
+
+      .cost-table-row--total {
+        background: rgba(0, 200, 83, 0.12);
+        color: var(--color-text);
+        font-weight: 600;
+      }
+
+      .cost-table-row span:last-child {
+        text-align: right;
+        color: var(--color-text-muted);
+      }
+
+      .cost-table-row--total span:last-child {
+        color: var(--color-accent);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Site Header -->
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="200" height="60" />
+        </a>
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open menu"
+        >
+          <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="blog.html" class="active">Blog</a>
+          <a href="about.html">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Article -->
+      <article class="article-wrap article-wrap--tight-end">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> · <a href="blog.html">Blog</a> · <span>Article</span>
+        </nav>
+
+        <!-- Article Header -->
+        <header class="article-header">
+          <h1>Building The Data Taylor: From Idea to Live Site with AI</h1>
+          <div class="article-meta">
+            <span>Published 09 May 2026</span>
+            <span class="tag tag-build">AI Tools</span>
+            <span>10 min read</span>
+          </div>
+        </header>
+
+        <!-- Hero Image -->
+        <div class="article-hero-img" style="max-width: 45%; margin-left: auto; margin-right: auto">
+          <img src="assets/Logos/Logo_Square.png" alt="The Data Taylor logo" />
+        </div>
+
+        <!-- Article Body -->
+        <div class="prose">
+          <p>
+            <em
+              >A non-developer's honest account of building a personal website with Claude, Cursor and GitHub, and what I
+              learned along the way.</em
+            >
+          </p>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">The Brief</h3>
+          <p>
+            I wanted a home for my data work. Somewhere to showcase my Tableau portfolio, write about tools I use every day:
+            Tableau, Alteryx, Databricks. I wanted to build something that felt like <em>me</em>. I had a name, The Data
+            Taylor, a logo, and a rough idea. What I didn't have was any web development experience.
+          </p>
+          <p>
+            What followed was a crash course in modern AI-assisted development, and honestly, it was more fun than I expected.
+          </p>
+
+          <h3 style="color: var(--color-accent)">The Tools</h3>
+          <p>Before we get into the journey, here's the full stack of what we used:</p>
+          <ul class="build-stack-grid">
+            <li><strong>Claude</strong><span>AI assistant for planning, prompting, writing and problem solving.</span></li>
+            <li><strong>Cursor</strong><span>AI-powered code editor that built the actual website.</span></li>
+            <li><strong>Git &amp; Git Bash</strong><span>Version control to track changes locally.</span></li>
+            <li><strong>GitHub</strong><span>Cloud storage for the code.</span></li>
+            <li><strong>GitHub Pages</strong><span>Free hosting that turns the code into a live website.</span></li>
+            <li><strong>Live Server</strong><span>A Cursor/VS Code extension for previewing changes instantly.</span></li>
+          </ul>
+          <p>
+            Total cost: <strong>£0</strong>. Everything above is free. (With the caveat I have paid for my own domain name.)
+          </p>
+
+          <h2>Step 1: The Prompt that Started Everything</h2>
+          <p>
+            Rather than jumping straight into Cursor and hoping for the best, I started with Claude to build a detailed brief.
+            The idea was simple: if you give an AI vague instructions, you get a vague result. So we spent time crafting a
+            prompt that covered:
+          </p>
+          <ul>
+            <li>The brand colours (extracted directly from the logo)</li>
+            <li>Typography choices that matched the logo's serif style</li>
+            <li>Every page needed: Home, Portfolio, Blog, About</li>
+            <li>The specific sections within each page</li>
+            <li>Technical requirements: pure HTML, CSS and vanilla JavaScript, no frameworks</li>
+          </ul>
+          <p>
+            The prompt ended up being over 200 lines long. That level of detail is what separates a generic AI-generated site
+            from something that actually feels intentional.
+          </p>
+          <div class="callout">
+            <strong>Key lesson:</strong> The quality of your output is directly tied to the quality of your input. Spend time on
+            the prompt before touching any code.
+          </div>
+
+          <h2>Step 2: Getting the Code Live</h2>
+          <p>
+            Cursor generated the whole site (HTML, CSS, JavaScript) in one go. The next challenge was getting it online. This
+            is where Git and GitHub came in, and it's fair to say the learning curve here was the steepest part of the whole
+            process.
+          </p>
+          <p>A few things that caught me out:</p>
+          <ul>
+            <li>
+              <strong>Git wasn't installed.</strong> Windows doesn't come with it. I had to download and install it separately
+              from
+              <a class="blog-accent-link" href="https://git-scm.com/" rel="noopener noreferrer">git-scm.com</a>.
+            </li>
+            <li>
+              <strong>The terminal needs to be in the right folder.</strong> Every time you open Git Bash you need to navigate
+              to your project folder first, otherwise nothing works.
+            </li>
+            <li>
+              <strong>Spaces in folder names cause problems.</strong> The project was saved in a folder called "The Data
+              Taylor" and the space required special handling in commands.
+            </li>
+            <li>
+              <strong>Case sensitivity.</strong> GitHub Pages runs on Linux, which treats <code>Logos</code> and
+              <code>logos</code> as completely different folders. Images that worked locally broke on the live site because of
+              a capital letter.
+            </li>
+          </ul>
+          <p>The three commands you end up using constantly once everything is set up:</p>
+          <div class="code-block-wrap">
+            <button class="code-copy" type="button" data-code-copy>Copy</button>
+            <pre><code>cd /c/Users/rober/Documents/The\ Data\ Taylor
+git add .
+git commit -m "describe your change"
+git push</code></pre>
+          </div>
+          <div class="callout">
+            <strong>Key lesson:</strong> GitHub Pages is an incredible free tool but it takes a bit of patience to set up. Once
+            it's working, deploying updates takes about 60 seconds.
+          </div>
+
+          <h2>Step 3: Making It Feel Like Mine</h2>
+          <p>
+            This is where the real fun started. Cursor built a solid foundation but making it feel like The Data Taylor required
+            a lot of iteration. Some of the things we tweaked:
+          </p>
+          <ul>
+            <li>
+              <strong>The hero carousel.</strong> The homepage features a rotating carousel of my Tableau Public thumbnails.
+              Getting this working properly involved compressing 13MB of PNG images down to JPGs (a Python one-liner in the
+              terminal), fixing folder capitalisation issues, and building a JSON manifest file that maps each image to its
+              Tableau Public URL so visitors can click through.
+            </li>
+            <li>
+              <strong>The animated bar chart background.</strong> Rather than the default diagonal line animation Cursor
+              generated, we replaced it with faint green bar chart bars that rise from the bottom of the hero on page load. A
+              subtle nod to the data theme without screaming about it.
+            </li>
+            <li>
+              <strong>The gradient border on the carousel.</strong> A left-to-right fade from bright green (#00C853) to deep
+              forest green (#1B6B3A). A small detail but one that ties directly to the brand colours.
+            </li>
+            <li>
+              <strong>The expertise cards.</strong> Replaced generic SVG icons with real product logos for Tableau, Alteryx,
+              Databricks and AI. Sounds simple, broke on the live site three times for different reasons.
+            </li>
+          </ul>
+          <div class="callout">
+            <strong>Key lesson:</strong> The gap between "it works locally" and "it works on the live site" is where most of the
+            real debugging happens. Always check the live version after pushing.
+          </div>
+
+          <h2>Step 4: Learning to Edit CSS Yourself</h2>
+          <p>
+            One of the most valuable things that came out of this process was learning to make small changes without needing to
+            ask an AI every time. CSS, the language that controls how everything looks, turns out to be pretty readable once
+            you know what you're looking for.
+          </p>
+          <p>A few things worth knowing:</p>
+          <ul>
+            <li>
+              <code>margin-top</code> pushes an element <strong>down</strong> by adding space above it. Negative values pull it
+              <strong>up</strong>.
+            </li>
+            <li>
+              <code>gap</code> controls the space <strong>between</strong> elements inside a flex or grid container.
+            </li>
+            <li><code>padding</code> adds space <strong>inside</strong> an element.</li>
+            <li>
+              The <strong>M symbol</strong> next to files in Cursor means Modified. You have unsaved (unpushed) changes.
+            </li>
+          </ul>
+          <p>
+            For finding the right thing to edit, <code>Ctrl+F</code> inside the CSS file and searching for the class name you
+            can see in the HTML is almost always the fastest route.
+          </p>
+
+          <h2>Step 5: The Content</h2>
+          <p>
+            A website is only as good as what's in it. For the About page we pulled together experience from LinkedIn, Tableau
+            Public and a CV, then rewrote it to sound like an actual person rather than a job application.
+          </p>
+          <p>
+            For the blog, which you're reading right now, the approach is to write about things I genuinely know and care
+            about. Iron Viz journeys. Alteryx layout opinions. Tableau calculated fields that make people say "how did you do
+            that?".
+          </p>
+          <p>
+            The section sign-off on blog posts? I ditched "Conclusion" in favour of "The Last Thread", a small editorial
+            touch that fits a site called The Data Taylor a bit better.
+          </p>
+
+          <h2>What It All Cost</h2>
+          <div class="cost-table">
+            <div class="cost-table-row cost-table-row--head"><span>Tool</span><span>Cost</span></div>
+            <div class="cost-table-row"><span>Claude</span><span>Free</span></div>
+            <div class="cost-table-row"><span>Cursor</span><span>Free</span></div>
+            <div class="cost-table-row"><span>Git</span><span>Free</span></div>
+            <div class="cost-table-row"><span>GitHub</span><span>Free</span></div>
+            <div class="cost-table-row"><span>GitHub Pages</span><span>Free</span></div>
+            <div class="cost-table-row"><span>Domain (optional)</span><span>~£10 / year</span></div>
+            <div class="cost-table-row cost-table-row--total"><span>Required spend</span><span>£0</span></div>
+            <div class="cost-table-row cost-table-row--total"><span>Actual spend <em style="font-weight: 400;">(I decided to pay for 
+              Cursor as I was too excited to wait for the free tier to unlock all the features.)</em></span><span>£18 + Domain cost for 3 years</span></div>
+          </div>
+          <p>
+            The only thing that costs money is a custom domain if you want one, thedatataylor.com rather than
+            thedatataylor.github.io. Even that's optional.
+          </p>
+
+          <h3 style="color: var(--color-accent)">The Last Thread</h3>
+          <p>
+            Could I have paid someone to build this? Yes. Would it have looked better on day one? Probably. But I wouldn't have
+            learned how CSS grid works, why image file paths are case sensitive on Linux, or how to push code from a terminal.
+          </p>
+          <p>
+            The honest truth about AI-assisted development is that it dramatically lowers the barrier to entry, but it doesn't
+            remove the need to understand what's happening. The best results came when I could describe <em>exactly</em> what I
+            wanted, understand <em>roughly</em> why something wasn't working, and make small tweaks <em>myself</em> rather than
+            regenerating everything from scratch.
+          </p>
+          <p>
+            The Data Taylor website isn't finished. It probably never will be. But it's live, it's mine, and every section of
+            it was deliberately crafted, which feels about right for a site called Crafted Insights.
+            <br />
+            <br />
+            Built with Claude, Cursor, GitHub Pages and a lot of patience with Git Bash.
+            <br />
+            <br />
+            Rob.
+          </p>
+        </div>
+
+        <!-- Author Box -->
+        <div class="author-box author-box--logo">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="260" height="78" />
+        </div>
+      </article>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/Logos/Logo_Square.png" alt="The Data Taylor" width="200" height="60" />
+          <p>Crafted Insights: data analytics with editorial clarity.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <div class="social-row">
+            <a href="https://www.linkedin.com/in/robert-taylor-32b779252" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="https://github.com/TheDataTaylor" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a href="https://x.com/trebor_rolyat" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a
+              class="social-tableau"
+              href="https://public.tableau.com/app/profile/rob.taylor6175/vizzes"
+              aria-label="Tableau Public portfolio"
+              rel="noopener noreferrer"
+            >
+              <img src="assets/Logos/tableau-logo.png" alt="" width="72" height="28" decoding="async" />
+            </a>
+          </div>
+        </div>
+        <p class="footer-copy">© 2025 The Data Taylor. Crafted Insights.</p>
+      </div>
+    </footer>
+
+    <script src="assets/js/main.js" defer></script>
+  </body>
+</html>

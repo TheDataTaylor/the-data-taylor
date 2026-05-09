@@ -157,7 +157,7 @@
       .replace(/^\d+_Workbook thumbnail,\s*/i, "")
       .replace(/\.(png|jpe?g|webp)$/i, "")
       .trim();
-    return cleaned ? cleaned + " — Tableau workbook preview" : "Tableau workbook preview";
+    return cleaned ? cleaned + ": Tableau workbook preview" : "Tableau workbook preview";
   }
 
   function shuffleInPlace(arr) {
