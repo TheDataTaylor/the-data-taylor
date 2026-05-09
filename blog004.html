@@ -238,7 +238,9 @@ git push</code></pre>
               <strong>The hero carousel.</strong> The homepage features a rotating carousel of my Tableau Public thumbnails.
               Getting this working properly involved compressing 13MB of PNG images down to JPGs (a Python one-liner in the
               terminal), fixing folder capitalisation issues, and building a JSON manifest file that maps each image to its
-              Tableau Public URL so visitors can click through.
+              Tableau Public URL so visitors can click through. <span style="color: var(--color-tag-build);">This json manifest build became a whole project and learning experience
+              in itself, where I had to create a python script to do what was required, pulling from Tableau Public API to get the data
+              I needed, then building the manifest file to use in the website.</span>
             </li>
             <li>
               <strong>The animated bar chart background.</strong> Rather than the default diagonal line animation Cursor
