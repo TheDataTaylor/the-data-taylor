@@ -162,6 +162,49 @@
           border-bottom: 1px solid var(--color-border);
         }
       }
+
+      @media (max-width: 640px) {
+        .sql-annotator {
+          margin: var(--space-4) 0;
+        }
+
+        .sql-annotator-panel-header,
+        .sql-annotator-lines,
+        .sql-annotator-note-list {
+          padding-left: var(--space-3);
+          padding-right: var(--space-3);
+        }
+
+        .sql-annotator-lines {
+          overflow-x: visible;
+          line-height: 1.6;
+          font-size: var(--text-xs);
+        }
+
+        .sql-annotator-line {
+          gap: var(--space-2);
+          padding: 0 var(--space-1);
+          align-items: flex-start;
+        }
+
+        .sql-annotator-line-num {
+          width: 1.25rem;
+        }
+
+        .sql-annotator-line-text {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+        }
+
+        .sql-annotator-note-list {
+          min-height: auto;
+        }
+
+        .sql-annotator-note-title,
+        .sql-annotator-note-body {
+          font-size: var(--text-sm);
+        }
+      }
     </style>
   </head>
   <body>
@@ -733,6 +776,12 @@
             Some models store grouped columns by stage (for example, stage 1 and stage 2 approval fields). Both
             <code>UNPIVOT</code> and <code>STACK</code> can reshape these while preserving field relationships.
           </p>
+          <p>More advanced wide table:</p>
+          <div class="code-block-wrap code-block-wrap--image">
+            <div class="article-hero-img">
+              <img src="assets/Blogs/002_blog_image_3.png" alt="Unpivoting grouped stage columns example table" />
+            </div>
+          </div>
           <div class="sql-annotator" data-default-ann="1">
             <div class="sql-annotator-grid">
               <div class="sql-annotator-code">
