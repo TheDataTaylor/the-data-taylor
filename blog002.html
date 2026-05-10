@@ -25,6 +25,7 @@
       }
 
       .sql-annotator-code {
+        min-width: 0;
         border-right: 1px solid var(--color-border);
       }
 
@@ -75,6 +76,8 @@
         border-left: 2px solid transparent;
         border-radius: var(--radius-sm);
         transition: background var(--transition-fast), border-color var(--transition-fast);
+        /* Let long SQL shrink inside the grid/flex column instead of overflowing onto badges */
+        min-width: 0;
       }
 
       .sql-annotator-line-num {
@@ -86,8 +89,10 @@
       }
 
       .sql-annotator-line-text {
-        flex: 1;
-        white-space: pre;
+        flex: 1 1 0;
+        min-width: 0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
         color: #d8e2d6;
       }
 
@@ -104,6 +109,7 @@
 
       .sql-annotator-badge {
         margin-left: auto;
+        flex-shrink: 0;
         width: 1.2rem;
         height: 1.2rem;
         border-radius: 999px;
@@ -190,11 +196,6 @@
 
         .sql-annotator-line-num {
           width: 1.25rem;
-        }
-
-        .sql-annotator-line-text {
-          white-space: pre-wrap;
-          overflow-wrap: anywhere;
         }
 
         .sql-annotator-note-list {
@@ -860,19 +861,16 @@
                   </div>
                   <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
                     <span class="sql-annotator-line-num">15</span>
-                    <span class="sql-annotator-line-text">  'Stage_1', 1_approval_name, 1_approval_email, 1_approval_date, 
-                      1_approval_status, 1_approval_comments,</span>
+                    <span class="sql-annotator-line-text">  'Stage_1', 1_approval_name, 1_approval_email, 1_approval_date, 1_approval_status, 1_approval_comments,</span>
                     <span class="sql-annotator-badge">6</span>
                   </div>
                   <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="6">
                     <span class="sql-annotator-line-num">16</span>
-                    <span class="sql-annotator-line-text">  'Stage_2', 2_approval_name, 2_approval_email, 2_approval_date, 
-                      2_approval_status, 2_approval_comments</span>
+                    <span class="sql-annotator-line-text">  'Stage_2', 2_approval_name, 2_approval_email, 2_approval_date, 2_approval_status, 2_approval_comments</span>
                   </div>
                   <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="7">
                     <span class="sql-annotator-line-num">17</span>
-                    <span class="sql-annotator-line-text">) AS approval_stage, approval_name, approval_email, approval_date, 
-                      approval_status, approval_comments</span>
+                    <span class="sql-annotator-line-text">) AS approval_stage, approval_name, approval_email, approval_date, approval_status, approval_comments</span>
                     <span class="sql-annotator-badge">7</span>
                   </div>
                   <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="8">
