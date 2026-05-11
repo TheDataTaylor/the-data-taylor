@@ -2082,7 +2082,7 @@ a.btn {
   margin-bottom: var(--space-5);
 }
 
-.contact-mailto-form {
+.contact-form {
   display: grid;
   gap: var(--space-4);
 }
@@ -2120,9 +2120,17 @@ a.btn {
   border-color: var(--color-accent);
 }
 
-.contact-mailto-form .btn {
+.contact-form .btn {
   width: fit-content;
   justify-self: center;
+}
+
+.contact-form .contact-note[data-contact-status]:not(:empty) {
+  color: var(--color-accent);
+}
+
+.contact-form.is-error .contact-note[data-contact-status] {
+  color: #f48fb1;
 }
 
 .contact-note {

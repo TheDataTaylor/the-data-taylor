@@ -382,41 +382,82 @@
     }
   }
 
-  /* About page mailto contact form */
-  var contactForm = document.querySelector("[data-contact-form]");
-  if (contactForm) {
-    contactForm.addEventListener("submit", function (event) {
+  /* About page — Web3Forms contact (JSON POST, stay on page) */
+  var web3Form = document.querySelector("form[data-web3forms]");
+  if (web3Form) {
+    var statusEl = web3Form.querySelector("[data-contact-status]");
+    var submitBtn = web3Form.querySelector("[data-contact-submit]");
+
+    web3Form.addEventListener("submit", function (event) {
       event.preventDefault();
 
-      var to = (contactForm.getAttribute("data-contact-to") || "").trim();
-      if (!to) return;
+      var keyInput = web3Form.querySelector('input[name="access_key"]');
+      var subjectInput = web3Form.querySelector('input[name="subject"]');
+      var nameInput = web3Form.querySelector('input[name="name"]');
+      var emailInput = web3Form.querySelector('input[name="email"]');
+      var messageInput = web3Form.querySelector('textarea[name="message"]');
 
-      var nameInput = contactForm.querySelector('input[name="name"]');
-      var emailInput = contactForm.querySelector('input[name="email"]');
-      var messageInput = contactForm.querySelector('textarea[name="message"]');
+      var accessKey = keyInput && keyInput.value ? keyInput.value.trim() : "";
+      if (!accessKey) {
+        if (statusEl) statusEl.textContent = "Form is not configured. Please add your Web3Forms access key.";
+        web3Form.classList.add("is-error");
+        return;
+      }
 
-      var name = (nameInput && nameInput.value ? nameInput.value : "").trim();
-      var email = (emailInput && emailInput.value ? emailInput.value : "").trim();
-      var message = (messageInput && messageInput.value ? messageInput.value : "").trim();
+      var payload = {
+        access_key: accessKey,
+        name: nameInput && nameInput.value ? nameInput.value.trim() : "",
+        email: emailInput && emailInput.value ? emailInput.value.trim() : "",
+        message: messageInput && messageInput.value ? messageInput.value.trim() : "",
+      };
+      if (subjectInput && subjectInput.value) {
+        payload.subject = subjectInput.value.trim();
+      }
 
-      var subject = "Website contact from " + (name || "visitor");
-      var lines = [
-        "Name: " + (name || "(not provided)"),
-        "Email: " + (email || "(not provided)"),
-        "",
-        "Message:",
-        message || "(no message)",
-      ];
+      if (statusEl) statusEl.textContent = "";
+      web3Form.classList.remove("is-error");
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.dataset.prevLabel = submitBtn.textContent || "";
+        submitBtn.textContent = "Sending…";
+      }
 
-      var mailtoUrl =
-        "mailto:" +
-        encodeURIComponent(to) +
-        "?subject=" +
-        encodeURIComponent(subject) +
-        "&body=" +
-        encodeURIComponent(lines.join("\n"));
-
-      window.location.href = mailtoUrl;
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(function (r) {
+          return r.json().then(function (data) {
+            return { ok: r.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          var data = result.data || {};
+          if (result.ok && data.success) {
+            if (statusEl) statusEl.textContent = "Thanks — your message was sent.";
+            web3Form.reset();
+          } else {
+            web3Form.classList.add("is-error");
+            if (statusEl) {
+              statusEl.textContent =
+                (data && data.message) || "Something went wrong. Please try again or email me directly.";
+            }
+          }
+        })
+        .catch(function () {
+          web3Form.classList.add("is-error");
+          if (statusEl) statusEl.textContent = "Network error. Please try again in a moment.";
+        })
+        .finally(function () {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = submitBtn.dataset.prevLabel || "Send message";
+          }
+        });
     });
   }
 
