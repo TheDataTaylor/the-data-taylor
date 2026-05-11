@@ -382,6 +382,44 @@
     }
   }
 
+  /* About page mailto contact form */
+  var contactForm = document.querySelector("[data-contact-form]");
+  if (contactForm) {
+    contactForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var to = (contactForm.getAttribute("data-contact-to") || "").trim();
+      if (!to) return;
+
+      var nameInput = contactForm.querySelector('input[name="name"]');
+      var emailInput = contactForm.querySelector('input[name="email"]');
+      var messageInput = contactForm.querySelector('textarea[name="message"]');
+
+      var name = (nameInput && nameInput.value ? nameInput.value : "").trim();
+      var email = (emailInput && emailInput.value ? emailInput.value : "").trim();
+      var message = (messageInput && messageInput.value ? messageInput.value : "").trim();
+
+      var subject = "Website contact from " + (name || "visitor");
+      var lines = [
+        "Name: " + (name || "(not provided)"),
+        "Email: " + (email || "(not provided)"),
+        "",
+        "Message:",
+        message || "(no message)",
+      ];
+
+      var mailtoUrl =
+        "mailto:" +
+        encodeURIComponent(to) +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(lines.join("\n"));
+
+      window.location.href = mailtoUrl;
+    });
+  }
+
   /* Code block copy */
   document.querySelectorAll("[data-code-copy]").forEach(function (btn) {
     btn.addEventListener("click", function () {
