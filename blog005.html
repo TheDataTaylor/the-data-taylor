@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>How To Create A Paint By Numbers In Tableau</title>
+    <meta
+      name="description"
+      content="Draft: building a paint-by-numbers style visual in Tableau — tutorial coming soon."
+    />
+    <link rel="icon" type="image/png" href="assets/Logos/Logo_Square.png" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      .blog005-img-pair {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: var(--space-3);
+        margin: var(--space-4) auto var(--space-6);
+        align-items: center;
+        max-width: 50%;
+      }
+
+      .blog005-img-pair .article-hero-img {
+        margin-bottom: 0;
+        max-width: none;
+      }
+
+      .blog005-img-pair__arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-accent);
+        padding: 0 var(--space-1);
+      }
+
+      .blog005-img-pair__arrow-svg {
+        display: block;
+        width: clamp(3.25rem, 7vw, 5rem);
+        height: auto;
+        animation: blog005-arrow-shuttle 1.35s ease-in-out infinite;
+      }
+
+      .blog005-img-pair__arrow-svg path {
+        stroke-width: 4.5;
+      }
+
+      .blog005-figure-half {
+        max-width: 35%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .article-hero-img.blog005-step4-img,
+      .article-hero-img.blog005-step7-img {
+        max-width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .blog005-step2-scale {
+        display: flex;
+        justify-content: center;
+        margin: var(--space-4) 0 var(--space-6);
+      }
+
+      .blog005-step2-scale .blog005-img-pair[data-blog005-sync-heights] {
+        transform: scale(0.8);
+        transform-origin: center top;
+        margin: 0 auto;
+      }
+
+      /* Step 2 pair only: full right image at matched height, no clip; trio centred */
+      .blog005-img-pair[data-blog005-sync-heights] {
+        grid-template-columns: max-content auto max-content;
+        width: fit-content;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: visible;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img {
+        overflow: visible;
+        margin-bottom: 0;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img:first-of-type img {
+        width: auto;
+        max-width: none;
+        height: auto;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img:last-of-type {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+        overflow: visible;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img:last-of-type img {
+        width: auto;
+        max-width: none;
+        flex-shrink: 0;
+        object-fit: contain;
+      }
+
+      @keyframes blog005-arrow-shuttle {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(0.55rem);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .blog005-img-pair__arrow-svg {
+          animation: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .blog005-img-pair {
+          grid-template-columns: 1fr;
+          max-width: min(100%, 22rem);
+        }
+
+        .blog005-img-pair[data-blog005-sync-heights] {
+          grid-template-columns: 1fr;
+          width: 100%;
+          max-width: min(100%, 22rem);
+          justify-items: center;
+        }
+
+        .blog005-img-pair__arrow {
+          padding: var(--space-2) 0;
+        }
+
+        .blog005-img-pair__arrow-svg {
+          animation-name: blog005-arrow-shuttle-mobile;
+        }
+      }
+
+      @keyframes blog005-arrow-shuttle-mobile {
+        0%,
+        100% {
+          transform: rotate(90deg) translateX(0);
+        }
+        50% {
+          transform: rotate(90deg) translateX(0.55rem);
+        }
+      }
+
+      .blog005-intro-question {
+        color: var(--color-accent);
+      }
+
+      .blog005-code-steps {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-8);
+        margin: var(--space-5) 0 var(--space-6);
+      }
+
+      .blog005-code-step__label {
+        font-size: var(--text-base);
+        font-weight: 600;
+        margin: 0 0 var(--space-2);
+        color: var(--color-text);
+      }
+
+      .blog005-code-step .code-block-wrap {
+        margin: var(--space-3) 0;
+      }
+
+      .blog005-code-step__note {
+        margin: var(--space-3) 0 0;
+        font-size: var(--text-base);
+        color: var(--color-text-muted);
+      }
+
+      .blog005-code-step__note > strong:first-of-type {
+        color: var(--color-accent);
+      }
+
+      /* Python # comments — same gold as blog004 .tag-build / inline manifest note */
+      .blog005-code-steps .code-block-wrap pre .blog005-code-py-comment {
+        color: var(--color-tag-build);
+      }
+
+      .blog005-code-step__note:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Collapsible long code (Step 3 block 3) */
+      .blog005-code-expand {
+        --blog005-code-expand-lines: 10;
+      }
+
+      .blog005-code-expand .blog005-code-expand__viewport {
+        position: relative;
+        max-height: calc(var(--space-8) + var(--blog005-code-expand-lines) * 1.6 * var(--text-sm));
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+      }
+
+      .blog005-code-expand.is-expanded .blog005-code-expand__viewport {
+        max-height: none;
+      }
+
+      .blog005-code-expand:not(.is-expanded) .blog005-code-expand__viewport::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3.25rem;
+        pointer-events: none;
+        background: linear-gradient(to bottom, transparent, var(--color-bg-code));
+      }
+
+      .blog005-code-expand.is-expanded .blog005-code-expand__viewport::after {
+        opacity: 0;
+      }
+
+      .blog005-code-expand__toggle {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        margin: 0;
+        border: none;
+        border-top: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-accent);
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background var(--transition-fast), color var(--transition-fast);
+      }
+
+      .blog005-code-expand__toggle:hover {
+        background: rgba(0, 200, 83, 0.08);
+      }
+
+      .blog005-code-expand__toggle:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: -2px;
+      }
+
+      .blog005-code-expand--no-toggle .blog005-code-expand__toggle {
+        display: none;
+      }
+
+      .blog005-code-expand--no-toggle .blog005-code-expand__viewport {
+        max-height: none;
+      }
+
+      .blog005-code-expand--no-toggle .blog005-code-expand__viewport::after {
+        display: none;
+      }
+
+
+      /* Step 5 prelude: Tableau calc syntax (editor-inspired colours on dark code blocks) */
+      .blog005-code-steps--tableau {
+        margin-bottom: var(--space-8);
+      }
+
+      .blog005-code-steps--tableau .code-block-wrap pre code,
+      .blog005-tb-syntax .sql-annotator-line-text {
+        color: #d4dad6;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-kw,
+      .blog005-tb-syntax .blog005-tb-kw {
+        color: #6eb6ff;
+        font-weight: 600;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-fn,
+      .blog005-tb-syntax .blog005-tb-fn {
+        color: #5fd4e3;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-field,
+      .blog005-tb-syntax .blog005-tb-field {
+        color: #f0b078;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-param,
+      .blog005-tb-syntax .blog005-tb-param {
+        color: #d8b8ff;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-str,
+      .blog005-tb-syntax .blog005-tb-str {
+        color: #aeb9c4;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-comment,
+      .blog005-tb-syntax .blog005-tb-comment {
+        color: #7bdc9a;
+        font-style: italic;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-lod,
+      .blog005-tb-syntax .blog005-tb-lod {
+        color: #5fd4e3;
+        font-weight: 600;
+      }
+
+      .blog005-code-expand--tb-long {
+        --blog005-code-expand-lines: 18;
+      }
+
+      /* Line annotator (same interaction pattern as blog002 SQL walkthrough) */
+      .blog005-code-step .sql-annotator {
+        margin: var(--space-3) 0;
+      }
+
+      .blog005-changed-colour-worked-example {
+        margin-top: var(--space-5);
+      }
+
+      .blog005-changed-colour-worked-example__setup {
+        margin: 0 0 var(--space-3);
+      }
+
+      .blog005-changed-colour-worked-example__list {
+        margin: 0;
+        padding-left: 1.25rem;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      .blog005-changed-colour-worked-example__list li + li {
+        margin-top: var(--space-2);
+      }
+
+      .sql-annotator {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: var(--color-bg-code);
+      }
+
+      .sql-annotator-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      }
+
+      .sql-annotator-code {
+        min-width: 0;
+        border-right: 1px solid var(--color-border);
+      }
+
+      .sql-annotator-panel-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .sql-annotator-dots {
+        display: inline-flex;
+        gap: 0.35rem;
+      }
+
+      .sql-annotator-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+      }
+
+      .sql-annotator-dot--r {
+        background: #ff5f57;
+      }
+      .sql-annotator-dot--y {
+        background: #ffbd2e;
+      }
+      .sql-annotator-dot--g {
+        background: #28ca41;
+      }
+
+      .sql-annotator-file {
+        margin-left: var(--space-2);
+        font-family: var(--font-mono);
+        letter-spacing: 0.02em;
+      }
+
+      .sql-annotator-lines {
+        padding: var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        line-height: 1.7;
+      }
+
+      .sql-annotator-line {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-3);
+        margin: 0;
+        padding: 0 var(--space-2);
+        border-left: 2px solid transparent;
+        border-radius: var(--radius-sm);
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+        min-width: 0;
+      }
+
+      .sql-annotator-line-num {
+        width: 1.6rem;
+        flex-shrink: 0;
+        text-align: right;
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+      }
+
+      .sql-annotator-line-text {
+        flex: 1 1 0;
+        min-width: 0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .sql-annotator-line--annotated {
+        cursor: pointer;
+        border-left-color: rgba(0, 200, 83, 0.24);
+      }
+
+      .sql-annotator-line--annotated:hover,
+      .sql-annotator-line--active {
+        background: rgba(0, 200, 83, 0.12);
+        border-left-color: var(--color-accent);
+      }
+
+      .sql-annotator-badge {
+        margin-left: auto;
+        flex-shrink: 0;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-accent);
+        color: #0f1a13;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .sql-annotator-line--hide-badge .sql-annotator-badge {
+        visibility: hidden;
+      }
+
+      .sql-annotator-hint {
+        margin: 0 0 var(--space-3);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .sql-annotator-note-list {
+        padding: var(--space-4);
+        min-height: 11rem;
+      }
+
+      .sql-annotator-note {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+        display: none;
+      }
+
+      .sql-annotator-note--active {
+        display: block;
+        border-color: var(--color-accent);
+        background: rgba(0, 200, 83, 0.08);
+      }
+
+      .sql-annotator-note-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--color-accent);
+      }
+
+      .sql-annotator-note-body {
+        margin: var(--space-2) 0 0;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      .sql-annotator-note-body code {
+        font-size: 0.92em;
+      }
+
+      .sql-annotator-note ol {
+        margin: var(--space-2) 0 0;
+        padding-left: 1.25rem;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      @media (max-width: 860px) {
+        .sql-annotator-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sql-annotator-code {
+          border-right: 0;
+          border-bottom: 1px solid var(--color-border);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .sql-annotator-panel-header,
+        .sql-annotator-lines,
+        .sql-annotator-note-list {
+          padding-left: var(--space-3);
+          padding-right: var(--space-3);
+        }
+
+        .sql-annotator-lines {
+          line-height: 1.6;
+          font-size: var(--text-xs);
+        }
+
+        .sql-annotator-line {
+          gap: var(--space-2);
+          padding: 0 var(--space-1);
+          align-items: flex-start;
+        }
+
+        .sql-annotator-line-num {
+          width: 1.25rem;
+        }
+
+        .sql-annotator-note-list {
+          min-height: auto;
+        }
+
+        .sql-annotator-note-title,
+        .sql-annotator-note-body {
+          font-size: var(--text-sm);
+        }
+
+        .sql-annotator-note ol {
+          font-size: var(--text-sm);
+        }
+      }
+
+      /* Step 5: 2×2 panels — chrome title bar, Line Notes, Tableau screenshot, callout */
+      .blog005-step5-panel {
+        margin: var(--space-6) 0;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: var(--color-bg-code);
+      }
+
+      .blog005-step5-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        min-height: 0;
+      }
+
+      .blog005-step5-chrome,
+      .blog005-step5-linebar {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .blog005-step5-chrome {
+        border-right: 1px solid var(--color-border);
+        flex-wrap: wrap;
+        row-gap: var(--space-2);
+        min-width: 0;
+      }
+
+      .blog005-step5-linebar {
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: var(--text-xs);
+      }
+
+      .blog005-step5-dots {
+        display: inline-flex;
+        gap: 0.35rem;
+        flex-shrink: 0;
+      }
+
+      .blog005-step5-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+      }
+
+      .blog005-step5-dot--r { background: #ff5f57; }
+      .blog005-step5-dot--y { background: #ffbd2e; }
+      .blog005-step5-dot--g { background: #28ca41; }
+
+      .blog005-step5-title {
+        margin-left: var(--space-2);
+        font-family: var(--font-mono);
+        letter-spacing: 0.02em;
+        min-width: 0;
+        line-height: 1.35;
+        word-break: break-word;
+      }
+
+      .blog005-step5-shot {
+        border-right: 1px solid var(--color-border);
+        padding: var(--space-4);
+        background: var(--color-bg-code);
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+        border-radius: var(--radius-sm);
+      }
+
+      .blog005-step5-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .blog005-step5-copy {
+        padding: var(--space-4);
+        background: var(--color-bg-code);
+        min-width: 0;
+        min-height: 0;
+      }
+
+      .blog005-step5-callout {
+        margin: 0;
+      }
+
+      .blog005-step5-callout-title {
+        margin: 0 0 var(--space-2);
+        font-size: var(--text-base);
+        color: var(--color-accent);
+      }
+
+      .blog005-step5-callout-body {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      @media (max-width: 860px) {
+        .blog005-step5-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .blog005-step5-chrome {
+          border-right: 0;
+        }
+
+        .blog005-step5-shot {
+          border-right: 0;
+          border-bottom: 1px solid var(--color-border);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .blog005-step5-panel {
+          margin: var(--space-4) 0;
+        }
+
+        .blog005-step5-chrome,
+        .blog005-step5-linebar,
+        .blog005-step5-shot,
+        .blog005-step5-copy {
+          padding-left: var(--space-3);
+          padding-right: var(--space-3);
+        }
+
+        .blog005-step5-callout-body,
+        .blog005-step5-callout-title {
+          font-size: var(--text-sm);
+        }
+      }
+
+      /* Selected Section Update — interactive worked example (callout-style shell + dark panels for highlights) */
+      .blog005-ssu-explorer {
+        /* String highlights — read on dark inner panels */
+        --ssu-kept-fg: var(--color-accent);
+        --ssu-kept-bg: rgba(0, 200, 83, 0.14);
+        --ssu-kept-border: rgba(0, 200, 83, 0.5);
+        --ssu-removed-fg: #ffab91;
+        --ssu-removed-bg: rgba(255, 138, 128, 0.12);
+        --ssu-removed-border: rgba(255, 138, 128, 0.45);
+        --ssu-after-fg: var(--color-tag-build);
+        --ssu-after-bg: rgba(224, 179, 106, 0.14);
+        --ssu-after-border: rgba(224, 179, 106, 0.45);
+        --ssu-new-fg: var(--color-tag-databricks);
+        --ssu-new-bg: rgba(66, 165, 245, 0.12);
+        --ssu-new-border: rgba(66, 165, 245, 0.45);
+        --ssu-panel-bg: var(--color-bg-code);
+        --ssu-panel-border: var(--color-border);
+        margin: var(--space-6) 0;
+        padding: var(--space-4) var(--space-5);
+        font-family: var(--font-body);
+        color: var(--color-text);
+        background: rgba(0, 200, 83, 0.08);
+        border: none;
+        border-left: 4px solid var(--color-accent);
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      }
+
+      .blog005-ssu-worked__title {
+        margin: 0 0 var(--space-3);
+        font-family: var(--font-body);
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--color-text);
+      }
+
+      .blog005-ssu-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        margin-bottom: var(--space-4);
+      }
+
+      .blog005-ssu-tab {
+        margin: 0;
+        padding: var(--space-2) var(--space-3);
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--color-text-muted);
+        background: var(--color-bg-code);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: color var(--transition-fast), border-color var(--transition-fast),
+          background var(--transition-fast);
+      }
+
+      .blog005-ssu-tab:hover {
+        color: var(--color-text);
+        border-color: var(--color-accent-muted);
+      }
+
+      .blog005-ssu-tab:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+
+      .blog005-ssu-tab[aria-pressed="true"] {
+        color: var(--color-accent);
+        background: var(--color-bg-code);
+        border-color: var(--color-accent);
+        box-shadow: 0 0 0 1px rgba(0, 200, 83, 0.25);
+      }
+
+      .blog005-ssu-dyn__label {
+        margin: 0 0 var(--space-2);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        font-family: var(--font-body);
+      }
+
+      .blog005-ssu-dyn__inputs {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
+        padding: var(--space-3) var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        line-height: 1.65;
+        color: var(--color-text);
+        background: var(--ssu-panel-bg);
+        border: 1px solid var(--ssu-panel-border);
+        border-radius: var(--radius-md);
+      }
+
+      .blog005-ssu-dyn__meta {
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        line-height: 1.6;
+        color: var(--color-text-muted);
+      }
+
+      .blog005-ssu-dyn__str {
+        margin: 0;
+        font-size: var(--text-sm);
+        line-height: 1.7;
+        word-break: break-all;
+        color: var(--color-text);
+      }
+
+      .blog005-ssu-dyn__str--empty {
+        color: var(--color-text-muted);
+      }
+
+      .blog005-ssu-dyn__walkthrough {
+        margin-bottom: var(--space-4);
+        padding-left: var(--space-3);
+        border-left: 3px solid var(--color-accent-muted);
+      }
+
+      .blog005-ssu-dyn__steps {
+        margin: 0;
+        padding-left: 1.2rem;
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
+        line-height: 1.65;
+        color: var(--color-text-muted);
+      }
+
+      .blog005-ssu-dyn__steps li + li {
+        margin-top: var(--space-2);
+      }
+
+      .blog005-ssu-dyn__steps code {
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: rgba(245, 245, 245, 0.82);
+      }
+
+      .blog005-ssu-dyn__steps strong {
+        font-weight: 700;
+        color: var(--color-text);
+      }
+
+      .blog005-ssu-in {
+        display: inline;
+        padding: 0.08em 0.28em;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        border-radius: var(--radius-sm);
+      }
+
+      /* Inline chips on green wash: darker text + stronger fills */
+      .blog005-ssu-explorer .blog005-ssu-dyn__steps .blog005-ssu-in {
+        font-weight: 500;
+      }
+
+      .blog005-ssu-explorer .blog005-ssu-dyn__steps .blog005-ssu-in--neutral {
+        color: var(--color-text);
+        background: rgba(26, 20, 20, 0.42);
+        border: 1px solid rgba(245, 245, 245, 0.1);
+      }
+
+      .blog005-ssu-explorer .blog005-ssu-dyn__steps .blog005-ssu-in--kept {
+        color: #0a2918;
+        background: rgba(0, 200, 83, 0.42);
+        border: 1px solid rgba(0, 200, 83, 0.55);
+      }
+
+      .blog005-ssu-explorer .blog005-ssu-dyn__steps .blog005-ssu-in--after {
+        color: #2a1a05;
+        background: rgba(224, 179, 106, 0.48);
+        border: 1px solid rgba(180, 120, 40, 0.55);
+      }
+
+      .blog005-ssu-explorer .blog005-ssu-dyn__steps .blog005-ssu-in--new {
+        color: #061f38;
+        background: rgba(66, 165, 245, 0.38);
+        border: 1px solid rgba(40, 120, 200, 0.55);
+      }
+
+      .blog005-ssu-explorer .blog005-ssu-dyn__steps .blog005-ssu-in--removed {
+        color: #3a120c;
+        background: rgba(255, 138, 128, 0.4);
+        border: 1px solid rgba(200, 60, 40, 0.5);
+        text-decoration: line-through;
+      }
+
+      .blog005-ssu-dyn__result-label {
+        margin: 0 0 var(--space-2);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        font-family: var(--font-body);
+      }
+
+      .blog005-ssu-dyn__result {
+        margin: 0;
+        padding: var(--space-3) var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        line-height: 1.65;
+        word-break: break-all;
+        color: var(--color-text);
+        background: var(--ssu-panel-bg);
+        border: 1px solid var(--ssu-panel-border);
+        border-radius: var(--radius-md);
+      }
+
+      .blog005-ssu-hl {
+        padding: 0.05rem 0;
+        border-radius: var(--radius-sm);
+      }
+
+      .blog005-ssu-dyn__str .blog005-ssu-hl--kept {
+        color: var(--ssu-kept-fg);
+        background: transparent;
+        border-bottom: 2px solid var(--ssu-kept-border);
+      }
+
+      .blog005-ssu-dyn__str .blog005-ssu-hl--removed {
+        color: var(--ssu-removed-fg);
+        background: transparent;
+        text-decoration: line-through;
+        border-bottom: 2px solid var(--ssu-removed-border);
+      }
+
+      .blog005-ssu-dyn__str .blog005-ssu-hl--after {
+        color: var(--ssu-after-fg);
+        background: transparent;
+        border-bottom: 2px solid var(--ssu-after-border);
+      }
+
+      .blog005-ssu-dyn__str .blog005-ssu-hl--new {
+        color: var(--ssu-new-fg);
+        background: transparent;
+        border-bottom: 2px solid var(--ssu-new-border);
+      }
+
+      .blog005-ssu-dyn__result .blog005-ssu-hl--kept {
+        color: var(--ssu-kept-fg);
+        background: var(--ssu-kept-bg);
+        border-bottom: 2px solid var(--ssu-kept-border);
+      }
+
+      .blog005-ssu-dyn__result .blog005-ssu-hl--removed {
+        color: var(--ssu-removed-fg);
+        background: var(--ssu-removed-bg);
+        text-decoration: line-through;
+        border-bottom: 2px solid var(--ssu-removed-border);
+      }
+
+      .blog005-ssu-dyn__result .blog005-ssu-hl--after {
+        color: var(--ssu-after-fg);
+        background: var(--ssu-after-bg);
+        border-bottom: 2px solid var(--ssu-after-border);
+      }
+
+      .blog005-ssu-dyn__result .blog005-ssu-hl--new {
+        color: var(--ssu-new-fg);
+        background: var(--ssu-new-bg);
+        border-bottom: 2px solid var(--ssu-new-border);
+      }
+
+      .blog005-ssu-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        margin: 0 0 var(--space-4);
+        font-family: var(--font-body);
+        font-size: var(--text-xs);
+        font-weight: 500;
+      }
+
+      .blog005-ssu-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .blog005-ssu-legend i {
+        display: inline-block;
+        width: 0.65rem;
+        height: 0.65rem;
+        border-radius: var(--radius-sm);
+        flex-shrink: 0;
+      }
+
+      .blog005-ssu-legend i.k {
+        background: var(--ssu-kept-fg);
+        border: 1px solid var(--ssu-kept-border);
+      }
+      .blog005-ssu-legend i.r {
+        background: var(--ssu-removed-fg);
+        border: 1px solid var(--ssu-removed-border);
+      }
+      .blog005-ssu-legend i.a {
+        background: var(--ssu-after-fg);
+        border: 1px solid var(--ssu-after-border);
+      }
+      .blog005-ssu-legend i.n {
+        background: var(--ssu-new-fg);
+        border: 1px solid var(--ssu-new-border);
+      }
+
+      .blog005-ssu-legend .blog005-ssu-legend__k {
+        color: #9cf0bd;
+      }
+      .blog005-ssu-legend .blog005-ssu-legend__r {
+        color: #ffc9be;
+      }
+      .blog005-ssu-legend .blog005-ssu-legend__a {
+        color: #f5d9a8;
+      }
+      .blog005-ssu-legend .blog005-ssu-legend__n {
+        color: #a8d8ff;
+      }
+
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-CDR01PXKG0");
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="200" height="60" />
+        </a>
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open menu"
+        >
+          <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="blog.html" class="active">Blog</a>
+          <a href="about.html">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <article class="article-wrap article-wrap--tight-end">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> · <a href="blog.html">Blog</a> · <span>Draft</span>
+        </nav>
+
+        <header class="article-header">
+          <h1>How To Create A Paint By Numbers In Tableau</h1>
+          <div class="article-meta">
+            <span>Draft — not linked from the blog index</span>
+            <span class="tag tag-tableau">Tableau</span>
+            <span>~17 min read</span>
+          </div>
+        </header>
+
+          <p>
+            <em>So the first question is <strong class="blog005-intro-question">why would you want to create a paint by numbers in Tableau?</strong> And it's a good one. The short answer is I wanted to do a collaboration viz with
+              <a class="project-pink-link" href="https://datavizfairy.co.uk/" target="_blank" rel="noopener noreferrer">Shreya</a>
+              and she suggested the idea. From there it escalated quickly to could we actually do it and how much fun would it
+               be to do. Below I am going to walk you through the process of how we created the viz and the challenges of some of the 
+               technical aspects that were required to get it working.</em>
+          </p>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">Step 1: Create The Image</h3>
+          <p>The easy part was done, we had decided on an idea, now we had to bring it to life. We turned to Chat GPT to help us 
+            create a fun image based on a photo of the two of us from DataFam Europe. We asked it to create a fun Easter themed 
+            image that could be used as a paint by numbers image. After a couple of spectacular failures we managed to get the prompt 
+            just right and our Easter bunnies image was ready for the next step.</p>
+          <div class="blog005-img-pair">
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/005_blog_image_1.jpg"
+                alt="Paint by numbers in Tableau — reference figure 1 (draft)"
+              />
+            </div>
+            <div class="blog005-img-pair__arrow" aria-hidden="true">
+              <svg
+                class="blog005-img-pair__arrow-svg"
+                viewBox="0 0 96 40"
+                width="96"
+                height="40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 20h62M60 9l22 11-22 11"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/005_blog_image_2.png"
+                alt="Paint by numbers in Tableau — reference figure 2 (draft)"
+              />
+            </div>
+          </div>
+          
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">Step 2: Create The SVG</h3>
+          <p>The next step was to create the SVG file that would be used to create the paint by numbers image.
+            To be able to allow the user to select certain areas on the image and assign colours to it we were 
+            going to need each section as its own shape so that we could use polygons within Tableau. Handily 
+            there is another tool that helps us do this very easily within Figma. Any image on the canvas can be converted 
+            to an SVG file with the PNG to SVG Converter in a few easy steps. The result is a vectorized SVG file which can 
+            then be downloaded.</p>
+          <div class="blog005-step2-scale">
+            <div class="blog005-img-pair" data-blog005-sync-heights>
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/005_blog_image_3.png"
+                alt="Paint by numbers in Tableau — reference figure 1 (draft)"
+              />
+            </div>
+            <div class="blog005-img-pair__arrow" aria-hidden="true">
+              <svg
+                class="blog005-img-pair__arrow-svg"
+                viewBox="0 0 96 40"
+                width="96"
+                height="40"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 20h62M60 9l22 11-22 11"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/005_blog_image_4.png"
+                alt="Paint by numbers in Tableau — reference figure 4 (draft)"
+              />
+            </div>
+          </div>
+          </div>
+          
+
+          <h3 style="color: var(--color-accent)">Step 3: Make The Polygon Data</h3>
+          <p>
+            Now that we had the SVG file we needed to find a way to pull path geometry out of it as text,
+            then sample and simplify points into a table Tableau can read. We created a Python script to do 
+            this for us. Below is the exact code we used to pull the data out of the SVG file with X and Y coordinates for each point.
+          </p>
+
+          <div class="blog005-code-steps">
+            <section class="blog005-code-step" aria-labelledby="blog005-py-deps">
+              <h4 id="blog005-py-deps" class="blog005-code-step__label">Code block 1: Notebook Dependencies</h4>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code>%pip install svg.path
+%pip install rdp</code></pre>
+              </div>
+              <p class="blog005-code-step__note">
+                <strong>What this does:</strong> <code>%pip</code> installs packages into the cluster’s Python environment so
+                we can parse SVG path strings (<code>svg.path</code>) and simplify polylines (<code>rdp</code>, Ramer–Douglas–Peucker).
+              </p>
+            </section>
+
+            <section class="blog005-code-step" aria-labelledby="blog005-py-paths">
+              <h4 id="blog005-py-paths" class="blog005-code-step__label">Code block 2: Extract <code>d</code> Attributes</h4>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code>import re
+
+<span class="blog005-code-py-comment"># Put your SVG content here (as a string)</span>
+svg_file_content = """&lt;path d="M364 142H364.25H378.75H379V143H379.25H382.75H383.........Shortened for brevity.............stroke-width="2"/&gt;"""  <span class="blog005-code-py-comment"># You can simply paste your SVG file with multiple &lt;path&gt; elements</span>
+
+<span class="blog005-code-py-comment"># Extract all path strings from the file</span>
+path_strings = re.findall(r'd="([^"]+)"', svg_file_content)</code></pre>
+              </div>
+              <p class="blog005-code-step__note">
+                <strong>What this does:</strong> Paste your exported SVG (or a fragment) into the string, then
+                <code>re.findall</code> collects every <code>d="…"</code> value into <code>path_strings</code> for the parser in the next cell.
+              </p>
+            </section>
+
+            <section class="blog005-code-step" aria-labelledby="blog005-py-build-df">
+              <h4 id="blog005-py-build-df" class="blog005-code-step__label">Code block 3: Sample Paths And Build The DataFrame</h4>
+              <div class="code-block-wrap blog005-code-expand">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <div
+                  class="blog005-code-expand__viewport"
+                  id="blog005-code-block-3-region"
+                  role="region"
+                  aria-label="Python: paths to DataFrame"
+                >
+                <pre><code>from svg.path import parse_path, Move, Close
+import numpy as np
+import pandas as pd
+from rdp import rdp
+
+<span class="blog005-code-py-comment"># Set SVG canvas dimensions from your file</span>
+svg_width = 1024
+svg_height = 1536
+
+all_rows = []
+
+for global_path_id, svg_path_str in enumerate(path_strings):
+    path = parse_path(svg_path_str)
+    <span class="blog005-code-py-comment"># Segment as before</span>
+    subpaths = []
+    current_subpath = []
+    for segment in path:
+        if isinstance(segment, Move):
+            if current_subpath:
+                subpaths.append(current_subpath)
+            current_subpath = [segment]
+        elif isinstance(segment, Close):
+            current_subpath.append(segment)
+            if current_subpath:
+                subpaths.append(current_subpath)
+            current_subpath = []
+        else:
+            current_subpath.append(segment)
+    if current_subpath:
+        subpaths.append(current_subpath)
+    <span class="blog005-code-py-comment"># No need to compute y_flip_max from the shape!</span>
+    <span class="blog005-code-py-comment"># Use svg_height for consistent placement</span>
+    for local_path_id, subpath in enumerate(subpaths):
+        points = []
+        for segment in subpath:
+            ts = np.linspace(0, 1, 20)
+            for t in ts:
+                point = segment.point(t)
+                x, y = point.real, point.imag
+                y_flipped = svg_height - y  
+                points.append([x, y_flipped])
+        <span class="blog005-code-py-comment"># Simplify</span>
+        simple_points = rdp(points, epsilon=1.5)
+        for point_id, (x, y) in enumerate(simple_points):
+            all_rows.append({
+                'global_path_id': global_path_id,
+                'local_path_id': local_path_id,
+                'point_id': point_id,
+                'x': x,
+                'y': y
+            })
+
+<span class="blog005-code-py-comment"># Create DataFrame</span>
+df_svg = pd.DataFrame(all_rows)
+display(df_svg)</code></pre>
+                </div>
+                <button
+                  class="blog005-code-expand__toggle"
+                  type="button"
+                  aria-expanded="false"
+                  aria-controls="blog005-code-block-3-region"
+                >
+                  Show full code
+                </button>
+              </div>
+              <p class="blog005-code-step__note">
+                <strong>What this does:</strong> Each SVG path is split into subpaths, converted to many <code>(x, y)</code> samples,
+                Y is flipped to a bottom-left style coordinate system, <code>rdp</code> reduces noise, and rows are tagged with
+                <code>global_path_id</code>, <code>local_path_id</code>, and <code>point_id</code> for Tableau polygons.
+              </p>
+            </section>
+          </div>
+
+          <h3 style="color: var(--color-accent)">Step 4: Bring The Data Into Tableau</h3>
+          <p>We finally have our data for all the shapes within the image. We can now bring it into Tableau and start to create 
+            the paint by numbers image. Simply bring in your data as a new worksheet and start creating your calculations.
+            As we started to build we did find the python script hadn't been perfect and we had 
+                some issues with extra shapes and things we didn't need. As a result there was a bit of data cleanisng that 
+                went into this stage. But 
+            <div class="prose">
+              <div class="callout">
+                <strong>Key Lesson:</strong> This is a good reminder that you should always be double checking your data and 
+                anything that has been generated with the help of AI.</p>
+            
+              </div>
+              
+              <div class="article-hero-img blog005-step4-img">
+            <img
+              src="assets/Blogs/005_blog_image_7.png"
+              alt="Paint by numbers in Tableau — bringing polygon data into Tableau (draft)"
+              decoding="async"
+            />
+          </div>
+          
+
+          <h3 style="color: var(--color-accent)">Step 5: The Calculations!</h3>
+          <p>
+            OK the data is in Tableau and we have started to create the calculations, parameters and actions to make it all work. 
+            There were a few fairly straightforward things but below I will walk you through the key calcs and actions that made the 
+            interaction really pop for the user. First up we needed to normalise our X and Y coordinates to be between 0 and 1 so that 
+            we could use them with Map Layers.
+          </p>
+
+          <div class="blog005-code-steps blog005-code-steps--tableau">
+            <section class="blog005-code-step" aria-labelledby="blog005-tb-xnorm">
+              <h4 id="blog005-tb-xnorm" class="blog005-code-step__label">X (Normalised)</h4>
+              <p class="blog005-code-step__note">
+                <strong>Overview:</strong> This calculation simply divides the X coordinate by the maximum X coordinate to get a 
+                value between 0 and 1. This is repeated for the Y coordinate to then used to create the Map Layer.
+              </p>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-field">[X]</span>/ <span class="blog005-tb-lod">{</span><span class="blog005-tb-fn">MAX</span>(<span class="blog005-tb-field">[X]</span>)<span class="blog005-tb-lod">}</span></code></pre>
+              </div>
+              
+            </section>
+
+            <section class="blog005-code-step" aria-labelledby="blog005-tb-mp-lines">
+              <h4 id="blog005-tb-mp-lines" class="blog005-code-step__label">MP- Lines (Others)</h4>
+              <p class="blog005-code-step__note">
+                <strong>Overview:</strong> This calculation uses the MAKEPOINT function with the normalised X and Y coordinates 
+                to allow us to plot the points on the map layer. We filtered for >1 to exclude the background shape.
+              </p>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-field">[global_path_id]</span> &gt; 1 <span class="blog005-tb-kw">THEN</span>
+<span class="blog005-tb-fn">MAKEPOINT</span>(<span class="blog005-tb-field">[X (Normalised)]</span>,<span class="blog005-tb-field">[Y (Normalised)]</span>)
+<span class="blog005-tb-kw">END</span></code></pre>
+              </div>
+            </section>
+            <section class="blog005-code-step" aria-labelledby="blog005-tb-selected-section">
+              <h4 id="blog005-tb-selected-section" class="blog005-code-step__label">Selected Section Update</h4>
+              <p class="blog005-code-step__note">
+                <strong>Overview:</strong> This calculation updates the string of colour assignments in
+                <code>[All New Colours]</code>. If the current path ID already exists in the string, it replaces that entry; if not, it appends a new one.
+              </p>
+              <p class="sql-annotator-hint">
+                Tip: click a highlighted line on the left or a note on the right to focus that part (same line-note pattern as the Databricks SQL post).
+              </p>
+              <div class="sql-annotator" id="blog005-selected-section-annotator" data-default-ann="1">
+                <div class="sql-annotator-grid">
+                  <div class="sql-annotator-code">
+                    <div class="sql-annotator-panel-header">
+                      <span class="sql-annotator-dots" aria-hidden="true">
+                        <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                      </span>
+                      <span class="sql-annotator-file">Selected Section Update</span>
+                    </div>
+                    <div class="sql-annotator-lines blog005-tb-syntax">
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                        <span class="sql-annotator-line-num">1</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>) <span class="blog005-tb-kw">THEN</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                        <span class="sql-annotator-line-num">2</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-comment">// Remove the old segment and add new entry</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">3</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-fn">LEFT</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-fn">FIND</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>) - 1)</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">4</span>
+                        <span class="sql-annotator-line-text">    +</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">5</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-fn">MID</span>(</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">6</span>
+                        <span class="sql-annotator-line-text">        <span class="blog005-tb-param">[All New Colours]</span>,</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">7</span>
+                        <span class="sql-annotator-line-text">        <span class="blog005-tb-fn">FIND</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>) <span class="blog005-tb-comment">// segment start</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">8</span>
+                        <span class="sql-annotator-line-text">        +</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">9</span>
+                        <span class="sql-annotator-line-text">        <span class="blog005-tb-fn">FIND</span>(</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">10</span>
+                        <span class="sql-annotator-line-text">            <span class="blog005-tb-fn">MID</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-fn">FIND</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>) + 1, <span class="blog005-tb-fn">LEN</span>(<span class="blog005-tb-param">[All New Colours]</span>)),</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">11</span>
+                        <span class="sql-annotator-line-text">            <span class="blog005-tb-comment">// Start after segmentStart</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">12</span>
+                        <span class="sql-annotator-line-text">            <span class="blog005-tb-str">&quot;|&quot;</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">13</span>
+                        <span class="sql-annotator-line-text">        ),</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">14</span>
+                        <span class="sql-annotator-line-text">        <span class="blog005-tb-fn">LEN</span>(<span class="blog005-tb-param">[All New Colours]</span>)</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">15</span>
+                        <span class="sql-annotator-line-text">    )</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                        <span class="sql-annotator-line-num">16</span>
+                        <span class="sql-annotator-line-text">    +</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">17</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-comment">//&quot;|&quot; + </span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">18</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span> + <span class="blog005-tb-param">[Selected Colour]</span> + <span class="blog005-tb-str">&quot;|&quot;</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="4">
+                        <span class="sql-annotator-line-num">19</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSE</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">20</span>
+                        <span class="sql-annotator-line-text"></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">21</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">LEN</span>(<span class="blog005-tb-param">[All New Colours]</span>) = 0</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">22</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">THEN</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">23</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-param">[All New Colours]</span> + <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span> + <span class="blog005-tb-param">[Selected Colour]</span> + <span class="blog005-tb-str">&quot;|&quot;</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">24</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">ELSE</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">25</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-param">[All New Colours]</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span> + <span class="blog005-tb-param">[Selected Colour]</span> + <span class="blog005-tb-str">&quot;|&quot;</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">26</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">END</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">27</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">END</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="sql-annotator-notes">
+                    <div class="sql-annotator-panel-header">Line Notes</div>
+                    <div class="sql-annotator-note-list">
+                      <article class="sql-annotator-note" data-ann="1">
+                        <h4 class="sql-annotator-note-title">Condition check</h4>
+                        <p class="sql-annotator-note-body">
+                          Does this path ID already exist in the string?
+                          <br>
+                          <code>IF CONTAINS([All New Colours], "|" + STR([global_path_id (Clickable)]) + ":")</code>
+                        </p>
+                        <p class="sql-annotator-note-body">
+                          This tests whether <code>[All New Colours]</code> already contains an entry for the current path. The delimiter pattern
+                          <code>|pathID:</code> is how entries are identified. Each entry looks like <code>|42:red|</code>, so searching for
+                          <code>|42:</code> uniquely locates that path (the leading pipe avoids a partial match on an ID such as 142).
+                          <code>STR()</code> turns the numeric path ID into text so it can be concatenated into the search pattern.
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="2">
+                        <h4 class="sql-annotator-note-title">THEN: Remove old segment</h4>
+                        <p class="sql-annotator-note-body">
+                          When the path already exists, strip out its current colour, then you will append the replacement (see note 3). First, everything
+                          <strong>before</strong> this path's entry:
+                          <br>
+                          <code>LEFT([All New Colours], FIND([All New Colours], "|" + STR([global_path_id (Clickable)]) + ":") - 1)</code>
+                          — <code>LEFT(..., position - 1)</code> 
+                          <br>
+                          keeps all text up to (but not including) the <code>|pathID:</code> marker, preserving every
+                          entry that came before the one being replaced.
+                        </p>
+                        <p class="sql-annotator-note-body">
+                          That is concatenated with everything <strong>after</strong> the old entry: the nested <code>MID</code> / <code>FIND</code> block finds the next
+                          <code>|</code> after the segment start (inside the old value), then takes the substring from that closing pipe to the end of the string i.e. all
+                          entries that followed the removed segment.
+                        </p>
+                        <ol>
+                          <li>Outer <code>FIND</code> locates the start of this path's entry (<code>|pathID:</code>).</li>
+                          <li>Inner <code>MID</code> takes text starting one character after that, so you are inside the old entry.</li>
+                          <li>Inner <code>FIND</code> looks for the next <code>|</code>, which ends the old entry's value.</li>
+                          <li>Adding the offsets gives the position of that closing <code>|</code> in the full string.</li>
+                          <li><code>MID(..., LEN([All New Colours]))</code> from that point keeps the tail of the string after the deleted entry.</li>
+                        </ol>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="3">
+                        <h4 class="sql-annotator-note-title">THEN (cont.) Append new entry</h4>
+                        <p class="sql-annotator-note-body">
+                          After the string from step 2, concatenate 
+                          <br>
+                          <code>STR([global_path_id (Clickable)]) + ":" + [Selected Colour] + "|"</code>
+                          <br>
+                          — rebuilding the token as
+                          <code>pathID:colour|</code> on the cleaned prefix + suffix. Effectively: <strong>everything before + everything after + new entry</strong>, which replaces the old colour with the new one.
+                        </p>
+                        <p class="sql-annotator-note-body">
+                          The commented <code>//"|" +</code> line hints that a leading pipe was omitted on purpose: the trailing <code>|</code> from the previous entry already separates segments.
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="4">
+                        <h4 class="sql-annotator-note-title">ELSE: Path does not exist yet</h4>
+                        <p class="sql-annotator-note-body">
+                          <strong>Empty string:</strong> if <code>LEN([All New Colours]) = 0</code>, use
+                          <code>[All New Colours] + "|" + STR(...) + ":" + [Selected Colour] + "|"</code> so the first entry establishes the leading pipe for the delimited format.
+                        </p>
+                        <p class="sql-annotator-note-body">
+                          <strong>Non-empty:</strong> the string already ends with <code>|</code>, so append <code>STR(...) + ":" + [Selected Colour] + "|"</code> directly after
+                          <code>[All New Colours]</code> without an extra leading pipe.
+                        </p>
+                        <p class="sql-annotator-note-body">
+                          <strong>Example format:</strong> <code>|12:blue|47:red|99:green|</code> pipe-delimited segments, colon-separated path and colour.
+                        </p>
+                      </article>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="blog005-ssu-explorer" id="blog005-ssu-explorer">
+                <div class="blog005-ssu-worked">
+                  <h4 class="blog005-ssu-worked__title">Interactive worked example</h4>
+                  <div class="blog005-ssu-tabs" role="tablist" aria-label="Scenario">
+                    <button type="button" class="blog005-ssu-tab" role="tab" data-ssu-scenario="0" aria-selected="true" aria-pressed="true" id="blog005-ssu-tab-0">Branch 1 — Replace existing</button>
+                    <button type="button" class="blog005-ssu-tab" role="tab" data-ssu-scenario="1" aria-selected="false" aria-pressed="false" id="blog005-ssu-tab-1">Branch 2 — Append (non-empty)</button>
+                    <button type="button" class="blog005-ssu-tab" role="tab" data-ssu-scenario="2" aria-selected="false" aria-pressed="false" id="blog005-ssu-tab-2">Branch 3 — First entry (empty)</button>
+                  </div>
+                  <p class="blog005-ssu-dyn__label">Starting values</p>
+                  <div class="blog005-ssu-dyn__inputs" data-ssu-dyn-inputs></div>
+                  <p class="blog005-ssu-dyn__label">What the calc does — step by step</p>
+                  <div class="blog005-ssu-dyn__walkthrough">
+                    <ol class="blog005-ssu-dyn__steps" data-ssu-dyn-steps></ol>
+                  </div>
+                  <div class="blog005-ssu-legend" aria-label="Colour key for string segments">
+                    <span class="blog005-ssu-legend__k"><i class="k" aria-hidden="true"></i> kept before</span>
+                    <span class="blog005-ssu-legend__r"><i class="r" aria-hidden="true"></i> removed</span>
+                    <span class="blog005-ssu-legend__a"><i class="a" aria-hidden="true"></i> kept after</span>
+                    <span class="blog005-ssu-legend__n"><i class="n" aria-hidden="true"></i> new entry</span>
+                  </div>
+                  <p class="blog005-ssu-dyn__result-label">Result string</p>
+                  <p class="blog005-ssu-dyn__result" data-ssu-dyn-result></p>
+                </div>
+              </div>
+              <script>
+                (function () {
+                  var root = document.getElementById("blog005-ssu-explorer");
+                  if (!root) return;
+                  var inputsEl = root.querySelector("[data-ssu-dyn-inputs]");
+                  var stepsEl = root.querySelector("[data-ssu-dyn-steps]");
+                  var resultEl = root.querySelector("[data-ssu-dyn-result]");
+                  var tabs = root.querySelectorAll("[data-ssu-scenario]");
+                  var active = 0;
+
+                  function escapeHtml(s) {
+                    return String(s)
+                      .replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;");
+                  }
+
+                  function renderParts(parts) {
+                    return parts
+                      .map(function (p) {
+                        return '<span class="blog005-ssu-hl blog005-ssu-hl--' + p.k + '">' + escapeHtml(p.t) + "</span>";
+                      })
+                      .join("");
+                  }
+
+                  function renderInputs(sc) {
+                    var meta =
+                      '<p class="blog005-ssu-dyn__meta">' + escapeHtml(sc.meta) + "</p>";
+                    var strBlock = "";
+                    if (sc.initialParts && sc.initialParts.length) {
+                      strBlock =
+                        '<p class="blog005-ssu-dyn__str">' + renderParts(sc.initialParts) + "</p>";
+                    } else {
+                      strBlock =
+                        '<p class="blog005-ssu-dyn__str blog005-ssu-dyn__str--empty"><code>""</code> <span>(empty)</span></p>';
+                    }
+                    inputsEl.innerHTML = meta + strBlock;
+                  }
+
+                  var scenarios = [
+                    {
+                      meta: "[All New Colours] · path ID = 47 · selected colour = orange",
+                      initialParts: [
+                        { k: "kept", t: "|12:blue|" },
+                        { k: "removed", t: "|47:red|" },
+                        { k: "after", t: "99:green|" },
+                      ],
+                      steps: [
+                        '<strong>CONTAINS</strong> finds <span class="blog005-ssu-in blog005-ssu-in--neutral">|47:</span> inside the string → <strong>true</strong>, so the <strong>THEN</strong> branch runs (strip old segment, append new token).',
+                        '<strong>LEFT()</strong> keeps characters before <span class="blog005-ssu-in blog005-ssu-in--neutral">|47:</span>, yielding <span class="blog005-ssu-in blog005-ssu-in--kept">|12:blue|</span> — the prefix that stays unchanged.',
+                        'The nested <strong>MID()</strong> / <strong>FIND()</strong> block removes <span class="blog005-ssu-in blog005-ssu-in--removed">|47:red|</span> and returns the tail starting after that segment so it stitches back as <span class="blog005-ssu-in blog005-ssu-in--after">99:green|</span> (no extra pipe before <code>99</code> — the prefix already ends with <code>|</code>).',
+                        'Append <code>STR(47) + ":" + "orange" + "|"</code> → <span class="blog005-ssu-in blog005-ssu-in--new">47:orange|</span> (the string already has a delimiter before <code>47</code> from the tail).',
+                        'Final value: <span class="blog005-ssu-in blog005-ssu-in--kept">|12:blue|</span> + <span class="blog005-ssu-in blog005-ssu-in--after">99:green|</span> + <span class="blog005-ssu-in blog005-ssu-in--new">47:orange|</span> → <code>"|12:blue|99:green|47:orange|"</code>.',
+                      ],
+                      resultParts: [
+                        { k: "kept", t: "|12:blue|" },
+                        { k: "after", t: "99:green|" },
+                        { k: "new", t: "47:orange|" },
+                      ],
+                    },
+                    {
+                      meta: "[All New Colours] · path ID = 47 · selected colour = orange",
+                      initialParts: [{ k: "kept", t: "|12:blue|99:green|" }],
+                      steps: [
+                        '<strong>CONTAINS</strong> looks for <span class="blog005-ssu-in blog005-ssu-in--neutral">|47:</span> → <strong>false</strong> (path 47 not in the string yet).',
+                        '<strong>LEN()</strong> on <code>[All New Colours]</code> is not zero, so the inner <strong>ELSE</strong> runs: concatenate the existing string with the new token (no extra leading <code>|</code> because the string already ends with <code>|</code>).',
+                        'Expression: <span class="blog005-ssu-in blog005-ssu-in--kept">|12:blue|99:green|</span> + <span class="blog005-ssu-in blog005-ssu-in--neutral">47:</span> + <code>orange</code> + <code>|</code> → <span class="blog005-ssu-in blog005-ssu-in--new">47:orange|</span> appended.',
+                      ],
+                      resultParts: [
+                        { k: "kept", t: "|12:blue|99:green|" },
+                        { k: "new", t: "47:orange|" },
+                      ],
+                    },
+                    {
+                      meta: "[All New Colours] is empty · path ID = 47 · selected colour = orange",
+                      initialParts: [],
+                      steps: [
+                        '<strong>CONTAINS</strong> → <strong>false</strong>; <strong>LEN()</strong> on <code>[All New Colours]</code> is zero → inner <strong>THEN</strong>.',
+                        'Prepend <code>"|"</code> so the first entry matches the same <code>|pathID:colour|</code> pattern as every later entry.',
+                        'Build: <code>"" + "|" + "47:" + "orange" + "|"</code> → <span class="blog005-ssu-in blog005-ssu-in--new">|47:orange|</span>.',
+                      ],
+                      resultParts: [{ k: "new", t: "|47:orange|" }],
+                    },
+                  ];
+
+                  function renderScenario(i) {
+                    var sc = scenarios[i];
+                    renderInputs(sc);
+                    stepsEl.innerHTML = sc.steps.map(function (html) {
+                      return "<li>" + html + "</li>";
+                    }).join("");
+                    resultEl.innerHTML = renderParts(sc.resultParts);
+                  }
+
+                  function setActive(i) {
+                    active = i;
+                    tabs.forEach(function (btn, j) {
+                      var on = j === i;
+                      btn.setAttribute("aria-pressed", on ? "true" : "false");
+                      btn.setAttribute("aria-selected", on ? "true" : "false");
+                    });
+                    renderScenario(i);
+                  }
+
+                  tabs.forEach(function (btn) {
+                    btn.addEventListener("click", function () {
+                      setActive(parseInt(btn.getAttribute("data-ssu-scenario"), 10));
+                    });
+                  });
+
+                  setActive(0);
+                })();
+              </script>
+
+            </section>
+            <section class="blog005-code-step" aria-labelledby="blog005-tb-changed-colour">
+              <h4 id="blog005-tb-changed-colour" class="blog005-code-step__label">Changed Colour</h4>
+              <p class="blog005-code-step__note">
+                <strong>Overview:</strong> When the current path already has an entry in <code>[All New Colours]</code>, this field pulls out just that path's colour
+                token. If there is no entry yet, it returns <code>[Start Colour]</code> so the polygon still shows its original fill.
+              </p>
+              <p class="sql-annotator-hint">
+                Tip: click a highlighted line on the left or a note on the right to focus that part (same line-note pattern as the Databricks SQL post).
+              </p>
+              <div class="sql-annotator" id="blog005-changed-colour-annotator" data-default-ann="1">
+                <div class="sql-annotator-grid">
+                  <div class="sql-annotator-code">
+                    <div class="sql-annotator-panel-header">
+                      <span class="sql-annotator-dots" aria-hidden="true">
+                        <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                      </span>
+                      <span class="sql-annotator-file">Changed Colour</span>
+                    </div>
+                    <div class="sql-annotator-lines blog005-tb-syntax">
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                        <span class="sql-annotator-line-num">1</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>) <span class="blog005-tb-kw">THEN</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line">
+                        <span class="sql-annotator-line-num">2</span>
+                        <span class="sql-annotator-line-text"></span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                        <span class="sql-annotator-line-num">3</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-fn">MID</span>(</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">4</span>
+                        <span class="sql-annotator-line-text">        <span class="blog005-tb-param">[All New Colours]</span>,</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">5</span>
+                        <span class="sql-annotator-line-text">        <span class="blog005-tb-fn">FIND</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>) + <span class="blog005-tb-fn">LEN</span>(<span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>),</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                        <span class="sql-annotator-line-num">6</span>
+                        <span class="sql-annotator-line-text">        <span class="blog005-tb-fn">FIND</span>(</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">7</span>
+                        <span class="sql-annotator-line-text">            <span class="blog005-tb-fn">MID</span>(</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">8</span>
+                        <span class="sql-annotator-line-text">                <span class="blog005-tb-param">[All New Colours]</span>,</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">9</span>
+                        <span class="sql-annotator-line-text">                <span class="blog005-tb-fn">FIND</span>(<span class="blog005-tb-param">[All New Colours]</span>, <span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>) + <span class="blog005-tb-fn">LEN</span>(<span class="blog005-tb-str">&quot;|&quot;</span> + <span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[global_path_id (Clickable)]</span>) + <span class="blog005-tb-str">&quot;:&quot;</span>),</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">10</span>
+                        <span class="sql-annotator-line-text">                <span class="blog005-tb-fn">LEN</span>(<span class="blog005-tb-param">[All New Colours]</span>)</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">11</span>
+                        <span class="sql-annotator-line-text">            ),</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">12</span>
+                        <span class="sql-annotator-line-text">            <span class="blog005-tb-str">&quot;|&quot;</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">13</span>
+                        <span class="sql-annotator-line-text">        ) - 1</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="3">
+                        <span class="sql-annotator-line-num">14</span>
+                        <span class="sql-annotator-line-text">    )</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line">
+                        <span class="sql-annotator-line-num">15</span>
+                        <span class="sql-annotator-line-text"></span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="4">
+                        <span class="sql-annotator-line-num">16</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSE</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">17</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-param">[Start Colour]</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="4">
+                        <span class="sql-annotator-line-num">18</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">END</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="sql-annotator-notes">
+                    <div class="sql-annotator-panel-header">Line Notes</div>
+                    <div class="sql-annotator-note-list">
+                      <article class="sql-annotator-note" data-ann="1">
+                        <h4 class="sql-annotator-note-title">Condition check</h4>
+                        <p class="sql-annotator-note-body">
+                          Same gate as <strong>Selected Section Update</strong>: <code>IF CONTAINS([All New Colours], "|" + STR([global_path_id (Clickable)]) + ":")</code>
+                          is true only when the delimited string already has a segment for this path (<code>|pathID:colour|</code>).
+                        </p>
+                        <p class="sql-annotator-note-body">
+                          If it is false, control skips to <code>ELSE</code> and you use <code>[Start Colour]</code> instead of parsing <code>MID</code>.
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="2">
+                        <h4 class="sql-annotator-note-title">MID: source and start position</h4>
+                        <p class="sql-annotator-note-body">
+                          The outer <code>MID</code> reads from the full <code>[All New Colours]</code> string. Its second argument is where the colour value begins:
+                          <code>FIND(..., "|" + STR(...) + ":")</code> locates the start of this path's token, and <code>+ LEN("|" + STR(...) + ":")</code> advances past the entire
+                          prefix including the colon, so the extracted substring starts at the first character of the colour name, not at the pipe or path ID.
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="3">
+                        <h4 class="sql-annotator-note-title">MID: length (through next pipe)</h4>
+                        <p class="sql-annotator-note-body">
+                          The third argument is how many characters <code>MID</code> should return. The inner <code>MID([All New Colours], FIND(...)+LEN(...), LEN([All New Colours]))</code>
+                          takes the tail of the string from the first colour character through the end (everything after <code>pathID:</code> for this entry and all following text).
+                        </p>
+                        <p class="sql-annotator-note-body">
+                          The outer <code>FIND(..., "|")</code> on that slice locates the next pipe, the delimiter after this path's colour. Subtract <code>1</code> so the result
+                          stops <strong>before</strong> that pipe and returns only the colour token (e.g. <code>blue</code> from <code>|42:blue|</code>).
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="4">
+                        <h4 class="sql-annotator-note-title">ELSE: default colour</h4>
+                        <p class="sql-annotator-note-body">
+                          When this path has not been written into <code>[All New Colours]</code> yet, there is nothing to parse. The calc returns <code>[Start Colour]</code> so the
+                          section keeps its original palette colour until the user paints it.
+                        </p>
+                      </article>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="callout blog005-changed-colour-worked-example">
+                <h4 class="blog005-changed-colour-worked-example__title">Worked example</h4>
+                <p class="blog005-code-step__note blog005-changed-colour-worked-example__setup">
+                  <code>[All New Colours]</code> = <code>"|12:blue|47:red|99:green|"</code><br />
+                  <code>[global_path_id (Clickable)]</code> = <code>47</code>
+                </p>
+                <ul class="blog005-changed-colour-worked-example__list">
+                  <li>① <strong>CONTAINS</strong> finds <code>|47:</code> ✓</li>
+                  <li>
+                    ② <strong>FIND</strong> locates <code>|47:</code> at position 8. <code>LEN(|47:)</code> = 4. Start = position 12 → the
+                    <code>r</code> in <code>red</code>.
+                  </li>
+                  <li>③ Inner <strong>MID</strong> produces <code>"red|99:green|"</code>. <strong>FIND</strong> finds <code>|</code> at position 4.</li>
+                  <li>④ 4 - 1 = 3 characters to read → <strong>MID</strong> returns <code>"red"</code> ✓</li>
+                </ul>
+              </div>
+            </section>
+            <section class="blog005-code-step" aria-labelledby="blog005-tb-palette-concat">
+              <h4 id="blog005-tb-palette-concat" class="blog005-code-step__label">Colour Palette Concat</h4>
+              <p class="blog005-code-step__note">
+                <strong>Overview:</strong> This calc is used to combine the slected colour palette and the colour the user wants 
+                from the palette. We did this so we could have multiple colour palettes available to the user, which meant MORE 
+                colours to paint with!
+              </p>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-param">[Colour Palette Select]</span>)+<span class="blog005-tb-str">&quot;-&quot;</span>+<span class="blog005-tb-fn">STR</span>(<span class="blog005-tb-field">[Colour Palette ID]</span>)</code></pre>
+              </div>
+            </section>
+          </div>
+          
+          <h3 style="color: var(--color-accent)">Let's Now Explore The 3 Main Dashboard ASctions</h3>
+          <div class="blog005-step5-panel" aria-label="Parameter action: Selected Colour Update 1">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">Selected Colour Update 1</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img
+                  src="assets/Blogs/005_blog_image_8.png"
+                  alt="Tableau Edit Parameter Action dialog — Selected Colour Update 1"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">Selected Colour Update 1</h4>
+                  <p class="blog005-step5-callout-body">
+                    This action uses the sheet <strong>Changes- With Clicks</strong> to add the <strong>Colour Palette Concat</strong> field to the <strong>Selected Colour</strong> parameter when the 
+                    user selects a mark. The selected colour is then used to colour the polygon section on the map through the other calculations above.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="blog005-step5-panel" aria-label="Parameter action: Selected Section Update 1">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">Selected Section Update 1</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img
+                  src="assets/Blogs/005_blog_image_9.png"
+                  alt="Tableau Edit Parameter Action dialog — Selected Section Update 1"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">Selected Section Update 1</h4>
+                  <p class="blog005-step5-callout-body">
+                    This action uses the sheet <strong>Changes- With Clicks</strong> to add the <strong>global_path_id</strong> field to the <strong>Selected Section</strong> parameter when the 
+                    user selects a mark. The selected id/shape is then used to colour the polygon section on the map through the other calculations above.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="blog005-step5-panel" aria-label="Parameter action: Update Master List">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">Update Master List</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img
+                  src="assets/Blogs/005_blog_image_10.png"
+                  alt="Tableau Edit Parameter Action dialog — Update Master List"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">Update Master List</h4>
+                  <p class="blog005-step5-callout-body">
+                    This action uses the sheet <strong>Changes- With Clicks</strong> to add the <strong>Selected Section Update</strong> field to the <strong>Selected Section Update</strong> parameter when the 
+                    user selects a mark. This action drives all the changes and is used to colour the polygon section on the map through the other calculations above.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3 style="color: var(--color-accent)">Step 6: Make It Look Good</h3>
+          <p>Calculations, parameters and actions all complete, now it is time to make it look good. 
+            We added a few simple calculations to the worksheet to make it look a bit more polished and professional. 
+            Then Shreya worked her magic with Figma to bring in a magnificent background and a few other imagery items to really 
+            draw in the user. We also wanted to make the tooltips fun so we hid some 'Easter Eggs' pun intended within the viz, 
+            standardised all text and colours, then did the final checks of all the interactive elements.
+            <br>
+            <br>
+            Check out Shreya's write up about this project here: <a class="project-pink-link" href="https://datavizfairy.co.uk/2026/05/11/paint-by-numbers-in-tableau/" target="_blank" rel="noopener noreferrer">Shreya's Write Up</a>
+          </p>
+            <div class="callout">
+              <strong>Key Lesson:</strong> No matter how good your viz looks on Tableau Desktop, always publish to Tableau Public 
+              early and make sure everything is working and looks how you expect it to. This has caught me out SO many times.</p>
+          
+            </div>
+
+          <h3 style="color: var(--color-accent)">Step 7: Publish And Have Fun!</h3>
+          <p>You've done all the hard work and now it is time to sit back and admire your completed viz. But one last thing 
+            is to have some fun with it yourself, colour it in and save your pre set colours so your viewer can get a taste of
+             what they can do at the click of a button.</p>
+
+          <div class="article-hero-img blog005-step7-img">
+            <img
+              src="assets/Blogs/005_blog_image_6.png"
+              alt="Paint by numbers in Tableau — publish and share (draft)"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+
+          <h3 style="color: var(--color-accent)">The Last Thread</h3>
+          <p>
+            Looking back at this build, what stands out is how quickly a playful idea, a collaboration viz with Shreya after
+            DataFam Europe, turned into a small pipeline in its own right. We went from "could we?" to ChatGPT and Figma for the
+            image, then into the less glamorous but essential work: pulling path geometry out of an SVG with Python, flipping and
+            simplifying coordinates, and accepting that the first export would not be the last. Tableau was never only the chart layer
+            here; it became the engine that remembers every colour choice in a single pipe-delimited string, then feeds that state back
+            through normalised map layers, parameters, and actions until the polygons behave the way a paint-by-numbers page ought to.
+          </p>
+          
+          <p>
+            None of that polish would land without Shreya's pass in Figma: backgrounds, imagery, tooltips with Easter eggs, and
+            the discipline to standardise text and colour once the mechanics were stable. If you build your own variation, or use this idea anywhere, we would 
+            love to see it. Until then, thanks for following the thread from bunny concept to
+            published viz, may your paths be closed, your pipes aligned, and your parameter actions fire on the first try.
+            <br>
+            <br>
+            Rob.
+          </p>
+        </div>
+
+        <div class="author-box author-box--logo">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="260" height="78" />
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/Logos/Logo_Square.png" alt="The Data Taylor" width="200" height="60" />
+          <p>Crafted Insights: data analytics with editorial clarity.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <div class="social-row">
+            <a href="https://www.linkedin.com/in/robert-taylor-32b779252" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="https://github.com/TheDataTaylor" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a href="https://x.com/trebor_rolyat" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a
+              class="social-tableau"
+              href="https://public.tableau.com/app/profile/rob.taylor6175/vizzes"
+              aria-label="Tableau Public portfolio"
+              rel="noopener noreferrer"
+            >
+              <img src="assets/Logos/tableau-logo.png" alt="" width="72" height="28" decoding="async" />
+            </a>
+          </div>
+        </div>
+        <p class="footer-copy">© 2026 The Data Taylor. Crafted Insights.</p>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var pair = document.querySelector(".blog005-img-pair[data-blog005-sync-heights]");
+        if (!pair) return;
+        var imgs = pair.querySelectorAll(":scope > .article-hero-img > img");
+        if (imgs.length < 2) return;
+        var leftImg = imgs[0];
+        var rightImg = imgs[1];
+        function sync() {
+          var h = leftImg.getBoundingClientRect().height;
+          if (!h) return;
+          var nw = rightImg.naturalWidth;
+          var nh = rightImg.naturalHeight;
+          rightImg.style.maxWidth = "none";
+          if (nw > 0 && nh > 0) {
+            var w = (nw / nh) * h;
+            rightImg.style.height = h + "px";
+            rightImg.style.width = w + "px";
+          } else {
+            rightImg.style.height = h + "px";
+            rightImg.style.width = "auto";
+          }
+        }
+        function schedule() {
+          window.requestAnimationFrame(sync);
+        }
+        window.addEventListener("resize", schedule);
+        window.addEventListener("load", schedule);
+        leftImg.addEventListener("load", schedule);
+        rightImg.addEventListener("load", schedule);
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", schedule);
+        } else {
+          schedule();
+        }
+      })();
+
+      (function () {
+        var annotators = [].slice.call(document.querySelectorAll(".sql-annotator"));
+        if (!annotators.length) return;
+
+        annotators.forEach(function (root) {
+          var lines = [].slice.call(root.querySelectorAll(".sql-annotator-line--annotated"));
+          var notes = [].slice.call(root.querySelectorAll(".sql-annotator-note"));
+          if (!lines.length || !notes.length) return;
+
+          var skipPrefix = root.getAttribute("data-skip-ann-title-prefix") === "true";
+          if (!skipPrefix) {
+            notes.forEach(function (note) {
+              var title = note.querySelector(".sql-annotator-note-title");
+              if (!title) return;
+              var ann = note.getAttribute("data-ann");
+              var t = title.textContent.trim();
+              if (ann && !t.startsWith(ann + " · ")) {
+                title.textContent = ann + " · " + t;
+              }
+            });
+          }
+
+          function setActive(key) {
+            lines.forEach(function (line) {
+              line.classList.toggle("sql-annotator-line--active", line.getAttribute("data-ann") === key);
+            });
+            notes.forEach(function (note) {
+              var isActive = note.getAttribute("data-ann") === key;
+              note.classList.toggle("sql-annotator-note--active", isActive);
+              note.style.display = isActive ? "block" : "none";
+            });
+          }
+
+          function bind(el) {
+            el.addEventListener("click", function () {
+              setActive(el.getAttribute("data-ann"));
+            });
+          }
+
+          lines.forEach(bind);
+          notes.forEach(bind);
+          var def = root.getAttribute("data-default-ann");
+          setActive(def || (lines[0] && lines[0].getAttribute("data-ann")) || "1");
+        });
+      })();
+
+      (function () {
+        function initExpand(wrap) {
+          var viewport = wrap.querySelector(".blog005-code-expand__viewport");
+          var toggle = wrap.querySelector(".blog005-code-expand__toggle");
+          if (!viewport || !toggle) return;
+
+          function updateNoToggle() {
+            if (wrap.classList.contains("is-expanded")) return;
+            if (viewport.scrollHeight <= viewport.clientHeight + 4) {
+              wrap.classList.add("blog005-code-expand--no-toggle");
+            } else {
+              wrap.classList.remove("blog005-code-expand--no-toggle");
+            }
+          }
+
+          toggle.addEventListener("click", function () {
+            var expanded = wrap.classList.toggle("is-expanded");
+            toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+            toggle.textContent = expanded ? "Show less" : "Show full code";
+          });
+
+          window.addEventListener("resize", updateNoToggle);
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", updateNoToggle);
+          } else {
+            updateNoToggle();
+          }
+        }
+
+        document.querySelectorAll(".blog005-code-expand").forEach(initExpand);
+      })();
+    </script>
+    <script src="assets/js/main.js" defer></script>
+  </body>
+</html>
