@@ -3,21 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>448 Alteryx Challenges in 260 Days (Draft)</title>
+    <title>494 Alteryx Challenges Later: What I Learned From Nearly Completing the Archive</title>
     <meta
       name="description"
-      content="Draft post: lessons learned from completing 448 Alteryx challenges in 260 days."
+      content="Lessons from completing 494 of 500 Alteryx Weekly Challenges in 260 days: repetition, workflow thinking, and deliberate practice."
     />
     <link rel="icon" type="image/png" href="assets/Logos/Logo_Square.png" />
     <link rel="stylesheet" href="assets/css/style.css" />
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CDR01PXKG0');
-  </script>
+    <style>
+      /* Section titles — accent green (this page only) */
+      .blog003-article .prose h2,
+      .blog003-article .prose h3 {
+        color: var(--color-accent);
+      }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-CDR01PXKG0");
+    </script>
   </head>
   <body>
     <header class="site-header">
@@ -46,50 +55,209 @@
     </header>
 
     <main id="main">
-      <article class="article-wrap article-wrap--tight-end">
+      <article class="article-wrap article-wrap--tight-end blog003-article">
         <nav class="breadcrumb" aria-label="Breadcrumb">
-          <a href="index.html">Home</a> · <a href="blog.html">Blog</a> · <span>Draft</span>
+          <a href="index.html">Home</a> · <a href="blog.html">Blog</a> · <span>Alteryx archive</span>
         </nav>
 
         <header class="article-header">
-          <h1>448 Alteryx Challenges in 260 Days</h1>
+          <h1>494 Alteryx Challenges Later: What I Learned From Nearly Completing the Archive</h1>
           <div class="article-meta">
-            <span>Draft in progress</span>
+            <span>Unpublished draft</span>
             <span class="tag tag-alteryx">Alteryx</span>
-            <span>8 min read (target)</span>
+            <span>~14 min read</span>
           </div>
         </header>
 
         <div class="article-hero-img" style="max-width: 58%; margin-left: auto; margin-right: auto">
-          <img src="assets/Public Thumbnails/042-my-alteryx-challenge.jpg" alt="Alteryx challenge journey draft hero image" />
+          <img
+            src="assets/Public Thumbnails/042-my-alteryx-challenge.jpg"
+            alt="Alteryx Weekly Challenges: workflow practice and deliberate repetition"
+          />
         </div>
 
         <div class="prose">
           <div class="callout">
-            <strong>Draft status:</strong> This post is being prepared and is not published yet.
+            <strong>Unpublished:</strong> This page is ready for review but is not linked from the blog index yet.
           </div>
-
-          <h3 style="color: var(--color-accent); margin-top: 0">What this post will cover</h3>
+          <h2>What Was I Thinking?</h2>
           <p>
-            This article will break down the full challenge journey: what worked, what was hard, where the biggest skill gains came
-            from, and how to approach challenge-based learning sustainably.
+            I originally started the Alteryx Weekly Challenges for one simple reason: I wanted to get better faster.
           </p>
-
-          <h3 style="color: var(--color-accent)">Planned sections</h3>
+          <p>
+            At the time, I already understood the basics of Alteryx Designer. I could build workflows, join datasets together and
+            produce outputs. But there is a massive difference between knowing where the tools are and becoming genuinely fluent with
+            the platform. The Weekly Challenges ended up becoming the single best deliberate-practice system I have found for developing that
+            fluency.
+          </p>
+          <p>
+            Over 260 days I completed 494 out of the 500 available challenges. That works
+            out to a completion rate of 98.8%. But the numbers are only part of the story. The real value came from repetition.</p>
+          <p>The constant cycle of:</p>
           <ul>
-            <li>The goal and why I started</li>
-            <li>448 challenges in 260 days: pace, consistency, and trade-offs</li>
-            <li>What 98.7% completion looked like in practice</li>
-            <li>Top technical lessons from repeated challenge solving</li>
-            <li>How I would recommend others approach the challenge archive</li>
-            <li>What is next for me in the Alteryx community</li>
+            <li>Understanding messy requirements</li>
+            <li>Working through imperfect datasets</li>
+            <li>Finding multiple ways to solve the same problem</li>
+            <li>Discovering better workflow patterns</li>
+            <li>Learning where Alteryx can break</li>
+            <li>Learning how to simplify workflows</li>
+            <li>Building instinct for tool selection</li>
           </ul>
+          <p>Eventually, certain problems stopped feeling difficult. You begin recognising patterns almost immediately.</p>
 
-          <h3 style="color: var(--color-accent)">Notes to expand</h3>
+          <h2>The Early Challenges: Learning by Repetition</h2>
           <p>
-            Add concrete examples of challenges that changed the way I build workflows, plus a short list of practical habits that
-            helped maintain momentum over the year.
+            The first few dozen challenges were less about advanced techniques and more about repetition. A lot of the work involved:
           </p>
+          <ul>
+            <li>Date parsing</li>
+            <li>Joins</li>
+            <li>Multi-row calculations</li>
+            <li>Text parsing</li>
+            <li>Crosstabs</li>
+            <li>Data cleansing</li>
+            <li>Dynamic renaming</li>
+            <li>Filtering logic</li>
+            <li>Sorting and summarising</li>
+          </ul>
+          <p>At first, even relatively simple tasks could feel awkward.O ne challenge involved parsing multiple inconsistent date formats using Regex expressions:
+          </p>
+          <div class="code-block-wrap">
+            <pre><code>.*(\d\d-[[:alpha:]][[:alpha:]][[:alpha:]]-\d+)
+.*(\u\l\l\s\d+,*\s\d\d+)</code></pre>
+          </div>
+          <p>Another required using Generate Rows alongside ToNumber functions to split out postal areas correctly. 
+            Another challenge focused entirely on running averages using Multi-Row formulas. None of these techniques are 
+            individually difficult once you understand them. The difficult part is learning when to use them instinctively. 
+            That only comes from repetition.</p>
+
+          <h2>The Month Everything Accelerated</h2>
+          <p>My biggest month was May 2024, where I completed 143 challenges. That period completely changed how I approached Alteryx. 
+            At the beginning of the month, I was still thinking tool-by-tool. By the end of it, I was thinking workflow-first. Instead 
+            of asking: <em>“What tool do I need next?”</em> I had started asking: <em>“What structure does this workflow need?”</em> That
+             shift matters. Because once you stop thinking linearly, you begin designing workflows much more intentionally.</p>
+          <p>You start recognising recurring patterns:</p>
+          <ul>
+            <li>Standardise the data first</li>
+            <li>Build reusable logic</li>
+            <li>Reduce branching</li>
+            <li>Aggregate late where possible</li>
+            <li>Preserve keys before transposing</li>
+            <li>Keep workflows readable</li>
+            <li>Design for debugging</li>
+          </ul>
+          <p>The challenges reinforced those habits constantly.</p>
+
+          <h2>The Biggest Skill Gains</h2>
+          <p>Looking back through my notes, several themes appear repeatedly.</p>
+
+          <h3>1. Parsing and cleaning messy data</h3>
+          <p>This came up constantly. HTML parsing, JSON parsing, inconsistent dates, embedded delimiters, newline characters, malformed headers and irregular
+            structures. Some challenges involved downloading data directly via the Download tool and then parsing nested JSON structures before
+            restructuring everything using Crosstab, Union and Dynamic Rename. Others involved manually rebuilding tables from badly formatted HTML. These types of exercises are incredibly valuable because real-world data is rarely clean. Most business problems are actually data quality problems in disguise.</p>
+
+          <h3>2. Joins and relationship thinking</h3>
+          <p>A huge number of challenges involved joins. Not just basic joins either. There were self-joins, many-to-many relationships, 
+            hierarchy building, appending datasets together before re-matching them and using Record IDs strategically to preserve 
+            relationships after transformations. One hierarchy challenge involved repeatedly joining the dataset back to itself to 
+            build reporting levels. Another involved creating warehouse assignment logic using sorting, multi-row formulas and 
+            allocation calculations. Over time, you stop seeing joins as individual tools. You start seeing them as relationship logic. 
+            That mindset shift is important.</p>
+
+          <h3>3. Multi-Row formulas and stateful logic</h3>
+          <p>Multi-Row formulas appeared everywhere. Running totals. Distance calculations. Allocation logic. Retention 
+            calculations. Previous-row comparisons. Early on, Multi-Row formulas felt awkward. Later, they became one of the first 
+            tools I would reach for. The same applies to iterative thinking in general. Several challenges could be solved 
+            conventionally or using iterative macros. Those exercises helped build a much better understanding of process-driven 
+            workflow design.</p>
+
+          <h3>4. Macros and dynamic workflows</h3>
+          <p>The challenges become significantly more interesting once macros start appearing regularly. This is where workflows 
+            begin moving beyond static transformations. Some examples included:</p>
+          <ul>
+            <li>Building dropdown-driven applications</li>
+            <li>Creating reusable processing logic</li>
+            <li>Dynamic file handling</li>
+            <li>Parameter-driven calculations</li>
+            <li>Iterative hierarchy generation</li>
+            <li>Batch processing workflows</li>
+          </ul>
+          <p>Macros completely change how you think about scalability inside Alteryx. Once you become comfortable with them, 
+            you stop building workflows for single-use cases. You start building systems.</p>
+
+          <h2>The Challenges That Changed My Thinking</h2>
+          <p>A few challenges stood out because they introduced tools or concepts I had never properly used before.</p>
+          <p>One challenge introduced:</p>
+          <ul>
+            <li>Association Analysis</li>
+            <li>Linear Regression</li>
+            <li>Score tools</li>
+          </ul>
+          <p>Another involved spatial route calculations using:</p>
+          <ul>
+            <li>Centroids</li>
+            <li>Distance calculations</li>
+            <li>PolyBuild</li>
+            <li>Spatial grouping</li>
+          </ul>
+          <p>Those challenges mattered because they pushed me outside my normal comfort zone. That is one of the biggest 
+            strengths of the Weekly Challenges archive. It forces breadth. You cannot stay inside your preferred toolset forever.</p>
+
+          <h2>What Improved Most</h2>
+          <p>The biggest improvement was not technical knowledge. It was workflow confidence. After several hundred challenges:</p>
+          <ul>
+            <li>You debug faster</li>
+            <li>You spot bad data earlier</li>
+            <li>You anticipate edge cases</li>
+            <li>You simplify workflows more aggressively</li>
+            <li>You become less intimidated by messy inputs</li>
+            <li>You develop much stronger pattern recognition</li>
+            <li>You become comfortable rebuilding workflows entirely</li>
+          </ul>
+          <p>The speed difference becomes noticeable too. Problems that originally took over an hour eventually 
+            become 10-minute exercises. Not because the problems became easier. Because your workflow instincts improve.</p>
+
+          <h2>Why Deliberate Practice Works</h2>
+          <p>The Weekly Challenges work because they create deliberate repetition. You are repeatedly exposed to:</p>
+          <ul>
+            <li>Different industries</li>
+            <li>Different data structures</li>
+            <li>Different problem types</li>
+            <li>Different optimisation approaches</li>
+            <li>Different workflow styles</li>
+          </ul>
+          <p>That repetition compounds surprisingly quickly. A single challenge teaches a technique. Hundreds of 
+            challenges teach judgement. And judgement is what separates someone who can use Alteryx from someone who is 
+            genuinely fluent with it.</p>
+
+          <h2>The Final 6 Challenges</h2>
+          <p>I never reached the full 500. The remaining challenges are:</p>
+          <ul>
+            <li>99</li>
+            <li>397</li>
+            <li>399</li>
+            <li>401</li>
+            <li>479</li>
+            <li>500</li>
+          </ul>
+          <p>Part of me is frustrated I didn't complete the lot, but honestly, completing 494 challenges already changed the
+             way I work with data permanently. It was also always going to be an impossible challenge as for one of them the data link no 
+             longer worked, so even if I had completed the lot, it would have been a pointless exercise.</p>
+
+          <h2>The Final Thread</h2>
+          <p>If you are trying to improve in Alteryx, there is no shortcut that replaces repetition. Courses help. Documentation 
+            helps. YouTube tutorials help. But building hundreds of workflows forces a completely different level of understanding. 
+            The Weekly Challenges helped me move from: <em>“I know how to use Alteryx”</em> to <em>“I know how to solve problems with 
+              Alteryx.”</em> And those are not the same thing. If you have never tried the Weekly Challenges archive before, I would 
+              strongly recommend it. And don't forget: if you get really stuck,
+              <a
+                class="blog-accent-link"
+                href="https://community.alteryx.com/categories/weeklychallenge-board"
+                rel="noopener noreferrer"
+                >the Alteryx Weekly Challenge community</a
+              >
+              is a great place to see how others solved each challenge.</p>
+          <p>Just do not underestimate how addictive it becomes once you start seeing your workflow thinking improve in real time.</p>
         </div>
 
         <div class="author-box author-box--logo">

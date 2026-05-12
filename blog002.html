@@ -159,6 +159,10 @@
         font-size: var(--text-base);
       }
 
+      .blog002-results-img.code-block-wrap--image .article-hero-img {
+        max-width: 75%;
+      }
+
       @media (max-width: 860px) {
         .sql-annotator-grid {
           grid-template-columns: 1fr;
@@ -781,6 +785,16 @@
           </div>
           <p><strong>Best for:</strong> Databricks/Spark-first workloads where performance and compact syntax matter.</p>
 
+          <h3 style="color: var(--color-accent)">Conversion Output</h3>
+          <div class="code-block-wrap code-block-wrap--image blog002-results-img">
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/002_blog_image_4.png"
+                alt="Results comparing the three unpivot approaches in Databricks SQL"
+              />
+            </div>
+          </div>
+
           <h3 style="color: var(--color-accent)">Advanced case: unpivoting column groups</h3>
           <p>
             Some models store grouped columns by stage (for example, stage 1 and stage 2 approval fields). Both
@@ -952,6 +966,17 @@
             </div>
           </div>
 
+          <h3 style="color: var(--color-accent)">Advanved Conversion Output</h3>
+          <div class="code-block-wrap code-block-wrap--image blog002-results-img">
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/002_blog_image_5.png"
+                alt="Summary: when to use UNPIVOT, CROSS JOIN + CASE, or LATERAL VIEW + STACK in Databricks SQL"
+              />
+            </div>
+          </div>
+
+          
           <div class="callout">
             <strong>Quick rule of thumb:</strong> choose <code>UNPIVOT</code> for readability, <code>CROSS JOIN + CASE</code> for
             maximum customization, and <code>LATERAL VIEW + STACK</code> for Spark-native performance and scale.
