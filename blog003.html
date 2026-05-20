@@ -16,6 +16,21 @@
       .blog003-article .prose h3 {
         color: var(--color-accent);
       }
+
+      /* Alteryx logo blue — Danny Bradley link (matches brand ~#2497D4) */
+      .blog003-article .blog003-alteryx-brand-link {
+        color: #2497d4;
+        display: inline-block;
+        transform-origin: center;
+        transition: color var(--transition-fast), transform 160ms ease, text-shadow 160ms ease;
+      }
+
+      .blog003-article .blog003-alteryx-brand-link:hover,
+      .blog003-article .blog003-alteryx-brand-link:focus-visible {
+        color: #4db5e8;
+        transform: scale(1.14);
+        text-shadow: 0 0 0.5rem rgba(36, 151, 212, 0.35);
+      }
     </style>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
@@ -63,9 +78,9 @@
         <header class="article-header">
           <h1>494 Alteryx Challenges Later: What I Learned From Nearly Completing the Archive</h1>
           <div class="article-meta">
-            <span>Unpublished draft</span>
+            <span>Published 20 May 2026</span>
             <span class="tag tag-alteryx">Alteryx</span>
-            <span>~14 min read</span>
+            <span>8-12 min read</span>
           </div>
         </header>
 
@@ -77,9 +92,6 @@
         </div>
 
         <div class="prose">
-          <div class="callout">
-            <strong>Unpublished:</strong> This page is ready for review but is not linked from the blog index yet.
-          </div>
           <h2>What Was I Thinking?</h2>
           <p>
             I originally started the Alteryx Weekly Challenges for one simple reason: I wanted to get better faster.
@@ -244,6 +256,8 @@
              way I work with data permanently. It was always going to be an impossible full sweep, because for one of them the data link no
              longer worked, so even if I had completed the lot, it would have been a pointless exercise.</p>
 
+          
+
           <h2>The Final Thread</h2>
           <p>If you are trying to improve in Alteryx, there is no shortcut that replaces repetition. Courses help. Documentation 
             helps. YouTube tutorials help. But building hundreds of workflows forces a completely different level of understanding. 
@@ -256,8 +270,31 @@
                 rel="noopener noreferrer"
                 >the Alteryx Weekly Challenge community</a
               >
-              is a great place to see how others solved each challenge.</p>
-          <p>Just do not underestimate how addictive it becomes once you start seeing your workflow thinking improve in real time.</p>
+              is a great place to see how others solved each challenge. 
+              <br>
+              Just do not underestimate how addictive it becomes once you start seeing your workflow thinking improve in real time.
+              You never know, it may open opportunities to collaborate with others
+              or allow you to present at a conferfence one day. Here I am with
+              <a
+                class="blog003-alteryx-brand-link"
+                href="https://www.linkedin.com/in/danny-bradley-8669364a/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Danny Bradley</a
+              >
+              presenting at Alteryx Inspire EMEA in Amsterdam in 2022.</p>
+
+          <div class="article-hero-img" style="max-width: 44%; margin-left: auto; margin-right: auto">
+            <img
+              src="assets/Blogs/003_blog_image_1.jpg"
+              alt="Presenting at Alteryx Inspire EMEA in Amsterdam, 2022"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <p>
+            Rob
+          </p>
         </div>
 
         <div class="author-box author-box--logo">
