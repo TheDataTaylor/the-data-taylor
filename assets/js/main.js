@@ -74,9 +74,50 @@
     var countEls = Array.from(categoryList.querySelectorAll("[data-blog-count]"));
     var primaryBlogCategories = ["tableau", "alteryx", "databricks"];
     var activeCategory = "all";
+    var fullArticleTextByPost = new WeakMap();
 
     function postText(post) {
-      return (post.textContent || "").toLowerCase();
+      return ((post.textContent || "") + " " + (fullArticleTextByPost.get(post) || "")).toLowerCase();
+    }
+
+    function blogPostHref(post) {
+      var links = Array.from(post.querySelectorAll("a[href]"));
+      for (var i = 0; i < links.length; i++) {
+        var href = links[i].getAttribute("href") || "";
+        var cleanHref = href.split("#", 1)[0].split("?", 1)[0];
+        if (/\.html$/i.test(cleanHref) && cleanHref !== "blog.html") {
+          return href;
+        }
+      }
+      return null;
+    }
+
+    function extractArticleText(html) {
+      var doc = new DOMParser().parseFromString(html, "text/html");
+      var article = doc.querySelector("article");
+      var main = doc.querySelector("main");
+      var source = article || main || doc.body;
+      return source ? source.textContent || "" : "";
+    }
+
+    function hydrateBlogSearchText() {
+      blogPosts.forEach(function (post) {
+        var href = blogPostHref(post);
+        if (!href) return;
+
+        fetch(href)
+          .then(function (response) {
+            if (!response.ok) throw new Error("Blog article " + response.status);
+            return response.text();
+          })
+          .then(function (html) {
+            fullArticleTextByPost.set(post, extractArticleText(html));
+            applyBlogFilters();
+          })
+          .catch(function () {
+            // If article fetch fails, keep the existing card-only search.
+          });
+      });
     }
 
     function syncCounts() {
@@ -127,6 +168,7 @@
     });
 
     syncCounts();
+    hydrateBlogSearchText();
     applyBlogFilters();
   }
 
