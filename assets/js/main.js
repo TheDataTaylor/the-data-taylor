@@ -76,6 +76,24 @@
     var activeCategory = "all";
     var fullArticleTextByPost = new WeakMap();
 
+    function blogPostCategories(post) {
+      return (post.getAttribute("data-category") || "")
+        .toLowerCase()
+        .split(/\s+/)
+        .filter(Boolean);
+    }
+
+    function blogPostMatchesCategory(post, category) {
+      var categories = blogPostCategories(post);
+      if (category === "all") return true;
+      if (category === "other") {
+        return categories.length === 0 || categories.every(function (item) {
+          return primaryBlogCategories.indexOf(item) === -1;
+        });
+      }
+      return categories.indexOf(category) !== -1;
+    }
+
     function postText(post) {
       return ((post.textContent || "") + " " + (fullArticleTextByPost.get(post) || "")).toLowerCase();
     }
@@ -123,11 +141,18 @@
     function syncCounts() {
       var totals = { all: blogPosts.length, other: 0 };
       blogPosts.forEach(function (post) {
-        var category = (post.getAttribute("data-category") || "").toLowerCase();
-        if (!category) return;
-        if (primaryBlogCategories.indexOf(category) !== -1) {
-          totals[category] = (totals[category] || 0) + 1;
-        } else {
+        var categories = blogPostCategories(post);
+        if (categories.length === 0) return;
+
+        var matchedPrimary = false;
+        categories.forEach(function (category) {
+          if (primaryBlogCategories.indexOf(category) !== -1) {
+            totals[category] = (totals[category] || 0) + 1;
+            matchedPrimary = true;
+          }
+        });
+
+        if (!matchedPrimary) {
           totals.other += 1;
         }
       });
@@ -141,12 +166,7 @@
     function applyBlogFilters() {
       var query = (blogSearch.value || "").trim().toLowerCase();
       blogPosts.forEach(function (post) {
-        var category = (post.getAttribute("data-category") || "").toLowerCase();
-        var categoryMatch =
-          activeCategory === "all" ||
-          (activeCategory === "other"
-            ? primaryBlogCategories.indexOf(category) === -1
-            : category === activeCategory);
+        var categoryMatch = blogPostMatchesCategory(post, activeCategory);
         var queryMatch = !query || postText(post).indexOf(query) !== -1;
         post.classList.toggle("is-hidden", !(categoryMatch && queryMatch));
       });
@@ -546,5 +566,34 @@
         fallbackCopy();
       }
     });
+  });
+
+  /* Collapsible long code blocks (blog tutorial posts) */
+  document.querySelectorAll(".blog005-code-expand").forEach(function (wrap) {
+    var viewport = wrap.querySelector(".blog005-code-expand__viewport");
+    var toggle = wrap.querySelector(".blog005-code-expand__toggle");
+    if (!viewport || !toggle) return;
+
+    function updateNoToggle() {
+      if (wrap.classList.contains("is-expanded")) return;
+      if (viewport.scrollHeight <= viewport.clientHeight + 4) {
+        wrap.classList.add("blog005-code-expand--no-toggle");
+      } else {
+        wrap.classList.remove("blog005-code-expand--no-toggle");
+      }
+    }
+
+    toggle.addEventListener("click", function () {
+      var expanded = wrap.classList.toggle("is-expanded");
+      toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      toggle.textContent = expanded ? "Show less" : "Show full code";
+    });
+
+    window.addEventListener("resize", updateNoToggle);
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", updateNoToggle);
+    } else {
+      updateNoToggle();
+    }
   });
 })();

@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using the Tableau Public API to Pull Data</title>
+    <meta
+      name="description"
+      content="A step-by-step guide to pulling Tableau Public profile and workbook data programmatically using Python and Databricks."
+    />
+    <link rel="icon" type="image/png" href="assets/Logos/Logo_Square.png" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CDR01PXKG0');
+  </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="200" height="60" />
+        </a>
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open menu"
+        >
+          <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="blog.html" class="active">Blog</a>
+          <a href="about.html">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <article class="article-wrap article-wrap--tight-end">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> · <a href="blog.html">Blog</a> · <span>Article</span>
+        </nav>
+
+        <header class="article-header">
+          <h1>Using the Tableau Public API to Pull Data</h1>
+          <div class="article-meta">
+            <span>Published 10 June 2026</span>
+            <span class="tag tag-tableau">Tableau</span>
+            <span class="tag tag-databricks">Databricks</span>
+            <span>12 min read</span>
+          </div>
+        </header>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+            align-items: stretch;
+          "
+        >
+          <div class="article-hero-img journey-media-image" style="margin-bottom: 0; width: 100%; aspect-ratio: 16 / 10">
+            <a
+              href="https://public.tableau.com/app/profile/rob.taylor6175/viz/MerryChristmasTableauPublicAmbassadors/TableauPublic2024"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Merry Christmas Tableau Public Ambassadors — open viz on Tableau Public"
+            >
+              <img
+                src="assets/Public Thumbnails/039-merry-christmas-tableau-public-ambassadors.jpg"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                style="width: 100%; height: 100%; object-fit: cover"
+              />
+              <span class="journey-media-viz-hint" aria-hidden="true">Click to go to viz</span>
+            </a>
+          </div>
+          <div class="article-hero-img journey-media-image" style="margin-bottom: 0; width: 100%; aspect-ratio: 16 / 10">
+            <a
+              href="https://public.tableau.com/app/profile/rob.taylor6175/viz/TheVOTDHallofFame/VOTDLeaderboard"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Data Masterpieces — open viz on Tableau Public"
+              style="display: block; height: 100%"
+            >
+              <img
+                src="assets/Blogs/006_blog_image_5.jpg"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                style="width: 100%; height: 100%; object-fit: contain; object-position: center"
+              />
+              <span class="journey-media-viz-hint" aria-hidden="true">Click to go to viz</span>
+            </a>
+          </div>
+          <div class="article-hero-img journey-media-image" style="margin-bottom: 0; width: 100%; aspect-ratio: 16 / 10">
+            <a
+              href="https://public.tableau.com/app/profile/rob.taylor6175/viz/TableauAdventCalendar2023/TableauAdventCalendar"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Tableau Advent Calendar 2023 — open viz on Tableau Public"
+            >
+              <img
+                src="assets/Public Thumbnails/052-tableau-advent-calendar-2023.jpg"
+                alt=""
+                loading="lazy"
+                decoding="async"
+                style="width: 100%; height: 100%; object-fit: cover"
+              />
+              <span class="journey-media-viz-hint" aria-hidden="true">Click to go to viz</span>
+            </a>
+          </div>
+        </div>
+
+          <p>
+            <h3 style="color: var(--color-accent); margin-top: var(--space-6)">A beginner-friendly walkthrough using Python and Databricks.</h3>
+          </p>
+          <p>
+            If you have ever wanted to create vizzes like above and wondered how to pull data from Tableau Public automatically, you are in the right place. This post
+            walks through a Python workflow built in Databricks to collect profile and workbook data from Tableau Public using
+            their API. By the end you will understand each step of the process, what the code is doing, and what the output looks
+            like.
+          </p>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">What is an API?</h3>
+          <p>
+            An API (Application Programming Interface) is simply a way for two pieces of software to talk to each other. 
+            When you visit a Tableau Public profile in your browser, Tableau's servers send back data to display on the page. 
+            An API lets you request that same data programmatically, so instead of clicking through a website, you can write code 
+            to pull exactly what you need.
+          </p>
+          <p>Tableau Public exposes several API endpoints (URLs you can call) that return data in JSON format. JSON is just a 
+            structured text format that is easy for code to read and process. We will be using three main endpoints in this walkthrough:
+          </p>
+
+          <ul>
+            <li><strong>Profile API</strong>: returns details about a user's profile</li>
+            <li><strong>Workbooks API</strong>: returns a list of a user's published workbooks</li>
+            <li><strong>Single Workbook API</strong>: returns deeper detail on an individual workbook, including creation/publish/update dates and file size</li>
+          </ul>
+          <p>However, if you want to dig deeper into the available resources check out <a class="blog-accent-link" href="https://github.com/wjsutton/tableau_public_api/">Will Sutton</a>'s 
+            Git Hub repository. This is a fantastic overview and a where I started my learning journey.
+          </p>
+
+          <h3 style="color: var(--color-accent)">The Overall Workflow</h3>
+          <ol>
+            <li>Start with a list of Tableau Public usernames</li>
+            <li>Filter out any blanks and fetch profile info for each user</li>
+            <li>Pull a list of all their published workbooks</li>
+            <li>Construct image preview URLs for each workbook</li>
+            <li>Fetch deeper detail on each individual workbook</li>
+            <li>Combine everything into one clean table ready for analysis</li>
+          </ol>
+          <p>Each step builds on the one before it. Let's go through them one by one.
+          </p>
+
+          <br>
+          <h3 id="blog006-step1" style="color: var(--color-accent)">Step 1: Set Up Your List of Users</h3>
+          <div class="blog005-code-steps">
+            <section class="blog005-code-step" aria-labelledby="blog006-step1">
+          <p class="blog005-code-step__note">
+            <strong>Objective:</strong> Create and display a list of Tableau Public profiles to process.
+          </p>
+          <p class="blog005-code-step__note">
+            <strong>What Is Happening:</strong>
+          </p>
+          <ol class="blog005-code-step__note-list">
+            <li>A Python list of profiles is defined, including IDs, names, and Tableau Public usernames.</li>
+            <li>This list is converted into a Spark DataFrame for scalable processing and later use with Spark and Pandas operations.</li>
+            <li>The DataFrame is displayed for initial verification.</li>
+          </ol>
+          <p class="blog005-code-step__note">
+            <strong>Why:</strong> Starting with a structured list of user identifiers (Tableau usernames) allows the subsequent
+            automation to fetch each person's profile and workbook data via the Tableau Public APIs. Using Spark ensures
+            scalability for larger profile lists in the future.
+          </p>
+
+          <div class="code-block-wrap">
+            <button class="code-copy" type="button" data-code-copy>Copy</button>
+            <pre><code><span class="blog005-code-py-comment"># Create a list called 'profile_list'.</span>
+<span class="blog005-code-py-comment"># This list contains one tuple (a group of values).</span>
+<span class="blog005-code-py-comment"># Each tuple represents a Tableau Public Profile.</span>
+<span class="blog005-code-py-comment"># The three items represent: id, name, and username. The username can be taken from the profile URL.</span>
+profile_list = [
+    ("1", "Rob Taylor", "rob.taylor6175")
+]
+
+<span class="blog005-code-py-comment"># Use Spark's createDataFrame function to turn the list into a Spark DataFrame (a table-like structure).</span>
+<span class="blog005-code-py-comment"># We tell Spark the names of the columns: 'id', 'name', and 'username'.</span>
+profile_df = spark.createDataFrame(profile_list, schema=['id', 'name', 'username'])
+
+<span class="blog005-code-py-comment"># Display the DataFrame in a nice, readable table format in Databricks.</span>
+display(profile_df)</code></pre>
+          </div>
+            </section>
+          </div>
+
+          <h3 id="blog006-step2" style="color: var(--color-accent)">Step 2: Filter And Fetch Profile Information</h3>
+          <div class="blog005-code-steps">
+            <section class="blog005-code-step" aria-labelledby="blog006-step2">
+          <p class="blog005-code-step__note">
+            <strong>Objective:</strong> Clean up the profile list and gather detailed profile information per ambassador.
+          </p>
+          <p class="blog005-code-step__note">
+            <strong>What Is Happening:</strong>
+          </p>
+          <ol class="blog005-code-step__note-list">
+            <li>Blank or null usernames are filtered from the DataFrame.</li>
+            <li>A filter and limit operation ensures only valid and a manageable set of profiles are processed in initial development/testing.</li>
+            <li>Profile information is retrieved for each user by:</li>
+            <ul>
+              <li>Instantiating a ProfileDataCollector class, which calls the Tableau Public profile API for each username.</li>
+              <li>Parsing and normalizing fields (address, social links/websites, counts, settings).</li>
+              <li>Handling both clean and failed API responses, returning uniform records.</li>
+            </ul>
+            <li>The resulting profiles are collected into a Pandas DataFrame for downstream use and displayed.</li>
+          </ol>
+          <p class="blog005-code-step__note">
+            <strong>Why:</strong> Filtering ensures that only valid, actionable Tableau Public usernames are processed, preventing wasteful API calls. 
+            Using a collector class modularizes API logic, and explicit parsing of JSON fields (“websites,” “address”) ensures data normalization for analytics 
+            downstream. Robust error handling ensures one failing user does not derail the complete process.</p>
+            <br>
+            <p>The dataframe is filtered and limited to our requirements.</p>
+            <div class="code-block-wrap">
+              <button class="code-copy" type="button" data-code-copy>Copy</button>
+              <pre><code><span class="blog005-code-py-comment"># Filter out blanks and limit to top 10</span>
+filtered_df = profile_df.filter(
+    (profile_df.username != "") &         <span class="blog005-code-py-comment"># Only keep rows where 'username' is not an empty string</span>
+    (profile_df.username.isNotNull())     <span class="blog005-code-py-comment"># Also only keep rows where 'username' is not null (missing)</span>
+).limit(12)                                  <span class="blog005-code-py-comment"># Only keep up to 12 rows (even if there are more results)</span>
+
+display(filtered_df)                         <span class="blog005-code-py-comment"># Show the resulting filtered DataFrame as a table in Databricks</span></code></pre>
+            </div>
+
+          
+            <p>The <code>ProfileDataCollector</code> class then loops through each username, calls
+              <code>https://public.tableau.com/profile/api/{username}</code>, and extracts fields including name, title,
+              organisation, follower counts, social links, and location. Two fields needed extra parsing: address (comes back as a
+              single JSON string, split into country/state/city) and websites (a list that gets categorised into LinkedIn, Twitter,
+              GitHub, etc.).</p>
+
+          <div class="code-block-wrap blog005-code-expand blog005-code-expand--long">
+            <button class="code-copy" type="button" data-code-copy>Copy</button>
+            <div class="blog005-code-expand__viewport" role="region" aria-label="Python: ProfileDataCollector">
+              <pre><code>import logging                          <span class="blog005-code-py-comment"># Handles informational messages and error reporting from Python and Spark.</span>
+import time                             <span class="blog005-code-py-comment"># Allows us to pause the program ("sleep") between API calls.</span>
+import requests                         <span class="blog005-code-py-comment"># A popular library for making HTTP requests to web APIs (like Tableau Public).</span>
+import pandas as pd                     <span class="blog005-code-py-comment"># Used for creating and manipulating tables (DataFrames) in Python.</span>
+import json                             <span class="blog005-code-py-comment"># For reading and writing data in JSON format (what web APIs usually send).</span>
+import re                               <span class="blog005-code-py-comment"># Used for regular expressions (finding patterns in strings).</span>
+from pyspark.sql import SparkSession    <span class="blog005-code-py-comment"># SparkSession is the main gateway to Spark.</span>
+
+<span class="blog005-code-py-comment"># Logging level settings</span>
+<span class="blog005-code-py-comment"># Reduce Spark messages — only show critical errors, not lots of information or warnings.</span>
+logging.getLogger("py4j").setLevel(logging.ERROR)
+logging.getLogger("py4j.java_gateway").setLevel(logging.ERROR)
+logging.getLogger("py4j.clientserver").setLevel(logging.ERROR)
+
+<span class="blog005-code-py-comment"># Initialize global session and Spark session once, and reuse</span>
+SESSION = requests.Session()                                                <span class="blog005-code-py-comment"># Create a web session for API requests (more efficient).</span>
+SPARK = SparkSession.builder.appName("ProfileDataCollection").getOrCreate() <span class="blog005-code-py-comment"># Start a Spark session for big data.</span>
+
+<span class="blog005-code-py-comment">#############################################</span>
+<span class="blog005-code-py-comment"># SECTION 1: PROFILE DATA</span>
+<span class="blog005-code-py-comment">#############################################</span>
+
+class ProfileDataCollector:
+    def __init__(self, session=SESSION):
+        self.profile_api_base = "https://public.tableau.com/profile/api/"   <span class="blog005-code-py-comment"># Base URL to get a profile's info.</span>
+        self.session = session                                              <span class="blog005-code-py-comment"># Store your requests session.</span>
+
+    def parse_address(self, address_field):
+        <span class="blog005-code-py-comment">#Purpose: Extracts country, state, city from one big string.</span>
+        <span class="blog005-code-py-comment">#If the string is actually valid JSON, it's turned into a dictionary and values are pulled out.</span>
+        <span class="blog005-code-py-comment">#If the string is invalid or empty, blank values are returned.</span>
+        <span class="blog005-code-py-comment">#This is helpful, as APIs may give you a single block of address info rather than separate fields.</span>
+    """Parse the address JSON string into separate fields"""
+        try:
+            if isinstance(address_field, str) and address_field:
+                address_data = json.loads(address_field)   <span class="blog005-code-py-comment"># Convert a string like '{"country":...}' into a dictionary.</span>
+                return {
+                    'country': address_data.get('country', ''),
+                    'state': address_data.get('state', ''),
+                    'city': address_data.get('city', ''),
+                    'full_address': address_field
+                }
+        except:
+            pass
+        return {'country': '', 'state': '', 'city': '', 'full_address': ''}
+
+    def parse_websites(self, websites_field):
+        <span class="blog005-code-py-comment">#Purpose: Websites/social links come as a list. This function makes sure every URL gets its correct label (LinkedIn, Twitter, Instagram, etc.).</span>
+        <span class="blog005-code-py-comment">#It works for both JSON-string lists and Python lists.</span>
+        <span class="blog005-code-py-comment">#For each site, tries to figure out which social site it is based on keywords or the domain name.</span>
+        <span class="blog005-code-py-comment">#Fills in the right box (e.g., linkedin_url) so later reporting and filtering is easy.</span>
+        """Parse websites array into separate social media columns plus website1/website2"""
+        website_data = {
+            'linkedin_url': '',
+            'twitter_url': '',
+            'instagram_url': '',
+            'facebook_url': '',
+            'youtube_url': '',
+            'github_url': '',
+            'blog_url': '',
+            'website1': '',
+            'website2': '',
+            'total_websites_count': 0
+        }
+        
+        try:
+            if isinstance(websites_field, str) and websites_field and websites_field != '[]':
+                websites = json.loads(websites_field)
+            elif isinstance(websites_field, list):
+                websites = websites_field
+            else:
+                return website_data
+            
+            if not websites:
+                return website_data
+                
+            website_data['total_websites_count'] = len(websites)
+            
+            for site in websites:
+                if isinstance(site, dict):
+                    url = site.get('url', '')
+                    title = site.get('title', '').lower()
+                    
+                    <span class="blog005-code-py-comment"># First check if title explicitly tells us the category</span>
+                    if title == 'website1':
+                        website_data['website1'] = url
+                    elif title == 'website2':
+                        website_data['website2'] = url
+                    elif title == 'linkedin.com' or 'linkedin' in title:
+                        website_data['linkedin_url'] = url
+                    elif title == 'x.com' or title == 'twitter.com' or 'twitter' in title:
+                        website_data['twitter_url'] = url
+                    elif 'instagram' in title:
+                        website_data['instagram_url'] = url
+                    elif 'facebook' in title:
+                        website_data['facebook_url'] = url
+                    elif 'youtube' in title:
+                        website_data['youtube_url'] = url
+                    elif 'github' in title:
+                        website_data['github_url'] = url
+                    elif any(blog_word in title for blog_word in ['blog', 'medium', 'substack', 'wordpress']):
+                        website_data['blog_url'] = url
+                    else:
+                        <span class="blog005-code-py-comment"># If title doesn't help, fall back to URL pattern matching</span>
+                        if 'linkedin.com' in url.lower():
+                            website_data['linkedin_url'] = url
+                        elif 'twitter.com' in url.lower() or 'x.com' in url.lower():
+                            website_data['twitter_url'] = url
+                        elif 'instagram.com' in url.lower():
+                            website_data['instagram_url'] = url
+                        elif 'facebook.com' in url.lower():
+                            website_data['facebook_url'] = url
+                        elif 'youtube.com' in url.lower() or 'youtu.be' in url.lower():
+                            website_data['youtube_url'] = url
+                        elif 'github.com' in url.lower():
+                            website_data['github_url'] = url
+                        elif 'wordpress.com' in url.lower() or 'medium.com' in url.lower():
+                            website_data['blog_url'] = url
+                            
+                elif isinstance(site, str):
+                    <span class="blog005-code-py-comment"># If it's just a URL string, try to categorize by domain</span>
+                    url = site
+                    if 'linkedin.com' in url.lower():
+                        website_data['linkedin_url'] = url
+                    elif 'twitter.com' in url.lower() or 'x.com' in url.lower():
+                        website_data['twitter_url'] = url
+                    elif 'instagram.com' in url.lower():
+                        website_data['instagram_url'] = url
+                    elif 'facebook.com' in url.lower():
+                        website_data['facebook_url'] = url
+                    elif 'youtube.com' in url.lower() or 'youtu.be' in url.lower():
+                        website_data['youtube_url'] = url
+                    elif 'github.com' in url.lower():
+                        website_data['github_url'] = url
+            
+        except Exception as e:
+            print(f"Error parsing websites: {e}")
+            
+        return website_data
+
+    def clean_dataframe_for_spark(self, df):
+        <span class="blog005-code-py-comment">#Purpose: Fixes all missing values, ensures each column is the right "type" for Spark and Pandas.</span>
+        <span class="blog005-code-py-comment">#Helps prevent failures when you move data from Pandas to Spark.</span>
+        <span class="blog005-code-py-comment">#Ensures reporting and visualizations don't break due to nulls or type mix-ups.</span>
+        """Clean DataFrame to avoid PyArrow conversion issues"""
+        <span class="blog005-code-py-comment"># Convert any None/NaN values to appropriate defaults</span>
+        df = df.fillna({
+            'totalNumberOfFollowers': 0,
+            'totalNumberOfFollowing': 0, 
+            'visibleWorkbookCount': 0,
+            'total_websites_count': 0,
+            'freelance': False,
+            'askMeAboutMyViz': False,
+            'hideNewWorkbooks': False,
+            'searchable': True,
+            'showWebsites': False
+        })
+        
+        <span class="blog005-code-py-comment"># Fill string columns with empty strings</span>
+        string_cols = ['profileName', 'name', 'title', 'organization', 'bio', 'avatarUrl',
+                        'country', 'state', 'city', 'full_address', 'featuredVizRepoUrl',
+                        'bannerColour', 'bannerImage', 'createdAt', 'profileView',
+                        'linkedin_url', 'twitter_url', 'instagram_url', 'facebook_url',
+                        'youtube_url', 'github_url', 'blog_url', 'website1', 'website2',
+                        'websites_raw', 'pronouns']
+        
+        for col in string_cols:
+            if col in df.columns:
+                df[col] = df[col].fillna('').astype(str)
+        
+        <span class="blog005-code-py-comment"># Ensure boolean columns are properly typed</span>
+        bool_cols = ['freelance', 'askMeAboutMyViz', 'hideNewWorkbooks', 'searchable', 'showWebsites']
+        for col in bool_cols:
+            if col in df.columns:
+                df[col] = df[col].fillna(False).astype(bool)
+        
+        <span class="blog005-code-py-comment"># Ensure numeric columns are properly typed</span>
+        numeric_cols = ['totalNumberOfFollowers', 'totalNumberOfFollowing', 'visibleWorkbookCount', 'total_websites_count']
+        for col in numeric_cols:
+            if col in df.columns:
+                df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0).astype(int)
+        
+        return df
+
+    def get_author_profiles(self, profile_df, delay=0.5):
+        <span class="blog005-code-py-comment">#This is the core method for fetching every user's detailed API profile.</span>
+        <span class="blog005-code-py-comment">#Handles conversion, renaming, API calls, error management, and combines individual records into a DataFrame.</span>
+        <span class="blog005-code-py-comment">#Parses tricky fields (address, websites) so everything is ready for later reporting/display.</span>
+        <span class="blog005-code-py-comment">#Adds a pause to avoid "rate limits" (too many API calls at once).</span>
+        
+        <span class="blog005-code-py-comment"># Convert Spark DataFrame to Pandas and rename columns to match expected format</span>
+        profiles_pandas = profile_df.select('name', 'username').toPandas()
+        profiles_pandas = profiles_pandas.rename(columns={
+            'name': 'authorDisplayName',
+            'username': 'authorProfileName'
+        })
+        
+        unique_authors = profiles_pandas[['authorDisplayName', 'authorProfileName']].drop_duplicates()
+        profile_data = []
+        
+        for _, author in unique_authors.iterrows():
+            profile_url = f"{self.profile_api_base}{author['authorProfileName']}"   <span class="blog005-code-py-comment"># Build the API URL for each user.</span>
+            try:
+                r = self.session.get(profile_url, timeout=30)       <span class="blog005-code-py-comment"># Get the profile as JSON from Tableau Public API.</span>
+                r.raise_for_status()                                <span class="blog005-code-py-comment"># If there's an HTTP error, stop!</span>
+                profile = r.json()                                  <span class="blog005-code-py-comment"># Convert the API response to a Python dictionary.</span>
+                
+                address_info = self.parse_address(profile.get('address', ''))     <span class="blog005-code-py-comment"># Separate out address info.</span>
+                website_info = self.parse_websites(profile.get('websites', ''))   <span class="blog005-code-py-comment"># Separate out website/social info.</span>
+                
+                <span class="blog005-code-py-comment"># Capture ALL available fields</span>
+                info = {
+                    <span class="blog005-code-py-comment"># Original fields (keeping for consistency)</span>
+                    'authorDisplayName': author['authorDisplayName'],
+                    'authorProfileName': author['authorProfileName'],
+                    'Profile_URL': f"https://public.tableau.com/profile/{author['authorProfileName']}",
+                    
+                    <span class="blog005-code-py-comment"># Core profile fields</span>
+                    'profileName': profile.get('profileName', ''),
+                    'name': profile.get('name', ''),
+                    'title': profile.get('title', ''),
+                    'organization': profile.get('organization', ''),
+                    'bio': profile.get('bio', ''),
+                    'avatarUrl': profile.get('avatarUrl', ''),
+                    
+                    <span class="blog005-code-py-comment"># Address fields (parsed from JSON)</span>
+                    'country': address_info['country'],
+                    'state': address_info['state'],
+                    'city': address_info['city'],
+                    'full_address': address_info['full_address'],
+                    
+                    <span class="blog005-code-py-comment"># Social/engagement fields</span>
+                    'totalNumberOfFollowers': profile.get('totalNumberOfFollowers', 0),
+                    'totalNumberOfFollowing': profile.get('totalNumberOfFollowing', 0),
+                    'visibleWorkbookCount': profile.get('visibleWorkbookCount', 0),
+                    
+                    <span class="blog005-code-py-comment"># Profile customization fields</span>
+                    'featuredVizRepoUrl': profile.get('featuredVizRepoUrl', ''),
+                    'bannerColour': profile.get('bannerColour', ''),
+                    'bannerImage': profile.get('bannerImage', ''),
+                    
+                    <span class="blog005-code-py-comment"># Account/settings fields</span>
+                    'createdAt': profile.get('createdAt', ''),
+                    'freelance': profile.get('freelance', False),
+                    'askMeAboutMyViz': profile.get('askMeAboutMyViz', False),
+                    'profileView': profile.get('profileView', ''),
+                    'hideNewWorkbooks': profile.get('hideNewWorkbooks', False),
+                    'searchable': profile.get('searchable', True),
+                    'showWebsites': profile.get('showWebsites', False),
+                    
+                    <span class="blog005-code-py-comment"># Website fields (both specific platforms AND general website1/2)</span>
+                    'linkedin_url': website_info['linkedin_url'],
+                    'twitter_url': website_info['twitter_url'],
+                    'instagram_url': website_info['instagram_url'],
+                    'facebook_url': website_info['facebook_url'],
+                    'youtube_url': website_info['youtube_url'],
+                    'github_url': website_info['github_url'],
+                    'blog_url': website_info['blog_url'],
+                    'website1': website_info['website1'],
+                    'website2': website_info['website2'],
+                    'total_websites_count': website_info['total_websites_count'],
+                    
+                    <span class="blog005-code-py-comment"># Additional fields</span>
+                    'websites_raw': str(profile.get('websites', '')),  <span class="blog005-code-py-comment"># Keep original for reference</span>
+                    'pronouns': profile.get('pronouns', ''),
+                }
+                
+            except Exception as e:
+                print(f"Error fetching profile for {author['authorProfileName']}: {e}")
+                <span class="blog005-code-py-comment"># Create empty record with all fields</span>
+                info = {
+                    'authorDisplayName': author['authorDisplayName'],
+                    'authorProfileName': author['authorProfileName'],
+                    'Profile_URL': f"https://public.tableau.com/profile/{author['authorProfileName']}",
+                    'profileName': '', 'name': '', 'title': '', 'organization': '', 'bio': '', 'avatarUrl': '',
+                    'country': '', 'state': '', 'city': '', 'full_address': '',
+                    'totalNumberOfFollowers': 0, 'totalNumberOfFollowing': 0, 'visibleWorkbookCount': 0,
+                    'featuredVizRepoUrl': '', 'bannerColour': '', 'bannerImage': '',
+                    'createdAt': '', 'freelance': False, 'askMeAboutMyViz': False, 'profileView': '',
+                    'hideNewWorkbooks': False, 'searchable': True, 'showWebsites': False,
+                    'linkedin_url': '', 'twitter_url': '', 'instagram_url': '', 'facebook_url': '',
+                    'youtube_url': '', 'github_url': '', 'blog_url': '', 'website1': '', 'website2': '',
+                    'total_websites_count': 0, 'websites_raw': '', 'pronouns': ''
+                }
+            
+            profile_data.append(info)           <span class="blog005-code-py-comment"># Add processed profile to a list.</span>
+            time.sleep(delay)                   <span class="blog005-code-py-comment"># Wait a bit before next API call to avoid being blocked/throttled.</span>
+        
+        <span class="blog005-code-py-comment"># Create DataFrame and clean it for Spark compatibility</span>
+        profile_df = pd.DataFrame(profile_data)                     <span class="blog005-code-py-comment"># Turn the list of profiles into a DataFrame for analysis.</span>
+        profile_df = self.clean_dataframe_for_spark(profile_df)     <span class="blog005-code-py-comment"># Clean up for Spark compatibility.</span>
+        return profile_df
+
+<span class="blog005-code-py-comment"># Usage:</span>
+collector = ProfileDataCollector()                              <span class="blog005-code-py-comment"># Create an instance of your class (toolbox).</span>
+profile_results = collector.get_author_profiles(filtered_df)    <span class="blog005-code-py-comment"># Run your profile gathering using the filtered usernames.</span>
+display(profile_results)                                        <span class="blog005-code-py-comment"># Show the results in a table in Databricks.</span></code></pre>
+            </div>
+            <button type="button" class="blog005-code-expand__toggle" aria-expanded="false">Show full code</button>
+          </div>
+
+        
+          <div class="code-block-wrap code-block-wrap--image">
+            <p class="blog005-figure-caption">Example profile data returned from the API</p>
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/006_blog_image_1.jpg"
+                alt="Profile data returned from the API"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+          
+            </section>
+          </div>
+
+          <h3 id="blog006-step3" style="color: var(--color-accent)">Step 3: Pull All Published Workbooks</h3>
+          <div class="blog005-code-steps">
+            <section class="blog005-code-step" aria-labelledby="blog006-step3">
+          <p class="blog005-code-step__note"><strong>Objective:</strong> Retrieve metadata about all visible (public) workbooks for each persons profile.</p>
+          <p class="blog005-code-step__note"><strong>What Is Happening:</strong></p>
+          <ol class="blog005-code-step__note-list">
+            <li>WorkbookDataCollector class is implemented to handle workbook-API interaction.</li>
+            <li>For each profile, the API is paginated (if necessary) to gather all workbook records (repo URL, title, views, favorites, etc.).</li>
+            <li>All records are aggregated into a single Pandas DataFrame and displayed.</li>
+          </ol>
+          <p class="blog005-code-step__note">
+            <strong>Why:</strong> Tableau Public APIs require pagination for users with many workbooks, and the collector class encapsulates this complexity, 
+            abstracting raw API interaction from upstream and downstream workflow stages. This enables analysis of publishing activity, reach, and engagement per 
+            ambassador, and sets up further enrichment steps
+          </p>
+          <br>
+          <p>
+            The <code>WorkbookDataCollector</code> class fetches all publicly visible workbooks per user. The API returns 50 at a
+            time, so the code paginates automatically. Fields captured include; title, repository URL, default view name, view count, favourites count.
+          </p>
+          <div class="code-block-wrap blog005-code-expand blog005-code-expand--long">
+            <button class="code-copy" type="button" data-code-copy>Copy</button>
+            <div class="blog005-code-expand__viewport" role="region" aria-label="Python: WorkbookDataCollector">
+              <pre><code>class WorkbookDataCollector:
+def __init__(self, session=SESSION):
+    <span class="blog005-code-py-comment"># Set up: Save the base URL for workbook API and HTTP session for reuse</span>
+    self.workbook_api_base = "https://public.tableau.com/public/apis/workbooks"
+    self.session = session                   <span class="blog005-code-py-comment"># A requests.Session object for making HTTP requests</span>
+    self.batch_size = 50                     <span class="blog005-code-py-comment"># Number of workbooks to pull in each API call (max per request)</span>
+
+def get_all_workbooks_for_author(self, profile_name, total_workbooks, delay=0.5):
+    <span class="blog005-code-py-comment">#What's happening: This method will keep requesting workbooks in chunks (batches) until it has them all.</span>
+    <span class="blog005-code-py-comment">#The loop allows for authors with dozens or hundreds of workbooks, since the API limits how many can be requested in one go.</span>
+    <span class="blog005-code-py-comment">#If there's a temporary error, it skips to the next page so the process doesn't stop.</span>
+    """Get all workbooks for a single author with pagination"""
+    all_workbooks = []            <span class="blog005-code-py-comment"># Where we store all workbooks as we find them</span>
+    start = 0                     <span class="blog005-code-py-comment"># Start position for the API's paging system</span>
+
+    while start &lt; total_workbooks:
+        count = min(self.batch_size, total_workbooks - start)     <span class="blog005-code-py-comment"># Fetch up to batch_size, or fewer if at end</span>
+        url = f"{self.workbook_api_base}?profileName={profile_name}&amp;start={start}&amp;count={count}&amp;visibility=NON_HIDDEN"
+        <span class="blog005-code-py-comment"># The URL requests a slice of workbooks for this user, starting at 'start', retrieving 'count' items</span>
+        
+        try:
+            r = self.session.get(url, timeout=30)     <span class="blog005-code-py-comment"># Make the API request (GET)</span>
+            r.raise_for_status()                      <span class="blog005-code-py-comment"># Error if the API returns trouble (like 404/500)</span>
+            workbooks_data = r.json()                 <span class="blog005-code-py-comment"># Convert the JSON reply into a Python dictionary</span>
+            
+            if 'contents' in workbooks_data and workbooks_data['contents']:
+                for workbook in workbooks_data['contents']:
+                    workbook['authorProfileName'] = profile_name
+                    <span class="blog005-code-py-comment"># Attach the author's name (helps for later merges/joins)</span>
+                    all_workbooks.append(workbook)    <span class="blog005-code-py-comment"># Add this workbook info to our list</span>
+            
+            start += self.batch_size                  <span class="blog005-code-py-comment"># Increase "start" to get the next page of results</span>
+            time.sleep(delay)                         <span class="blog005-code-py-comment"># Short pause to avoid hitting Tableau too fast</span>
+            
+        except Exception:
+            start += self.batch_size                  <span class="blog005-code-py-comment"># If a request fails, skip to next chunk and continue</span>
+    
+    return all_workbooks       <span class="blog005-code-py-comment"># Return the full list of all workbooks for this author</span>
+
+def get_all_authors_workbooks(self, profile_results_df, delay=0.5):
+    <span class="blog005-code-py-comment">#This method goes through every author/profile in your collected list, and uses the previous method to grab their workbooks if they have any.</span>
+    <span class="blog005-code-py-comment">#All workbook data is put into one Pandas DataFrame (table).</span>
+    <span class="blog005-code-py-comment">#If none are found, returns a blank table with the right column names.</span>
+    """Get workbooks for all authors in the profile results DataFrame."""
+    all_workbooks_data = []
+    
+    for _, author in profile_results_df.iterrows():
+        profile_name = author['authorProfileName']         <span class="blog005-code-py-comment"># Get their Tableau Public username</span>
+        total_workbooks = author['visibleWorkbookCount']   <span class="blog005-code-py-comment"># How many public workbooks they have</span>
+        
+        if total_workbooks &gt; 0:
+            <span class="blog005-code-py-comment"># If the user has at least one workbook, get all of them with the method above.</span>
+            author_workbooks = self.get_all_workbooks_for_author(
+                profile_name, total_workbooks, delay
+            )
+            all_workbooks_data.extend(author_workbooks)    <span class="blog005-code-py-comment"># Add these workbooks to our global list</span>
+    
+    if all_workbooks_data:
+        return pd.DataFrame(all_workbooks_data)            <span class="blog005-code-py-comment"># Turn our master list into a Pandas table</span>
+    else:
+        <span class="blog005-code-py-comment"># If nobody had workbooks, provide a "blank" DataFrame with the expected columns.</span>
+        return pd.DataFrame(columns=['workbookRepoUrl', 'title', 'defaultViewName', 'viewCount', 
+                                    'numberOfFavorites', 'authorDisplayName', 'authorProfileName'])
+
+<span class="blog005-code-py-comment"># Create an instance (object) of the WorkbookDataCollector class</span>
+workbook_collector = WorkbookDataCollector()
+
+<span class="blog005-code-py-comment"># Use the class to get all workbooks for ALL users in 'profile_results'</span>
+all_workbooks_df = workbook_collector.get_all_authors_workbooks(profile_results, delay=0.5)
+
+<span class="blog005-code-py-comment"># Show all the workbooks (as a nice table) in Databricks</span>
+display(all_workbooks_df)</code></pre>
+            </div>
+            <button type="button" class="blog005-code-expand__toggle" aria-expanded="false">Show full code</button>
+          </div>
+
+          
+          <div class="code-block-wrap code-block-wrap--image">
+            <p class="blog005-figure-caption">Example workbooks data returned from the API</p>
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/006_blog_image_2.jpg"
+                alt="Workbooks table with titles and view counts"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+          
+            </section>
+          </div>
+
+          <h3 id="blog006-step4" style="color: var(--color-accent)">Step 4: Build Workbook Preview Image URLs</h3>
+          <div class="blog005-code-steps">
+            <section class="blog005-code-step" aria-labelledby="blog006-step4">
+          <p class="blog005-code-step__note"><strong>Objective:</strong> Augment the workbook metadata with supplemental fields, notably image preview URLs per workbook.</p>
+          <p class="blog005-code-step__note"><strong>What Is Happening:</strong></p>
+          <ol class="blog005-code-step__note-list">
+            <li>A function add_workbook_columns adds two columns: </li>
+            <ul>
+              <li>Workbook_Order – sequential number per author, for ordering/visualization.</li>
+              <li>Workbook_Image_URL – dynamically constructed based on Tableau Public’s static image URL patterns, derived from workbook repo and view URLs.</li>
+            </ul>
+            <li>Patterns are carefully constructed to match Tableau’s public CDN URL definitions (e.g., subdirectory slicing, substitution of segments, prefix/suffix fixing).</li>
+          </ol>
+          <p class="blog005-code-step__note">
+            <strong>Why:</strong> Preview images are not part of standard workbook metadata but are highly useful for analytics and dashboarding. Automating this 
+            via string logic ensures images can be referenced/displayed without manual post-processing in Tableau or other BI tools</p>
+          
+            <br>
+            <p>
+              The standard API doesn't include thumbnail URLs, but Tableau hosts static previews that can be constructed from the
+              workbook data. Two new columns are added: <code>Workbook_Order</code> and <code>Workbook_Image_URL</code>.
+            </p>
+            
+            <div class="code-block-wrap blog005-code-expand">
+              <button class="code-copy" type="button" data-code-copy>Copy</button>
+              <div class="blog005-code-expand__viewport" role="region" aria-label="Python: workbook image URL columns">
+                <pre><code><span class="blog005-code-py-comment"># Define a function that takes a DataFrame of workbooks as input.</span>
+<span class="blog005-code-py-comment"># If the DataFrame is empty (has no rows), just return it unchanged.</span>
+def add_workbook_columns(df):
+    """Add Workbook Order and Workbook Image URL columns"""
+    if df.empty:
+        return df
+    
+    <span class="blog005-code-py-comment"># 1. Add Workbook Order - number workbooks by author starting at 1</span>
+    <span class="blog005-code-py-comment"># Why?: If an author has multiple workbooks, you may want to "number" or rank them in a consistent order.</span>
+    <span class="blog005-code-py-comment"># Sort the data so that workbooks for each author are together, and in order by the workbook's repo (unique ID).</span>
+    <span class="blog005-code-py-comment"># Use groupby and cumcount() to assign 1 to the first workbook, 2 to the second, etc., for each author (not for the whole table).</span>
+    df = df.sort_values(['authorProfileName', 'workbookRepoUrl']).reset_index(drop=True)
+    df['Workbook_Order'] = df.groupby('authorProfileName').cumcount() + 1
+    
+    <span class="blog005-code-py-comment"># 2. Add Workbook Image URL using the specified logic</span>
+    <span class="blog005-code-py-comment"># Step 1: Create base image URL</span>
+    <span class="blog005-code-py-comment"># Create a new column ('ImageURL').</span>
+    <span class="blog005-code-py-comment"># Build the image URL string by concatenating:</span>
+    <span class="blog005-code-py-comment"># Base static image URL.</span>
+    df['ImageURL'] = ("https://public.tableau.com/static/images/" + 
+                      df['workbookRepoUrl'].str[:2] + "/" +             <span class="blog005-code-py-comment"># The first two letters of the workbookRepoUrl (Tableau's folder rules).</span>
+                      df['defaultViewRepoUrl'] + "/4_3.png")            <span class="blog005-code-py-comment"># The workbook's "defaultViewRepoUrl" (path to the main visual).</span>
+                                                                        <span class="blog005-code-py-comment"># "/4_3.png" (the standard file suffix for preview thumbnails).</span>
+
+    <span class="blog005-code-py-comment"># These string replacements fix quirks in Tableau's URL format, where:</span>
+    <span class="blog005-code-py-comment"># Step 2: Replace /sheets/ with /</span>
+    df['ImageURL'] = df['ImageURL'].str.replace('/sheets/', '/', regex=False)
+    
+    <span class="blog005-code-py-comment"># Step 3: Replace // with /_/ (but not the https://)</span>
+    df['ImageURL'] = df['ImageURL'].str.replace('//', '/_/', regex=False)
+    
+    <span class="blog005-code-py-comment"># Step 4: Fix the https:/_/ back to https://</span>
+    df['Workbook_Image_URL'] = df['ImageURL'].str.replace('https:/_/', 'https://', regex=False)
+    
+    <span class="blog005-code-py-comment"># Drop the intermediate ImageURL column</span>
+    <span class="blog005-code-py-comment"># Remove the now-unneeded intermediate "ImageURL" column, keeping only the final, correct 'Workbook_Image_URL' column.</span>
+    df = df.drop('ImageURL', axis=1)
+    
+    return df
+
+<span class="blog005-code-py-comment"># Apply the function to your workbooks DataFrame</span>
+<span class="blog005-code-py-comment"># Call your function to process and enhance your table of workbooks.</span>
+all_workbooks_df = add_workbook_columns(all_workbooks_df)
+
+<span class="blog005-code-py-comment"># Show all the workbooks (as a nice table) in Databricks</span>
+display(all_workbooks_df)</code></pre>
+              </div>
+              <button type="button" class="blog005-code-expand__toggle" aria-expanded="false">Show full code</button>
+            </div>
+          
+
+          
+            </section>
+          </div>
+
+          <h3 id="blog006-step5" style="color: var(--color-accent)">Step 5: Get Deeper Workbook Details</h3>
+          <div class="blog005-code-steps">
+            <section class="blog005-code-step" aria-labelledby="blog006-step5">
+          <p class="blog005-code-step__note"><strong>Objective:</strong> For each workbook, retrieve and enrich with low-level metadata, such as precise size, creation/update timestamps, and official author attribution.</p>
+          <p class="blog005-code-step__note"><strong>What Is Happening:</strong></p>
+          <ol class="blog005-code-step__note-list">
+            <li>SingleWorkbookCollector class batches calls to the single-workbook endpoint.</li>
+            <li>For each unique workbook, fields including attributions, publish/update dates (as provided in ms since epoch), and file size (bytes) are extracted.</li>
+            <li>Helper functions convert milliseconds to datetime, bytes to human-readable format, MB, GB, etc.</li>
+            <li>DataFrame is cleaned, new fields added, and then displayed.</li>
+            <li>Status/progress print statements are included for traceability on larger runs.</li>
+          </ol>
+          <p class="blog005-code-step__note">
+            <strong>Why:</strong> Expanding from summary to detailed workbook data enables richer analytics (e.g., storage analysis, publishing cadence, 
+            collaboration trends via attribution, etc.). Conversion and normalization (dates, sizes) are vital for analysis in BI platforms and for communicating 
+            findings with stakeholders.</p>
+            
+            <br>
+            <p>A separate single-workbook API endpoint returns: attribution info (for collaborations), creation/publish/update dates
+              (as Unix timestamps in ms, converted to readable datetimes), and file size (converted to KB/MB/GB).</p>
+              
+              <div class="code-block-wrap blog005-code-expand blog005-code-expand--long">
+              <button class="code-copy" type="button" data-code-copy>Copy</button>
+              <div class="blog005-code-expand__viewport" role="region" aria-label="Python: SingleWorkbookCollector">
+                <pre><code>class SingleWorkbookCollector:
+<span class="blog005-code-py-comment"># Set up: Save the base URL for workbook API and HTTP session for reuse</span>
+def __init__(self, session=SESSION):
+    self.single_workbook_api_base = "https://public.tableau.com/profile/api/single_workbook/"
+    self.session = session          <span class="blog005-code-py-comment"># A requests.Session object for making HTTP requests</span>
+
+def convert_timestamp_to_date(self, timestamp):
+    <span class="blog005-code-py-comment"># Tableau returns dates as numbers ("Unix timestamps"), this converts them (from ms) to readable dates.</span>
+    """Convert Unix timestamp in milliseconds to readable date"""
+    try:
+        if pd.isna(timestamp) or timestamp == 0:
+            return None
+        <span class="blog005-code-py-comment"># Convert milliseconds to seconds and then to datetime</span>
+        return pd.to_datetime(timestamp, unit='ms')
+    except:
+        return None
+
+def convert_bytes_to_readable(self, bytes_size):
+    <span class="blog005-code-py-comment"># Converts a file size in bytes to a friendly string like "2 MB" or "1.05 GB".</span>
+    """Convert bytes to human readable format"""
+    try:
+        if pd.isna(bytes_size) or bytes_size == 0:
+            return "0 B"
+        
+        bytes_size = float(bytes_size)
+        
+        <span class="blog005-code-py-comment"># Define the units</span>
+        units = ['B', 'KB', 'MB', 'GB', 'TB']
+        
+        <span class="blog005-code-py-comment"># Find the appropriate unit</span>
+        unit_index = 0
+        while bytes_size >= 1024 and unit_index &lt; len(units) - 1:
+            bytes_size /= 1024
+            unit_index += 1
+        
+        <span class="blog005-code-py-comment"># Format to 2 decimal places, but remove trailing zeros</span>
+        if bytes_size == int(bytes_size):
+            return f"{int(bytes_size)} {units[unit_index]}"
+        else:
+            return f"{bytes_size:.2f} {units[unit_index]}"
+            
+    except:
+        return "0 B"
+
+def convert_bytes_to_mb(self, bytes_size):
+    <span class="blog005-code-py-comment"># For analysis, sometimes you want a pure number (e.g., 19.7 MB), these help you get that directly.</span>
+    """Convert bytes to megabytes (decimal)"""
+    try:
+        if pd.isna(bytes_size) or bytes_size == 0:
+            return 0.0
+        return round(float(bytes_size) / (1024 * 1024), 2)
+    except:
+        return 0.0
+
+def convert_bytes_to_gb(self, bytes_size):
+    """Convert bytes to gigabytes (decimal)"""
+    try:
+        if pd.isna(bytes_size) or bytes_size == 0:
+            return 0.0
+        return round(float(bytes_size) / (1024 * 1024 * 1024), 3)
+    except:
+        return 0.0
+
+def clean_workbook_dataframe_for_spark(self, df):
+    <span class="blog005-code-py-comment"># Makes all fields consistently formatted for easier analysis and merging in Spark/Pandas/Databricks.</span>
+    <span class="blog005-code-py-comment"># Adds readable and convenient versions of storage and date fields.</span>
+    """Clean DataFrame and convert timestamps to proper dates and sizes to readable format"""
+    if df.empty:
+        return df
+        
+    <span class="blog005-code-py-comment"># Fill string columns</span>
+    string_columns = ['attributions_0_authorDisplayName', 'attributions_0_authorProfileName', 'defaultViewName']
+    for col in string_columns:
+        if col in df.columns:
+            df[col] = df[col].fillna('').astype(str)
+    
+    <span class="blog005-code-py-comment"># Convert timestamp columns to proper dates</span>
+    timestamp_columns = ['createdAt', 'firstPublishDate', 'lastPublishDate', 'lastUpdateDate']
+    for col in timestamp_columns:
+        if col in df.columns:
+            <span class="blog005-code-py-comment"># First ensure it's numeric</span>
+            df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
+            <span class="blog005-code-py-comment"># Then convert to datetime</span>
+            df[f'{col}_datetime'] = df[col].apply(self.convert_timestamp_to_date)
+            <span class="blog005-code-py-comment"># Keep original timestamp</span>
+            df[col] = df[col].astype('int64')
+    
+    <span class="blog005-code-py-comment"># Handle size column with multiple formats</span>
+    if 'size' in df.columns:
+        df['size'] = pd.to_numeric(df['size'], errors='coerce').fillna(0).astype('int64')
+        <span class="blog005-code-py-comment"># Add readable size formats</span>
+        df['size_readable'] = df['size'].apply(self.convert_bytes_to_readable)
+        df['size_mb'] = df['size'].apply(self.convert_bytes_to_mb)
+        df['size_gb'] = df['size'].apply(self.convert_bytes_to_gb)
+        
+    return df
+
+def get_single_workbook_details(self, workbooks_df, delay=0.5):
+    <span class="blog005-code-py-comment"># For each unique workbook, builds the correct API URL, fetches the workbook details.</span>
+    <span class="blog005-code-py-comment"># Pulls out several important pieces:</span>
+        <span class="blog005-code-py-comment"># Attribution (owner/author info)</span>
+        <span class="blog005-code-py-comment"># Publish and update dates</span>
+        <span class="blog005-code-py-comment"># File size in bytes</span>
+    <span class="blog005-code-py-comment"># Handles API failures gracefully by providing blank/default records, so your workflow won't crash.</span>
+    <span class="blog005-code-py-comment"># Waits a moment between calls (delay) to avoid being blocked ("rate limited") by Tableau's servers.</span>
+    """Get specific workbook details using the single workbook API"""
+    workbook_details = []
+    
+    <span class="blog005-code-py-comment"># Get unique workbook URLs to avoid duplicates</span>
+    unique_workbooks = workbooks_df[['workbookRepoUrl', 'authorProfileName']].drop_duplicates()
+    
+    for idx, (_, workbook) in enumerate(unique_workbooks.iterrows()):
+        workbook_repo_url = workbook['workbookRepoUrl']
+        author_profile = workbook['authorProfileName']
+        
+        if pd.isna(workbook_repo_url) or workbook_repo_url == '':
+            continue
+            
+        api_url = f"{self.single_workbook_api_base}{workbook_repo_url}?"
+        
+        try:
+            response = self.session.get(api_url, timeout=30)
+            response.raise_for_status()
+            workbook_data = response.json()
+            
+            <span class="blog005-code-py-comment"># Extract attributions data (author info)</span>
+            attributions = workbook_data.get('attributions', [])
+            attribution_author_display_name = ''
+            attribution_author_profile_name = ''
+            
+            if attributions and len(attributions) &gt; 0:
+                first_attribution = attributions[0]
+                attribution_author_display_name = first_attribution.get('authorDisplayName', '')
+                attribution_author_profile_name = first_attribution.get('authorProfileName', '')
+            
+            <span class="blog005-code-py-comment"># Extract only the required fields</span>
+            details = {
+                'workbookRepoUrl': workbook_repo_url,
+                'authorProfileName': author_profile,
+                'attributions_0_authorDisplayName': attribution_author_display_name,
+                'attributions_0_authorProfileName': attribution_author_profile_name,
+                'createdAt': workbook_data.get('createdAt', 0),
+                'defaultViewName': workbook_data.get('defaultViewName', ''),
+                'firstPublishDate': workbook_data.get('firstPublishDate', 0),
+                'lastPublishDate': workbook_data.get('lastPublishDate', 0),
+                'lastUpdateDate': workbook_data.get('lastUpdateDate', 0),
+                'size': workbook_data.get('size', 0)
+            }
+            
+            workbook_details.append(details)
+                
+        except Exception as e:
+            <span class="blog005-code-py-comment"># Create empty record for failed requests</span>
+            details = {
+                'workbookRepoUrl': workbook_repo_url,
+                'authorProfileName': author_profile,
+                'attributions_0_authorDisplayName': '',
+                'attributions_0_authorProfileName': '',
+                'createdAt': 0,
+                'defaultViewName': '',
+                'firstPublishDate': 0,
+                'lastPublishDate': 0,
+                'lastUpdateDate': 0,
+                'size': 0
+            }
+            workbook_details.append(details)
+        
+        time.sleep(delay)
+    
+    <span class="blog005-code-py-comment"># Create DataFrame and clean it</span>
+    if workbook_details:
+        details_df = pd.DataFrame(workbook_details)
+        details_df = self.clean_workbook_dataframe_for_spark(details_df)
+        return details_df
+    else:
+        return pd.DataFrame()
+
+<span class="blog005-code-py-comment"># Run the single workbook collection</span>
+single_workbook_collector = SingleWorkbookCollector()       <span class="blog005-code-py-comment"># Builds the collector object.</span>
+workbook_details_df = single_workbook_collector.get_single_workbook_details(all_workbooks_df, delay=0.5)    <span class="blog005-code-py-comment"># Fetch and process details for all the workbooks you have.</span>
+
+display(workbook_details_df) <span class="blog005-code-py-comment"># Show the detailed results as a DataFrame if available.</span></code></pre>
+              </div>
+              <button type="button" class="blog005-code-expand__toggle" aria-expanded="false">Show full code</button>
+            </div>
+            
+            
+            
+          <div class="code-block-wrap code-block-wrap--image">
+            <p class="blog005-figure-caption">
+              Example workbook detail data returned from the API
+            </p>
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/006_blog_image_3.jpg"
+                alt="Workbook detail table with attributions and dates"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+          
+            </section>
+          </div>
+
+          <h3 id="blog006-step6" style="color: var(--color-accent)">Step 6: Combine Everything</h3>
+          <div class="blog005-code-steps">
+            <section class="blog005-code-step" aria-labelledby="blog006-step6">
+          <p class="blog005-code-step__note"><strong>Objective:</strong> Merge all previous outputs into a final, unified DataFrame per profile per workbook, suitable for analytics/reporting.</p>
+          <p class="blog005-code-step__note"><strong>What Is Happening:</strong></p>
+          <ol class="blog005-code-step__note-list">
+            <li>The profile, workbook summary, and workbook detail DataFrames are joined, aligning by keys (authorProfileName, workbookRepoUrl).</li>
+            <li>Additional diagnostics (e.g., count of profiles without associated workbooks) are printed to guide QA.</li>
+            <li>Final result is displayed, structured with all profile/workbook/detail attributes in columns.</li>
+          </ol>
+          <p class="blog005-code-step__note">
+            <strong>Why:</strong> Combining all sourced/enriched data into a single table supports flexible downstream reporting, BI dashboarding, or export 
+            and preserves all context (profile, activity, engagement, content, technical/operational details) in a unified schema.</p>
+
+            <br>
+            <p>A series of left joins brings all three datasets together into one flat tableand keeps every profile row even if workbook 
+              data is missing, ensuring no records are dropped.</p>
+              
+              <div class="code-block-wrap blog005-code-expand">
+              <button class="code-copy" type="button" data-code-copy>Copy</button>
+              <div class="blog005-code-expand__viewport" role="region" aria-label="Python: combine all data">
+  <pre><code><span class="blog005-code-py-comment"># Updated Step 5: Combine All Data Including Specific Workbook Details</span>
+
+def combine_all_data(profile_results, workbooks_df, workbook_details_df):
+    <span class="blog005-code-py-comment">"""Combine profile, workbook, and detailed workbook information"""</span>
+
+    <span class="blog005-code-py-comment"># First merge profile with workbooks (as before)</span>
+    <span class="blog005-code-py-comment"># Start by merging the profile info (profile_results) with the list of their workbooks (workbooks_df).</span>
+    combined_df = profile_results.merge(
+        workbooks_df,
+        on='authorProfileName', <span class="blog005-code-py-comment">#Both DataFrames have a column called 'authorProfileName', so use that as the key.</span>
+        how='left' <span class="blog005-code-py-comment">#Keep all rows from profiles, and add workbook info when it exists. If there are profiles without any workbooks, their info is kept but workbook columns will be empty (null).</span>
+    )
+
+    <span class="blog005-code-py-comment"># Then merge with workbook details if available</span>
+    if not workbook_details_df.empty: <span class="blog005-code-py-comment">#If workbook detail data exists, merge it in (add extra info for each workbook).</span>
+        combined_df = combined_df.merge(
+            workbook_details_df,
+            on=['workbookRepoUrl', 'authorProfileName'], <span class="blog005-code-py-comment">#Use both 'workbookRepoUrl' and 'authorProfileName' as the key columns (makes sure the merge is accurate, since repo URLs are unique per author).</span>
+            how='left' <span class="blog005-code-py-comment">#Still use this so that if a workbook detail is missing, you'll still have the basic record.</span>
+        )
+
+    return combined_df
+
+<span class="blog005-code-py-comment"># Combine all data</span>
+final_combined_df = combine_all_data(profile_results, all_workbooks_df, workbook_details_df)    <span class="blog005-code-py-comment">#Run the merger.</span>
+display(final_combined_df)  <span class="blog005-code-py-comment">#Show the fully combined, enriched table. Each row contains profile info, workbook metadata, and (if available) detailed info for each workbook.</span></code></pre>
+              </div>
+              <button type="button" class="blog005-code-expand__toggle" aria-expanded="false">Show full code</button>
+            </div>
+            
+            
+          <div class="code-block-wrap code-block-wrap--image">
+            <p class="blog005-figure-caption">
+              Example final combined table, one row per workbook
+            </p>
+            <div class="article-hero-img">
+              <img
+                src="assets/Blogs/006_blog_image_4.jpg"
+                alt="Final combined table — one row per workbook"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+          
+            </section>
+          </div>
+
+          <h3 style="color: var(--color-accent)">Now You Have Your Data, What Can You Do With It?</h3>
+          <ul>
+            <li>Track engagement: which workbooks get the most views over time</li>
+            <li>Analyse publishing cadence: how frequently a user publishes</li>
+            <li>Identify collaborations via the attribution fields</li>
+            <li>Build a portfolio showcase using <code>Workbook_Image_URL</code> thumbnails</li>
+            <li>Monitor storage usage with the size fields</li>
+            <li>Compare profiles across multiple users</li>
+          </ul>
+
+          <h3 style="color: var(--color-accent)">The Last Thread</h3>
+          <p>
+            Looking back at this walkthrough, what looks like one long script is really a chain of small, repeatable steps. You start
+            with usernames, call the same endpoints Tableau uses in the browser, and end with a flat table you can drop into a viz, a
+            dashboard, or a scheduled job. The unglamorous parts; pagination, pauses between requests, cleaning nulls before Spark
+            sees them, are what turn a clever API call into something you can run every week without babysitting it. Learning how to do this 
+            really allowed me to play with the vizzes on my Tableau Public profile and create some really fun things.
+          </p>
+          <p>
+            If you build your own version, start with a single profile and prove each step before you widen the list.
+            <a class="blog-accent-link" href="https://github.com/wjsutton/tableau_public_api/">Will Sutton's repository</a> is still the
+            best place to explore what is available; this post is just one path through it. I'd love to see what you make with the
+            data; portfolio showcases, engagement tracking, collaboration maps, and if something in the code does not behave the way
+            you expect, that is usually where the learning starts.
+            <br />
+            <br />
+            Rob.
+          </p>
+
+        <div class="author-box author-box--logo">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="260" height="78" />
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/Logos/Logo_Square.png" alt="The Data Taylor" width="200" height="60" />
+          <p>Crafted Insights: data analytics with editorial clarity.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <div class="social-row">
+            <a href="https://www.linkedin.com/in/robert-taylor-32b779252" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="https://github.com/TheDataTaylor" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a href="https://x.com/trebor_rolyat" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a
+              class="social-tableau"
+              href="https://public.tableau.com/app/profile/rob.taylor6175/vizzes"
+              aria-label="Tableau Public portfolio"
+              rel="noopener noreferrer"
+            >
+              <img src="assets/Logos/tableau-logo.png" alt="" width="72" height="28" decoding="async" />
+            </a>
+          </div>
+        </div>
+        <p class="footer-copy">© 2026 The Data Taylor. Crafted Insights.</p>
+      </div>
+    </footer>
+
+    <script src="assets/js/main.js?v=7" defer></script>
+  </body>
+</html>
+
