@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tableau Map Layers: How 2020.4 Changed Everything | The Data Taylor</title>
+    <meta
+      name="description"
+      content="How Tableau's 2020.4 Map Layers feature revolutionised viz building  -  and how I used 17 layers to build a playable maze game in a single worksheet."
+    />
+    <link rel="icon" type="image/png" href="assets/Logos/Logo_Square.jpg" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      .blog005-img-pair {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: var(--space-3);
+        margin: var(--space-4) auto var(--space-6);
+        align-items: center;
+        max-width: 50%;
+      }
+
+      .blog005-img-pair .article-hero-img {
+        margin-bottom: 0;
+        max-width: none;
+      }
+
+      .blog005-img-pair__arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-accent);
+        padding: 0 var(--space-1);
+      }
+
+      .blog005-img-pair__arrow-svg {
+        display: block;
+        width: clamp(3.25rem, 7vw, 5rem);
+        height: auto;
+        animation: blog005-arrow-shuttle 1.35s ease-in-out infinite;
+      }
+
+      .blog005-img-pair__arrow-svg path {
+        stroke-width: 4.5;
+      }
+
+      .blog005-figure-half {
+        max-width: 35%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .article-hero-img.blog005-step4-img,
+      .article-hero-img.blog005-step7-img {
+        max-width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .blog005-step2-scale {
+        display: flex;
+        justify-content: center;
+        margin: var(--space-4) 0 var(--space-6);
+      }
+
+      .blog005-step2-scale .blog005-img-pair[data-blog005-sync-heights] {
+        transform: scale(0.8);
+        transform-origin: center top;
+        margin: 0 auto;
+      }
+
+      /* Step 2 pair only: full right image at matched height, no clip; trio centred */
+      .blog005-img-pair[data-blog005-sync-heights] {
+        grid-template-columns: max-content auto max-content;
+        width: fit-content;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: visible;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img {
+        overflow: visible;
+        margin-bottom: 0;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img:first-of-type img {
+        width: auto;
+        max-width: none;
+        height: auto;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img:last-of-type {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+        overflow: visible;
+      }
+
+      .blog005-img-pair[data-blog005-sync-heights] > .article-hero-img:last-of-type img {
+        width: auto;
+        max-width: none;
+        flex-shrink: 0;
+        object-fit: contain;
+      }
+
+      @keyframes blog005-arrow-shuttle {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        50% {
+          transform: translateX(0.55rem);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .blog005-img-pair__arrow-svg {
+          animation: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .blog005-img-pair {
+          grid-template-columns: 1fr;
+          max-width: min(100%, 22rem);
+        }
+
+        .blog005-img-pair[data-blog005-sync-heights] {
+          grid-template-columns: 1fr;
+          width: 100%;
+          max-width: min(100%, 22rem);
+          justify-items: center;
+        }
+
+        .blog005-img-pair__arrow {
+          padding: var(--space-2) 0;
+        }
+
+        .blog005-img-pair__arrow-svg {
+          animation-name: blog005-arrow-shuttle-mobile;
+        }
+      }
+
+      @keyframes blog005-arrow-shuttle-mobile {
+        0%,
+        100% {
+          transform: rotate(90deg) translateX(0);
+        }
+        50% {
+          transform: rotate(90deg) translateX(0.55rem);
+        }
+      }
+
+      .blog005-intro-question {
+        color: var(--color-accent);
+      }
+
+      .blog005-code-steps {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-8);
+        margin: var(--space-5) 0 var(--space-6);
+      }
+
+      .blog005-code-step__label {
+        font-size: var(--text-base);
+        font-weight: 600;
+        margin: 0 0 var(--space-2);
+        color: var(--color-text);
+      }
+
+      .blog005-code-step .code-block-wrap {
+        margin: var(--space-3) 0;
+      }
+
+      .blog005-code-step__note {
+        margin: var(--space-3) 0 0;
+        font-size: var(--text-base);
+        color: var(--color-text-muted);
+      }
+
+      .blog005-code-step__note > strong:first-of-type {
+        color: var(--color-accent);
+      }
+
+      /* Python # comments â€” same gold as blog004 .tag-build / inline manifest note */
+      .blog005-code-steps .code-block-wrap pre .blog005-code-py-comment {
+        color: var(--color-tag-build);
+      }
+
+      .blog005-code-step__note:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Collapsible long code (Step 3 block 3) */
+      .blog005-code-expand {
+        --blog005-code-expand-lines: 10;
+      }
+
+      .blog005-code-expand .blog005-code-expand__viewport {
+        position: relative;
+        max-height: calc(var(--space-8) + var(--blog005-code-expand-lines) * 1.6 * var(--text-sm));
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+      }
+
+      .blog005-code-expand.is-expanded .blog005-code-expand__viewport {
+        max-height: none;
+      }
+
+      .blog005-code-expand:not(.is-expanded) .blog005-code-expand__viewport::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3.25rem;
+        pointer-events: none;
+        background: linear-gradient(to bottom, transparent, var(--color-bg-code));
+      }
+
+      .blog005-code-expand.is-expanded .blog005-code-expand__viewport::after {
+        opacity: 0;
+      }
+
+      .blog005-code-expand__toggle {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        margin: 0;
+        border: none;
+        border-top: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-accent);
+        font-family: var(--font-body);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background var(--transition-fast), color var(--transition-fast);
+      }
+
+      .blog005-code-expand__toggle:hover {
+        background: rgba(0, 200, 83, 0.08);
+      }
+
+      .blog005-code-expand__toggle:focus-visible {
+        outline: 2px solid var(--color-accent);
+        outline-offset: -2px;
+      }
+
+      .blog005-code-expand--no-toggle .blog005-code-expand__toggle {
+        display: none;
+      }
+
+      .blog005-code-expand--no-toggle .blog005-code-expand__viewport {
+        max-height: none;
+      }
+
+      .blog005-code-expand--no-toggle .blog005-code-expand__viewport::after {
+        display: none;
+      }
+
+
+      /* Step 5 prelude: Tableau calc syntax (editor-inspired colours on dark code blocks) */
+      .blog005-code-steps--tableau {
+        margin-bottom: var(--space-8);
+      }
+
+      .blog005-code-steps--tableau .code-block-wrap pre code,
+      .blog005-tb-syntax .sql-annotator-line-text {
+        color: #d4dad6;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-kw,
+      .blog005-tb-syntax .blog005-tb-kw {
+        color: #6eb6ff;
+        font-weight: 600;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-fn,
+      .blog005-tb-syntax .blog005-tb-fn {
+        color: #5fd4e3;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-field,
+      .blog005-tb-syntax .blog005-tb-field {
+        color: #f0b078;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-param,
+      .blog005-tb-syntax .blog005-tb-param {
+        color: #d8b8ff;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-str,
+      .blog005-tb-syntax .blog005-tb-str {
+        color: #aeb9c4;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-comment,
+      .blog005-tb-syntax .blog005-tb-comment {
+        color: #7bdc9a;
+        font-style: italic;
+      }
+
+      .blog005-code-steps--tableau .blog005-tb-lod,
+      .blog005-tb-syntax .blog005-tb-lod {
+        color: #5fd4e3;
+        font-weight: 600;
+      }
+
+      .blog005-code-expand--tb-long {
+        --blog005-code-expand-lines: 18;
+      }
+
+      /* Line annotator (same interaction pattern as blog002 SQL walkthrough) */
+      .blog005-code-step .sql-annotator {
+        margin: var(--space-3) 0;
+      }
+
+      .blog005-changed-colour-worked-example {
+        margin-top: var(--space-5);
+      }
+
+      .blog005-changed-colour-worked-example__setup {
+        margin: 0 0 var(--space-3);
+      }
+
+      .blog005-changed-colour-worked-example__list {
+        margin: 0;
+        padding-left: 1.25rem;
+        list-style: disc;
+        list-style-position: outside;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+        line-height: 1.55;
+      }
+
+      .blog005-changed-colour-worked-example__list li + li {
+        margin-top: var(--space-2);
+      }
+
+      .sql-annotator {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: var(--color-bg-code);
+      }
+
+      .sql-annotator-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      }
+
+      .sql-annotator-code {
+        min-width: 0;
+        border-right: 1px solid var(--color-border);
+      }
+
+      .sql-annotator-panel-header {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .sql-annotator-dots {
+        display: inline-flex;
+        gap: 0.35rem;
+      }
+
+      .sql-annotator-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+      }
+
+      .sql-annotator-dot--r {
+        background: #ff5f57;
+      }
+      .sql-annotator-dot--y {
+        background: #ffbd2e;
+      }
+      .sql-annotator-dot--g {
+        background: #28ca41;
+      }
+
+      .sql-annotator-file {
+        margin-left: var(--space-2);
+        font-family: var(--font-mono);
+        letter-spacing: 0.02em;
+      }
+
+      .sql-annotator-lines {
+        padding: var(--space-4);
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        line-height: 1.7;
+      }
+
+      .sql-annotator-line {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-3);
+        margin: 0;
+        padding: 0 var(--space-2);
+        border-left: 2px solid transparent;
+        border-radius: var(--radius-sm);
+        transition: background var(--transition-fast), border-color var(--transition-fast);
+        min-width: 0;
+      }
+
+      .sql-annotator-line-num {
+        width: 1.6rem;
+        flex-shrink: 0;
+        text-align: right;
+        color: var(--color-text-muted);
+        font-size: var(--text-xs);
+      }
+
+      .sql-annotator-line-text {
+        flex: 1 1 0;
+        min-width: 0;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .sql-annotator-line--annotated {
+        cursor: pointer;
+        border-left-color: rgba(0, 200, 83, 0.24);
+      }
+
+      .sql-annotator-line--annotated:hover,
+      .sql-annotator-line--active {
+        background: rgba(0, 200, 83, 0.12);
+        border-left-color: var(--color-accent);
+      }
+
+      .sql-annotator-badge {
+        margin-left: auto;
+        flex-shrink: 0;
+        width: 1.2rem;
+        height: 1.2rem;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-accent);
+        color: #0f1a13;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .sql-annotator-line--hide-badge .sql-annotator-badge {
+        visibility: hidden;
+      }
+
+      .sql-annotator-hint {
+        margin: 0 0 var(--space-3);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .sql-annotator-note-list {
+        padding: var(--space-4);
+        min-height: 11rem;
+      }
+
+      .sql-annotator-note {
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-4);
+        display: none;
+      }
+
+      .sql-annotator-note--active {
+        display: block;
+        border-color: var(--color-accent);
+        background: rgba(0, 200, 83, 0.08);
+      }
+
+      .sql-annotator-note-title {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: var(--text-base);
+        font-weight: 600;
+        color: var(--color-accent);
+      }
+
+      .sql-annotator-note-body {
+        margin: var(--space-2) 0 0;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      .sql-annotator-note-body code {
+        font-size: 0.92em;
+      }
+
+      .sql-annotator-note ol {
+        margin: var(--space-2) 0 0;
+        padding-left: 1.25rem;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      @media (max-width: 860px) {
+        .sql-annotator-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sql-annotator-code {
+          border-right: 0;
+          border-bottom: 1px solid var(--color-border);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .sql-annotator-panel-header,
+        .sql-annotator-lines,
+        .sql-annotator-note-list {
+          padding-left: var(--space-3);
+          padding-right: var(--space-3);
+        }
+
+        .sql-annotator-lines {
+          line-height: 1.6;
+          font-size: var(--text-xs);
+        }
+
+        .sql-annotator-line {
+          gap: var(--space-2);
+          padding: 0 var(--space-1);
+          align-items: flex-start;
+        }
+
+        .sql-annotator-line-num {
+          width: 1.25rem;
+        }
+
+        .sql-annotator-note-list {
+          min-height: auto;
+        }
+
+        .sql-annotator-note-title,
+        .sql-annotator-note-body {
+          font-size: var(--text-sm);
+        }
+
+        .sql-annotator-note ol {
+          font-size: var(--text-sm);
+        }
+      }
+
+      /* Step 5: 2Ã - 2 panels â€” chrome title bar, Line Notes, Tableau screenshot, callout */
+      .blog005-step5-panel {
+        margin: var(--space-6) 0;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        background: var(--color-bg-code);
+      }
+
+      .blog005-step5-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        min-height: 0;
+      }
+
+      .blog005-step5-chrome,
+      .blog005-step5-linebar {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-bottom: 1px solid var(--color-border);
+        color: var(--color-text-muted);
+        font-size: var(--text-sm);
+      }
+
+      .blog005-step5-chrome {
+        border-right: 1px solid var(--color-border);
+        flex-wrap: wrap;
+        row-gap: var(--space-2);
+        min-width: 0;
+      }
+
+      .blog005-step5-linebar {
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: var(--text-xs);
+      }
+
+      .blog005-step5-dots {
+        display: inline-flex;
+        gap: 0.35rem;
+        flex-shrink: 0;
+      }
+
+      .blog005-step5-dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+      }
+
+      .blog005-step5-dot--r { background: #ff5f57; }
+      .blog005-step5-dot--y { background: #ffbd2e; }
+      .blog005-step5-dot--g { background: #28ca41; }
+
+      .blog005-step5-title {
+        margin-left: var(--space-2);
+        font-family: var(--font-mono);
+        letter-spacing: 0.02em;
+        min-width: 0;
+        line-height: 1.35;
+        word-break: break-word;
+      }
+
+      .blog005-step5-shot {
+        border-right: 1px solid var(--color-border);
+        padding: var(--space-4);
+        background: var(--color-bg-code);
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+        border-radius: var(--radius-sm);
+      }
+
+      .blog005-step5-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .blog005-step5-copy {
+        padding: var(--space-4);
+        background: var(--color-bg-code);
+        min-width: 0;
+        min-height: 0;
+      }
+
+      .blog005-step5-callout {
+        margin: 0;
+      }
+
+      .blog005-step5-callout-title {
+        margin: 0 0 var(--space-2);
+        font-size: var(--text-base);
+        color: var(--color-accent);
+      }
+
+      .blog005-step5-callout-body {
+        margin: 0;
+        color: var(--color-text-muted);
+        font-size: var(--text-base);
+      }
+
+      @media (max-width: 860px) {
+        .blog005-step5-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .blog005-step5-chrome {
+          border-right: 0;
+        }
+
+        .blog005-step5-shot {
+          border-right: 0;
+          border-bottom: 1px solid var(--color-border);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .blog005-step5-panel {
+          margin: var(--space-4) 0;
+        }
+
+        .blog005-step5-chrome,
+        .blog005-step5-linebar,
+        .blog005-step5-shot,
+        .blog005-step5-copy {
+          padding-left: var(--space-3);
+          padding-right: var(--space-3);
+        }
+
+        .blog005-step5-callout-body,
+        .blog005-step5-callout-title {
+          font-size: var(--text-sm);
+        }
+      }
+
+      /* Line-note badge colours: 1=blue, 2=orange, 3=green, 4=red */
+      .sql-annotator-line[data-ann="1"] .sql-annotator-badge { background: #6eb6ff; color: #0f1a13; }
+      .sql-annotator-line[data-ann="2"] .sql-annotator-badge { background: #f0b078; color: #0f1a13; }
+      .sql-annotator-line[data-ann="3"] .sql-annotator-badge { background: #7bdc9a; color: #0f1a13; }
+      .sql-annotator-line[data-ann="4"] .sql-annotator-badge { background: #ff5f57; color: #0f1a13; }
+
+      /* Body copy: muted grey for readability; h1 and accent elements stay as-is */
+      .blog007-article {
+        color: var(--color-text-muted);
+      }
+
+      .blog007-article .article-header h1 {
+        color: var(--color-text);
+      }
+
+      .blog007-article h3[style*="color-accent"],
+      .blog007-article h4[style*="color-accent"],
+      .blog007-article .blog-accent-link,
+      .blog007-article .blog005-code-step__note > strong:first-of-type,
+      .blog007-article .blog005-step5-callout-title,
+      .blog007-article .sql-annotator-note-title,
+      .blog007-article .callout strong {
+        color: var(--color-accent);
+      }
+
+      .blog007-article .blog005-code-step__label {
+        color: var(--color-text);
+      }
+
+      .blog007-intro {
+        color: var(--color-text);
+      }
+
+      .blog007-layer-list {
+        margin: var(--space-3) 0 var(--space-5);
+        padding-left: 1.25rem;
+      }
+
+      .blog007-layer-list > li + li {
+        margin-top: var(--space-2);
+      }
+
+      .blog007-layer-list strong {
+        color: var(--color-accent);
+      }
+
+      .blog007-layer-img {
+        max-width: 50%;
+        margin: var(--space-3) 0 0;
+      }
+
+      .blog007-param-actions .blog005-step5-shot {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .blog007-param-actions .blog005-step5-shot img {
+        width: 50%;
+        max-width: 50%;
+        height: auto;
+      }
+
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-CDR01PXKG0");
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="200" height="60" />
+        </a>
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open menu"
+        >
+          <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="portfolio.html">Portfolio</a>
+          <a href="blog.html" class="active">Blog</a>
+          <a href="about.html">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <article class="article-wrap article-wrap--tight-end blog007-article">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> · <a href="blog.html">Blog</a> · <span>Tableau Map Layers</span>
+        </nav>
+
+        <header class="article-header">
+          <h1>Tableau Map Layers: How 2020.4 Changed Everything</h1>
+          <div class="article-meta">
+            <span>Published 17 June 2026</span>
+            <span class="tag tag-tableau">Tableau</span>
+            <span>~12 min read</span>
+          </div>
+        </header>
+
+          <p class="blog007-intro">
+            At TC26, Tableau gave map layers their moment in the spotlight, we will soon be getting a more dynamic version to play with! But the story of this feature started back in 2020.4, and if you missed it then, you missed one of the most quietly transformative releases Tableau has ever shipped. This is that story  -  and what I built with it.
+          </p>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">What Are Tableau Map Layers?</h3>
+          <p>
+            In November 2020, as part of the 2020.4 release, Tableau quietly dropped a feature called <strong>Multiple Marks Layer Support for Maps</strong>. The name is a mouthful. The capability is anything but understated.
+          </p>
+          <p>
+            Before 2020.4, if you wanted to overlay different mark types on a Tableau map  -  filled polygons for regions, dots for individual data points, lines for connections  -  your only real option was to layer floating worksheets over each other on a dashboard. It worked, but it was clunky, hard to maintain, and fell apart the moment your dashboard needed to resize.
+          </p>
+          <p>
+            Map Layers changed that entirely. You can now add multiple marks cards directly to a single worksheet, each one acting as its own visual layer stacked on top of the previous. Polygons, lines, circles, shapes  -  all on one sheet, all independently controlled, all sitting neatly inside a single <strong>Layer Control</strong> pane that users can toggle on and off.
+          </p>
+          <p>
+            The Layer Control that ships with the feature lets the viewer toggle each layer on and off, giving them real control over what they see.
+          </p>
+
+          <div class="article-hero-img" style="max-width: 25%; margin-left: auto; margin-right: auto;">
+            <img src="assets/Blogs/007_blog_image_09.jpg" alt="Tableau Map Layers  -  Layer Control panel showing four marks layers" loading="lazy" decoding="async" />
+          </div>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">Bending the Rules: The Trick Nobody Expected</h3>
+          <p>
+            Now here is where it gets interesting  -  and where the Tableau community did what it does best.
+          </p>
+          <p>
+            The intended use of Map Layers, as documented in Tableau's own
+            <a class="blog-accent-link" href="https://help.tableau.com/current/pro/desktop/en-us/maps_marks_layers.htm" target="_blank" rel="noopener noreferrer">Create Geographic Layers for Maps</a>
+            guide, is straightforward: use MAKEPOINT to plot geographic coordinates, stack your mark types, build a richer map. Useful. Expected.
+          </p>
+          <p>
+            But Tableau Hall of Fame Visionary
+            <a class="blog-accent-link" href="https://twitter.com/DataPlusScience/status/1330006839812042753" target="_blank" rel="noopener noreferrer">Jeffrey Shaffer</a>
+            spotted something else almost immediately after the 2020.4 release. By swapping the Longitude and Latitude pills from their default positions  -  moving them across from Rows to Columns and vice versa  -  you do not get a map any more. You get a scatter plot, with a fully functional dual-axis system, and crucially, you retain the ability to add more marks cards on top of it.
+          </p>
+          <p>
+            In other words: you can use Map Layers to build multi-layer scatter plots, custom charts, games, and interactive tools  -  <em>anything</em> that can be expressed as X and Y coordinates  -  without the feature ever touching actual geography.
+          </p>
+
+          
+
+          <div class="callout">
+            <strong>Important!</strong> You need at least two marks cards on your map <em>before</em> you switch the axis pills across. If you only have a single marks card and then swap the axes, you lose the ability to add more layers. Two or more marks cards first, then swap  -  that is the sequence.
+          </div>
+
+          <p>
+            Once you have made that switch, you are no longer constrained by geography. Any field can be the X axis. Any field can be the Y axis. And you can stack as many marks layers on top as you need, each one driven by its own calculation, its own colour, its own mark type.
+          </p>
+          <p>
+            This completely transformed how I built vizzes. I think it is the single function that has done the most to push what Tableau can 
+            actually do. Everything I build now uses this to some extent  -  because once you understand it, you start to see it everywhere. I 
+            learnt everything I now know from getting started with an inital blog about it by <a class="blog-accent-link" href="https://public.tableau.com/app/profile/sparsonsdataviz/vizzes" target="_blank" rel="noopener noreferrer">Sam Parsons</a>, he wrote it when working for <a class="blog-accent-link" href="https://biztory.com/blog/tableau-map-layers-getting-started" target="_blank" rel="noopener noreferrer">Biztory</a>, 
+            though I think it;s now under a different name. But well worth a read to get you going with this feature.
+          </p>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">My Example: Escape the Maze</h3>
+          <p>
+            I wanted to build something that would really stress-test what Map Layers could do. Not a conventional chart, not even a conventional map. Something genuinely interactive, with real game logic baked into it using only Tableau's native tools.
+          </p>
+          <p>
+            The result was
+            <a class="blog-accent-link" href="https://public.tableau.com/app/profile/rob.taylor6175/viz/EscapeTheMaze/EscapeTheMaze" target="_blank" rel="noopener noreferrer">Escape the Maze</a>
+             -  a fully playable maze game built on a single Tableau worksheet, driven by 17 map layers, 6 parameters, and a stack of calculated fields.
+          </p>
+
+          <div class="article-hero-img">
+            <img src="assets/Blogs/007_blog_image_08.jpg" alt="Escape the Maze  -  full dashboard view of the Tableau maze game" loading="lazy" decoding="async" />
+          </div>
+
+          <p>Here is the breakdown of what is inside it.</p>
+
+          <h4 style="color: var(--color-accent); margin-top: var(--space-5)">The 17 Map Layers</h4>
+          <p>Every visual element in the viz is its own marks layer:</p>
+          <ul class="blog007-layer-list">
+            <li>
+              <strong>1 background layer</strong>  -  the maze walls, not always visible, but setting the playing field.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_01.jpg" alt="Escape the Maze - background maze walls layer" loading="lazy" decoding="async" />
+              </div>
+            </li>
+            <li>
+              <strong>3 layers for the treasure coins</strong>  -  each coin is independently controlled, appearing or disappearing as the player finds them.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_02.jpg" alt="Escape the Maze -  treasure coin layers" loading="lazy" decoding="async" />
+              </div>
+            </li>
+            <li>
+              <strong>5 layers for the monsters</strong>  -  hidden until the player lands on their square, at which point they reveal themselves.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_03.jpg" alt="Escape the Maze -  monster layers" loading="lazy" decoding="async" />
+              </div>
+            </li>
+            <li>
+              <strong>1 layer for the exit lock status</strong>  -  switches state depending on whether the player has collected enough coins to unlock the exit.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_04.jpg" alt="Escape the Maze -  exit lock status layer" loading="lazy" decoding="async" />
+              </div>
+            </li>
+            <li>
+              <strong>4 layers for the guidance arrows</strong>  -  directional arrows appear around the player's current position to show where they can move.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_05.jpg" alt="Escape the Maze -  guidance arrow layers" loading="lazy" decoding="async" />
+              </div>
+            </li>
+            <li>
+              <strong>1 layer for the explorer</strong>  -  the player's character, positioned dynamically based on parameter values.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_06.jpg" alt="Escape the Maze -  explorer character layer" loading="lazy" decoding="async" />
+              </div>
+            </li>
+            <li>
+              <strong>1 layer for hint speech bubbles</strong>  -  contextual hints that appear when the player is on certain squares.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_07.jpg" alt="Escape the Maze -  hint speech bubble layer" loading="lazy" decoding="async" />
+              </div>
+            </li>
+            <li>
+              <strong>1 layer for the interactive grid</strong>  -  the clickable grid the player interacts with, driving all the parameter actions.
+              <div class="article-hero-img blog007-layer-img">
+                <img src="assets/Blogs/007_blog_image_08.jpg" alt="Escape the Maze -  interactive grid layer" loading="lazy" decoding="async" />
+              </div>
+            </li>
+          </ul>
+
+          
+
+          <h4 style="color: var(--color-accent); margin-top: var(--space-5)">The Calculations</h4>
+
+          <h4 style="margin-top: var(--space-4)">X Explorer Update &amp; Y Explorer Update</h4>
+          <p class="blog005-code-step__note">
+            These two calculations position the explorer on the grid. They check whether a square is in the available options or has already 
+            been visited, and return the appropriate coordinate. Otherwise they return NULL, keeping the explorer central on that square.
+          </p>
+
+          <div class="blog005-code-steps blog005-code-steps--tableau">
+
+            <section class="blog005-code-step" aria-labelledby="blog007-x-explorer-update">
+              <h4 id="blog007-x-explorer-update" class="blog005-code-step__label">X Explorer Update</h4>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Available Options Update Parameter]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[X Value]</span>+0.5
+<span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[X Value]</span>+0.5
+<span class="blog005-tb-kw">ELSE</span> <span class="blog005-tb-kw">NULL</span>
+<span class="blog005-tb-kw">END</span></code></pre>
+              </div>
+            </section>
+
+            <section class="blog005-code-step" aria-labelledby="blog007-y-explorer-update">
+              <h4 id="blog007-y-explorer-update" class="blog005-code-step__label">Y Explorer Update</h4>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Available Options Update Parameter]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Y Value]</span>+0.5
+<span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Y Value]</span>+0.5
+<span class="blog005-tb-kw">ELSE</span> <span class="blog005-tb-kw">NULL</span>
+<span class="blog005-tb-kw">END</span></code></pre>
+              </div>
+            </section>
+          </div>
+          
+          <div class="blog005-code-steps blog005-code-steps--tableau">
+
+            <section class="blog005-code-step" aria-labelledby="blog007-light-value">
+              <h4 id="blog007-light-value" class="blog005-code-step__label">Light Value</h4>
+              <p class="blog005-code-step__note">
+                Controls the colour of the grid squares. Green for un visited squares (value 0), red when the exit is locked (value 2), green when the exit is unlocked (value 3) and transparent (1) for visited squares.
+              </p>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-field">[Letter Key]</span>)
+    <span class="blog005-tb-kw">THEN</span> 1
+<span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'GA'</span>)
+    <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'DF'</span>)
+    <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'GN'</span>)
+    <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-field">[Letter Key]</span> = <span class="blog005-tb-str">'ZZ'</span>
+    <span class="blog005-tb-kw">THEN</span> 3
+<span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-field">[Letter Key]</span> = <span class="blog005-tb-str">'ZZ'</span>
+    <span class="blog005-tb-kw">THEN</span> 2
+<span class="blog005-tb-kw">ELSE</span> 0
+<span class="blog005-tb-kw">END</span></code></pre>
+              </div>
+            </section>
+          </div>
+
+          
+          <div class="blog005-code-steps blog005-code-steps--tableau">
+
+            <section class="blog005-code-step" aria-labelledby="blog007-hints-text-wrapped">
+              <h4 id="blog007-hints-text-wrapped" class="blog005-code-step__label">Hints Text Wrapped</h4>
+          <p class="blog005-code-step__note">
+            Tableau does not have native word-wrap for label text. This REGEXP_REPLACE calculation inserts a line break every 14 characters at a word boundary  -  keeping hint text readable within the constrained space of a speech bubble layer.
+          </p>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-fn">REGEXP_REPLACE</span>(
+    <span class="blog005-tb-field">[Hints Text]</span>
+    ,<span class="blog005-tb-str">'(.{{14}}\s)'</span>
+    ,<span class="blog005-tb-str">'$1'</span>+ <span class="blog005-tb-fn">CHAR</span>(10)
+)</code></pre>
+              </div>
+            </section>
+          </div>
+
+          <h4 id="blog007-hints-text-wrapped" class="blog005-code-step__label">Monster Filter</h4>
+          <p class="blog005-code-step__note">
+            Monsters are hidden until you find them. This calculation returns the Letter Key for a square only if the player has already visited it  -  and returns 'Green' otherwise, mapping to a transparent icon.
+          </p>
+          <p class="sql-annotator-hint">Tip: click a highlighted line on the left to show the Line Notes.</p>
+
+              <div class="sql-annotator" id="blog007-monster-filter-annotator" data-default-ann="1">
+                <div class="sql-annotator-grid">
+                  <div class="sql-annotator-code">
+                    <div class="sql-annotator-panel-header">
+                      <span class="sql-annotator-dots" aria-hidden="true">
+                        <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                      </span>
+                      <span class="sql-annotator-file">Monster Filter</span>
+                    </div>
+                    <div class="sql-annotator-lines blog005-tb-syntax">
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                        <span class="sql-annotator-line-num">1</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'AO'</span>) <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-field">[Letter Key]</span> = <span class="blog005-tb-str">'AO'</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">2</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Letter Key]</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">3</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'ED'</span>) <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-field">[Letter Key]</span> = <span class="blog005-tb-str">'ED'</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">4</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Letter Key]</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">5</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'EK'</span>) <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-field">[Letter Key]</span> = <span class="blog005-tb-str">'EK'</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">6</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Letter Key]</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">7</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'HI'</span>) <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-field">[Letter Key]</span> = <span class="blog005-tb-str">'HI'</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">8</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Letter Key]</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">9</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>,<span class="blog005-tb-str">'JC'</span>) <span class="blog005-tb-kw">AND</span> <span class="blog005-tb-field">[Letter Key]</span> = <span class="blog005-tb-str">'JC'</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="1">
+                        <span class="sql-annotator-line-num">10</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Letter Key]</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                        <span class="sql-annotator-line-num">11</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSE</span> <span class="blog005-tb-str">'Green'</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line">
+                        <span class="sql-annotator-line-num">12</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">END</span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="sql-annotator-notes">
+                    <div class="sql-annotator-panel-header">Line Notes</div>
+                    <div class="sql-annotator-note-list">
+                      <article class="sql-annotator-note" data-ann="1">
+                        <h4 class="sql-annotator-note-title">Condition check  -  monster found</h4>
+                        <p class="sql-annotator-note-body">
+                          Each <code>ELSEIF</code> checks whether the player has visited a specific square (using its Letter Key in
+                          <code>[Selected Squares]</code>) AND whether the current row is that same square. Only when both are true does
+                          this return <code>[Letter Key]</code>  -  making the monster mark visible on that layer. The five checks cover the
+                          five monster squares in the maze (AO, ED, EK, HI, JC).
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="2">
+                        <h4 class="sql-annotator-note-title">Default  -  monster hidden</h4>
+                        <p class="sql-annotator-note-body">
+                          Returning <code>'Green'</code> maps to a transparent or background-coloured shape icon, keeping the monster invisible
+                          until its square is discovered. This is what keeps all unfound monsters hidden across the layer by default.
+                        </p>
+                      </article>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          <br>
+          <h4 id="blog007-hints-text-wrapped" class="blog005-code-step__label">Available Options &amp; Available Letters</h4>
+          <p class="blog005-code-step__note">These two work together to track which squares the player can move to next.</p>
+          <div class="blog005-code-steps blog005-code-steps--tableau">
+
+            <section class="blog005-code-step" aria-labelledby="blog007-available-options">
+              <h4 id="blog007-available-options" class="blog005-code-step__label">Available Options</h4>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Available Options Update Parameter]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+<span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Available Options]</span>
+<span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+<span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Available Options]</span>
+<span class="blog005-tb-kw">ELSE</span> <span class="blog005-tb-kw">NULL</span>
+<span class="blog005-tb-kw">END</span></code></pre>
+              </div>
+            </section>
+
+            <section class="blog005-code-step" aria-labelledby="blog007-available-letters">
+              <h4 id="blog007-available-letters" class="blog005-code-step__label">Available Letters</h4>
+              <div class="code-block-wrap">
+                <button class="code-copy" type="button" data-code-copy>Copy</button>
+                <pre><code><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Available Options Update Parameter]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+<span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Letter Key]</span>
+<span class="blog005-tb-kw">ELSEIF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>, <span class="blog005-tb-field">[Letter Key]</span>)
+<span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-field">[Letter Key]</span>
+<span class="blog005-tb-kw">ELSE</span> <span class="blog005-tb-kw">NULL</span>
+<span class="blog005-tb-kw">END</span></code></pre>
+              </div>
+            </section>
+          </div>
+
+
+          <h4 id="blog007-hints-text-wrapped" class="blog005-code-step__label">Selected Param Update</h4>
+          <p class="blog005-code-step__note">
+            This is the calculation that accumulates the player's journey. Every time the player clicks a square, this field checks whether that square is in the available options  -  and if it is, appends its Letter Key to the Selected Squares string. This comma-delimited string is the single source of truth for everything that has happened in the game so far.
+          </p>
+          <p class="sql-annotator-hint">Tip: click a highlighted line on the left to show the Line Notes.</p>
+
+              <div class="sql-annotator" id="blog007-selected-param-annotator" data-default-ann="1">
+                <div class="sql-annotator-grid">
+                  <div class="sql-annotator-code">
+                    <div class="sql-annotator-panel-header">
+                      <span class="sql-annotator-dots" aria-hidden="true">
+                        <span class="sql-annotator-dot sql-annotator-dot--r"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--y"></span>
+                        <span class="sql-annotator-dot sql-annotator-dot--g"></span>
+                      </span>
+                      <span class="sql-annotator-file">Selected Param Update</span>
+                    </div>
+                    <div class="sql-annotator-lines blog005-tb-syntax">
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="1">
+                        <span class="sql-annotator-line-num">1</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Available Options Update Parameter]</span>, <span class="blog005-tb-field">[Letter Key]</span>)</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">1</span>
+                      </div>
+                      <div class="sql-annotator-line">
+                        <span class="sql-annotator-line-num">2</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">THEN</span></span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="2">
+                        <span class="sql-annotator-line-num">3</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">IF</span> <span class="blog005-tb-fn">CONTAINS</span>(<span class="blog005-tb-param">[Selected Squares]</span>, <span class="blog005-tb-field">[Letter Key]</span>)</span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated sql-annotator-line--hide-badge" data-ann="2">
+                        <span class="sql-annotator-line-num">4</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">THEN</span> <span class="blog005-tb-kw">NULL</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">2</span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="3">
+                        <span class="sql-annotator-line-num">5</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">ELSE</span> <span class="blog005-tb-param">[Selected Squares]</span> + <span class="blog005-tb-field">[Letter Key]</span> + <span class="blog005-tb-str">','</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">3</span>
+                      </div>
+                      <div class="sql-annotator-line">
+                        <span class="sql-annotator-line-num">6</span>
+                        <span class="sql-annotator-line-text">    <span class="blog005-tb-kw">END</span></span>
+                      </div>
+                      <div class="sql-annotator-line sql-annotator-line--annotated" data-ann="4">
+                        <span class="sql-annotator-line-num">7</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">ELSE</span> <span class="blog005-tb-param">[Selected Squares]</span></span>
+                        <span class="sql-annotator-badge" aria-hidden="true">4</span>
+                      </div>
+                      <div class="sql-annotator-line">
+                        <span class="sql-annotator-line-num">8</span>
+                        <span class="sql-annotator-line-text"><span class="blog005-tb-kw">END</span></span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="sql-annotator-notes">
+                    <div class="sql-annotator-panel-header">Line Notes</div>
+                    <div class="sql-annotator-note-list">
+                      <article class="sql-annotator-note" data-ann="1">
+                        <h4 class="sql-annotator-note-title">Outer condition  -  is this square a valid move?</h4>
+                        <p class="sql-annotator-note-body">
+                          <code>CONTAINS([Available Options Update Parameter], [Letter Key])</code> checks whether this row's square is one
+                          the player is currently allowed to move to. Only valid adjacent squares are included in the Available Options Update Parameter.
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="2">
+                        <h4 class="sql-annotator-note-title">Inner condition  -  already visited?</h4>
+                        <p class="sql-annotator-note-body">
+                          If the square is valid, this inner check prevents double-counting: if <code>[Letter Key]</code> is already in
+                          <code>[Selected Squares]</code>, the player has been here before and we return NULL rather than appending a duplicate.
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="3">
+                        <h4 class="sql-annotator-note-title">Append new square</h4>
+                        <p class="sql-annotator-note-body">
+                          When the square is valid and not yet visited, concatenate <code>[Selected Squares] + [Letter Key] + ','</code> to build
+                          the running history string. The comma delimiter separates each visited square key in the accumulating string.
+                        </p>
+                      </article>
+                      <article class="sql-annotator-note" data-ann="4">
+                        <h4 class="sql-annotator-note-title">Not a valid move</h4>
+                        <p class="sql-annotator-note-body">
+                          When the outer condition is false (the square is not in the available options), return the existing
+                          <code>[Selected Squares]</code> unchanged. This means clicking a non-adjacent square has no effect on the game state.
+                        </p>
+                      </article>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+          
+          <h4 style="color: var(--color-accent); margin-top: var(--space-5)">The 6 Parameters</h4>
+          <p>All game state is stored in parameters. No external data source, no database  -  just Tableau parameters holding strings and numbers, updated by parameter actions on every click.</p>
+          <ul>
+            <li><strong>Current Square</strong>  -  tracks which grid square the explorer is currently on.</li>
+            <li><strong>Explorer Parameter</strong>  -  lets the player choose their explorer character image.</li>
+            <li><strong>Selected Squares</strong>  -  a comma-delimited string that accumulates every square the player has visited. This one drives most of the game logic.</li>
+            <li><strong>X Explorer Parameter</strong>  -  the X-axis position of the explorer character.</li>
+            <li><strong>Y Explorer Parameter</strong>  -  the Y-axis position of the explorer character.</li>
+            <li><strong>Available Options Update Parameter</strong>  -  restricts movement, ensuring the player can only move to adjacent or previously visited squares.</li>
+          </ul>
+          <p>
+            Five parameter actions connect the clickable grid layer to all the parameters above. Each one fires on a <strong>Select</strong> action from the Maze sheet.
+          </p>
+          <h4 style="color: var(--color-accent); margin-top: var(--space-6)">Parameter Actions: The Engine Room</h4>
+          <div class="blog007-param-actions">
+
+          <div class="blog005-step5-panel" aria-label="Parameter action: Current Sq Update">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">Current Sq Update</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img src="assets/Blogs/007_blog_image_10.jpg" alt="Tableau Edit Parameter Action dialog  -  Current Sq Update" loading="lazy" decoding="async" />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">Current Sq Update</h4>
+                  <p class="blog005-step5-callout-body">This action writes the <strong>Available Letters</strong> field into the <strong>Current Square</strong> parameter. It keeps track of which square the explorer is currently standing on, which drives the speech bubble hints and the exit unlock logic.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="blog005-step5-panel" aria-label="Parameter action: Update Selected Squares">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">Update Selected Squares</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img src="assets/Blogs/007_blog_image_11.jpg" alt="Tableau Edit Parameter Action dialog  -  Update Selected Squares" loading="lazy" decoding="async" />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">Update Selected Squares</h4>
+                  <p class="blog005-step5-callout-body">This action writes <strong>Selected Param Update</strong> into the <strong>Selected Squares</strong> parameter. This is the action that remembers where you have been  -  every square you visit gets appended to the string, and the entire game state flows from this single parameter.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="blog005-step5-panel" aria-label="Parameter action: X Expl Update">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">X Expl Update</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img src="assets/Blogs/007_blog_image_12.jpg" alt="Tableau Edit Parameter Action dialog  -  X Expl Update" loading="lazy" decoding="async" />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">X Expl Update</h4>
+                  <p class="blog005-step5-callout-body">Writes <code>MAX(X Explorer Update)</code> into the <strong>X Explorer Parameter</strong>, using Max aggregation. This moves the explorer character horizontally to the clicked square's X position.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="blog005-step5-panel" aria-label="Parameter action: Y Expl Update">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">Y Expl Update</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img src="assets/Blogs/007_blog_image_13.jpg" alt="Tableau Edit Parameter Action dialog  -  Y Expl Update" loading="lazy" decoding="async" />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">Y Expl Update</h4>
+                  <p class="blog005-step5-callout-body">Writes <code>MAX(Y Explorer Update)</code> into the <strong>Y Explorer Parameter</strong>, using Max aggregation. This moves the explorer character vertically to the clicked square's Y position.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="blog005-step5-panel" aria-label="Parameter action: Avail Options Update">
+            <div class="blog005-step5-grid">
+              <div class="blog005-step5-chrome">
+                <span class="blog005-step5-dots" aria-hidden="true">
+                  <span class="blog005-step5-dot blog005-step5-dot--r"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--y"></span>
+                  <span class="blog005-step5-dot blog005-step5-dot--g"></span>
+                </span>
+                <span class="blog005-step5-title">Avail Options Update</span>
+              </div>
+              <div class="blog005-step5-linebar">Line Notes</div>
+              <div class="blog005-step5-shot">
+                <img src="assets/Blogs/007_blog_image_14.jpg" alt="Tableau Edit Parameter Action dialog  -  Avail Options Update" loading="lazy" decoding="async" />
+              </div>
+              <div class="blog005-step5-copy">
+                <div class="callout blog005-step5-callout">
+                  <h4 class="blog005-step5-callout-title">Avail Options Update</h4>
+                  <p class="blog005-step5-callout-body">Writes the <strong>Available Options</strong> field into the <strong>Available Options Update Parameter</strong>. This restricts the player's next valid move to only the squares adjacent to their current position, preventing them from jumping across the maze.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          </div>
+
+          <p>
+            Every click on the grid fires all five actions simultaneously. In sequence, they update where the player is, where they have been, where the explorer sits on screen, and where they are allowed to go next. The whole game state updates in a single interaction  -  no external data, no JavaScript.
+          </p>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">The Last Thread</h3>
+          <p>
+            When 2020.4 dropped, Map Layers felt like a mapping improvement. And it was  -  for cartographers and geospatial analysts, the ability to stack mark types cleanly onto a map was long overdue. But the community saw something else in it almost immediately: a general-purpose layering system that just happened to use geographic coordinates as its default canvas.
+          </p>
+          <p>
+            Escape the Maze is one answer to the question of what you can do when you take that idea to its limit. Seventeen layers, six parameters, five parameter actions, and a pile of string manipulation calculations  -  all in a single Tableau worksheet, all driven by the same underlying trick Jeffrey Shaffer spotted in the first week after release.
+          </p>
+          <p>
+            The feature is now several versions old and gets less airtime than newer releases. But if you are building anything complex in Tableau today  -  interactive tools, custom chart types, anything that needs multiple overlapping visual elements on a single sheet  -  Map Layers is almost certainly part of the answer. It was in 2020.4. It still is now.
+          </p>
+          <p>
+            If you want to have a go at the maze, you can find it on
+            <a class="blog-accent-link" href="https://public.tableau.com/app/profile/rob.taylor6175/viz/EscapeTheMaze/EscapeTheMaze" target="_blank" rel="noopener noreferrer">Tableau Public here</a>.
+            And if you build something with Map Layers yourself, I would love to see it.
+            <br />
+            <br />
+            Rob.
+          </p>
+
+
+        <div class="author-box author-box--logo">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="260" height="78" />
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/Logos/Logo_Square.png" alt="The Data Taylor" width="200" height="60" />
+          <p>Crafted Insights: data analytics with editorial clarity.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <div class="social-row">
+            <a href="https://www.linkedin.com/in/robert-taylor-32b779252" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="https://github.com/TheDataTaylor" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a href="https://x.com/trebor_rolyat" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a
+              class="social-tableau"
+              href="https://public.tableau.com/app/profile/rob.taylor6175/vizzes"
+              aria-label="Tableau Public portfolio"
+              rel="noopener noreferrer"
+            >
+              <img src="assets/Logos/tableau-logo.png" alt="" width="72" height="28" decoding="async" />
+            </a>
+          </div>
+        </div>
+        <p class="footer-copy">© 2026 The Data Taylor. Crafted Insights.</p>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var annotators = [].slice.call(document.querySelectorAll(".sql-annotator"));
+        if (!annotators.length) return;
+
+        annotators.forEach(function (root) {
+          var lines = [].slice.call(root.querySelectorAll(".sql-annotator-line--annotated"));
+          var notes = [].slice.call(root.querySelectorAll(".sql-annotator-note"));
+          if (!lines.length || !notes.length) return;
+
+          notes.forEach(function (note) {
+            var title = note.querySelector(".sql-annotator-note-title");
+            if (!title) return;
+            var ann = note.getAttribute("data-ann");
+            var t = title.textContent.trim();
+            if (ann && !t.startsWith(ann + " · ")) {
+              title.textContent = ann + " · " + t;
+            }
+          });
+
+          function setActive(key) {
+            lines.forEach(function (line) {
+              line.classList.toggle("sql-annotator-line--active", line.getAttribute("data-ann") === key);
+            });
+            notes.forEach(function (note) {
+              var isActive = note.getAttribute("data-ann") === key;
+              note.classList.toggle("sql-annotator-note--active", isActive);
+              note.style.display = isActive ? "block" : "none";
+            });
+          }
+
+          function bind(el) {
+            el.addEventListener("click", function () {
+              setActive(el.getAttribute("data-ann"));
+            });
+          }
+
+          lines.forEach(bind);
+          notes.forEach(bind);
+          var def = root.getAttribute("data-default-ann");
+          setActive(def || (lines[0] && lines[0].getAttribute("data-ann")) || "1");
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        document.querySelectorAll('img[src^="assets/Blogs/007_blog_image_"]').forEach(function (img) {
+          img.addEventListener(
+            "error",
+            function () {
+              var ph = document.createElement("div");
+              ph.className = "callout";
+              ph.style.margin = "0";
+              ph.style.minHeight = "16rem";
+              ph.style.display = "flex";
+              ph.style.alignItems = "center";
+              ph.style.justifyContent = "center";
+              ph.style.textAlign = "center";
+              ph.textContent = img.getAttribute("alt") || "Image placeholder";
+              var frame = img.closest(".article-hero-img, .blog005-step5-shot") || img.parentElement;
+              if (frame) {
+                frame.innerHTML = "";
+                frame.appendChild(ph);
+              }
+            },
+            { once: true }
+          );
+        });
+      })();
+    </script>
+    <script src="assets/js/main.js?v=8" defer></script>
+
+  </body>
+</html>
+
+
+
+
