@@ -244,6 +244,18 @@
     return n.toLocaleString("en-GB");
   }
 
+  function formatPublishedDate(isoDate) {
+    if (typeof isoDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return null;
+    var parts = isoDate.split("-");
+    var date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+    if (isNaN(date.getTime())) return null;
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
   function normalizeCarouselEntry(raw, dir) {
     if (typeof raw === "string") {
       var altStr = altFromFilename(raw);
@@ -255,6 +267,7 @@
         title: titleFromFile,
         favourites: null,
         views: null,
+        publishedAt: null,
       };
     }
     if (raw && typeof raw === "object" && raw.image) {
@@ -270,6 +283,7 @@
         title: titleVal,
         favourites: parseNonNegInt(raw.numberOfFavorites),
         views: parseNonNegInt(raw.viewCount),
+        publishedAt: typeof raw.publishedAt === "string" && raw.publishedAt ? raw.publishedAt : null,
       };
     }
     return null;
@@ -285,6 +299,8 @@
     var linkEl = carouselRoot.querySelector("[data-carousel-link]");
     var metaEl = carouselRoot.querySelector("[data-carousel-meta]");
     var titleEl = carouselRoot.querySelector("[data-carousel-title]");
+    var dateWrap = carouselRoot.querySelector("[data-carousel-date-wrap]");
+    var dateEl = carouselRoot.querySelector("[data-carousel-date]");
     var statsEl = carouselRoot.querySelector("[data-carousel-stats]");
     var favWrap = carouselRoot.querySelector("[data-carousel-favourites-wrap]");
     var viewsWrap = carouselRoot.querySelector("[data-carousel-views-wrap]");
@@ -354,6 +370,19 @@
               (entry.alt && entry.alt.replace(/^Tableau Public thumbnail for\s*/i, "").trim()) ||
               "Tableau workbook";
             titleEl.textContent = vizName;
+
+            var publishedLabel = formatPublishedDate(entry.publishedAt);
+            if (dateWrap && dateEl) {
+              if (publishedLabel) {
+                dateWrap.hidden = false;
+                dateEl.textContent = publishedLabel;
+                dateEl.setAttribute("datetime", entry.publishedAt);
+              } else {
+                dateWrap.hidden = true;
+                dateEl.textContent = "";
+                dateEl.removeAttribute("datetime");
+              }
+            }
 
             var hasFav = entry.favourites != null;
             var hasViews = entry.views != null;

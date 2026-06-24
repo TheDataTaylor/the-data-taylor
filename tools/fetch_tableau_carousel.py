@@ -17,6 +17,7 @@ from typing import Any
 from urllib.parse import quote
 from PIL import Image
 from io import BytesIO
+from datetime import datetime, timezone
 
 import requests
 from slugify import slugify
@@ -24,6 +25,7 @@ from slugify import slugify
 PROFILE_API_BASE = "https://public.tableau.com/profile/api/"
 WORKBOOK_API_BASE = "https://public.tableau.com/public/apis/workbooks"
 STATIC_IMAGE_BASE = "https://public.tableau.com/static/images/"
+SINGLE_WORKBOOK_API_BASE = "https://public.tableau.com/profile/api/single_workbook/"
 
 DEFAULT_AUTHORS = [
     {"authorDisplayName": "Rob Taylor", "authorProfileName": "rob.taylor6175"},
@@ -39,7 +41,7 @@ class CarouselItem:
     view_count: int
     favourites: int
     workbook_order: int
-
+    published_at: str
     def to_manifest_dict(self) -> dict[str, Any]:
         return {
             "title": self.title,
@@ -49,6 +51,7 @@ class CarouselItem:
             "viewCount": self.view_count,
             "numberOfFavorites": self.favourites,
             "workbookOrder": self.workbook_order,
+            "publishedAt": self.published_at,
         }
 
 
@@ -87,7 +90,20 @@ def get_workbooks_for_author(
 
     return workbooks
 
-
+def get_workbook_created_date(session: requests.Session, workbook_repo_url: str) -> str:
+    url = f"{SINGLE_WORKBOOK_API_BASE}{workbook_repo_url}?"
+    try:
+        data = get_json(session, url)
+        # Tableau returns timestamps in milliseconds, convert to readable date
+        timestamp = data.get("firstPublishDate") or data.get("createdAt") or 0
+        if timestamp:
+            
+            return datetime.fromtimestamp(int(timestamp) / 1000, tz=timezone.utc).strftime("%Y-%m-%d")
+        return ""
+    except Exception as e:
+        print(f"Could not fetch date for {workbook_repo_url}: {e}")
+        return ""
+    
 def tableau_thumbnail_url(workbook_repo_url: str, default_view_repo_url: str) -> str:
     # Matches your notebook logic, but keeps it as explicit path manipulation.
     url = f"{STATIC_IMAGE_BASE}{workbook_repo_url[:2]}/{default_view_repo_url}/4_3.png"
@@ -165,25 +181,39 @@ def build_carousel(
                 continue
 
             title = str(workbook.get("title") or "Untitled Tableau workbook")
+
             workbook_repo_url = str(workbook.get("workbookRepoUrl") or "")
             default_view_repo_url = str(workbook.get("defaultViewRepoUrl") or "")
             if not workbook_repo_url or not default_view_repo_url:
                 print(f"Skipping {title!r}: missing workbook/view URL")
                 continue
+            
+            published_at = get_workbook_created_date(session, workbook_repo_url)
 
             image_url = tableau_thumbnail_url(workbook_repo_url, default_view_repo_url)
             href = tableau_viz_url(profile_name, default_view_repo_url)
             #filename = f"{order:03d}-{slugify(title) or 'tableau-viz'}.png"
-            filename = f"{order:03d}-{slugify(title) or 'tableau-viz'}.jpg"
+            #filename = f"{order:03d}-{slugify(title) or 'tableau-viz'}.jpg"
+            filename = f"{slugify(title) or 'tableau-viz'}.jpg"
             image_output_path = output_dir / filename
 
+            #if not dry_run:
+            #    try:
+            #        #download_image(session, image_url, image_output_path)
+            #        download_image(session, image_url, image_output_path, quality=jpg_quality)
+            #    except Exception as exc:
+            #        print(f"Skipping {title!r}: could not download thumbnail: {exc}")
+            #        continue
+
             if not dry_run:
-                try:
-                    #download_image(session, image_url, image_output_path)
-                    download_image(session, image_url, image_output_path, quality=jpg_quality)
-                except Exception as exc:
-                    print(f"Skipping {title!r}: could not download thumbnail: {exc}")
-                    continue
+                if image_output_path.exists():
+                    print(f"Skipping download (already exists): {filename}")
+                else:
+                    try:
+                        download_image(session, image_url, image_output_path, quality=jpg_quality)
+                    except Exception as exc:
+                        print(f"Skipping {title!r}: could not download thumbnail: {exc}")
+                        continue
 
             items.append(
                 CarouselItem(
@@ -194,6 +224,7 @@ def build_carousel(
                     view_count=int(workbook.get("viewCount") or 0),
                     favourites=favourites,
                     workbook_order=order,
+                    published_at=published_at,
                 )
             )
 
@@ -207,6 +238,27 @@ def build_carousel(
     manifest = [item.to_manifest_dict() for item in items]
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nWrote {len(items)} manifest entries to {manifest_path}")
+
+    by_date = sorted(items, key=lambda x: x.published_at, reverse=True)
+    by_favourites = sorted(items, key=lambda x: x.favourites, reverse=True)
+
+    date_manifest_path = manifest_path.with_stem(manifest_path.stem + "-by-date")
+    fav_manifest_path = manifest_path.with_stem(manifest_path.stem + "-by-favourites")
+
+    date_manifest_path.write_text(json.dumps([i.to_manifest_dict() for i in by_date], indent=2, ensure_ascii=False), encoding="utf-8")
+    fav_manifest_path.write_text(json.dumps([i.to_manifest_dict() for i in by_favourites], indent=2, ensure_ascii=False), encoding="utf-8")
+
+    print(f"Wrote {len(by_date)} entries to {date_manifest_path}")
+    print(f"Wrote {len(by_favourites)} entries to {fav_manifest_path}")
+    print("\n--- By Date Published ---")
+    for i in by_date:
+        print(f"  {i.published_at}  |  {i.title}  |  ❤️ {i.favourites}")
+
+    print("\n--- By Most Favourites ---")
+    for i in by_favourites:
+        print(f"  ❤️ {i.favourites}  |  {i.title}  |  {i.published_at}")
+
+
     return items
 
 

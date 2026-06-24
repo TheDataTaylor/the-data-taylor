@@ -715,6 +715,17 @@ a.btn {
   color: var(--color-text);
 }
 
+.hero-carousel-published {
+  margin: 0 0 0.35rem;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+.hero-carousel-date {
+  font-weight: 500;
+}
+
 .hero-carousel-stats {
   margin: 0;
   font-size: var(--text-sm);
