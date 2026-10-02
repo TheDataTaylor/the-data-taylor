@@ -986,6 +986,11 @@ a.btn {
   color: var(--color-tag-databricks);
 }
 
+.tag-community {
+  background: rgba(255, 106, 61, 0.15);
+  color: #ff6a3d;
+}
+
 .tag-build {
   background: rgba(224, 179, 106, 0.15);
   color: var(--color-tag-build);
