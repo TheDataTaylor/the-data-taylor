@@ -74,12 +74,17 @@ a.avc[href]:hover,a.av[href]:hover,a.avc[href]:focus-visible,a.av[href]:focus-vi
 .nav button:disabled{opacity:.3;cursor:default}
 .nav button:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
 .nav .pos{font-family:var(--mono);font-size:12px;color:#fff;mix-blend-mode:difference;opacity:.8}
-.home-link{position:fixed;z-index:21;top:calc(max(36px,env(safe-area-inset-top) + 22px));left:max(16px,env(safe-area-inset-left));font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:#fff;mix-blend-mode:difference;text-decoration:none;opacity:.8}
-.home-link:hover,.home-link:focus-visible{opacity:1}
-.home-link:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+.home-link{position:fixed;z-index:21;top:calc(max(14px,env(safe-area-inset-top)) + 18px);right:max(16px,env(safe-area-inset-right));display:flex;align-items:center;background:var(--ink);text-decoration:none;border-radius:999px;padding:6px 14px;box-shadow:0 4px 18px rgba(0,0,0,.3);transition:transform .15s}
+.home-link img{display:block;height:48px;width:auto}
+.home-link:hover,.home-link:focus-visible{transform:scale(1.05)}
+.home-link:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+@media (max-width:680px){
+  .home-link{padding:5px 12px}
+  .home-link img{height:40px}
+}
 
 /* month grid */
-.slide.full{padding:36px max(20px,env(safe-area-inset-right)) 66px max(20px,env(safe-area-inset-left))}
+.slide.full{padding:104px max(20px,env(safe-area-inset-right)) 66px max(20px,env(safe-area-inset-left))}
 .content.wide{max-width:none}
 .mrows{--rh:48px;--tg:6px;display:flex;flex-direction:column;gap:var(--tg);width:100%}
 .mr{display:flex;align-items:center;gap:clamp(8px,1.6vw,18px);height:var(--rh)}
@@ -221,10 +226,10 @@ a.avc[href]:hover,a.av[href]:hover,a.avc[href]:focus-visible,a.av[href]:focus-vi
 </style>
 </head>
 <body>
-<a class="home-link" href="index.html">The Data Taylor</a>
 <div class="stage" id="stage"></div>
 <div class="bars" id="bars" role="group" aria-label="Jump to slide"></div>
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="mbox" id="mbox"></div></div>
+<a class="home-link" href="index.html" aria-label="The Data Taylor"><img src="assets/Logos/Logo_Square.png" alt="" width="1100" height="558"></a>
 <nav class="nav" aria-label="Slides"><button id="prev" type="button" aria-label="Previous slide">← Back</button><span class="pos" id="pos" aria-live="polite"></span><button id="next" type="button" aria-label="Next slide">Next →</button></nav>
 
 <script>
