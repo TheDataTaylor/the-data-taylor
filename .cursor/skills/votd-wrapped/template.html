@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VOTD Wrapped __YEAR__ | The Data Taylor</title>
+<meta name="description" content="A year of Tableau Public Visualizations of the Day, told as a short interactive story." />
+<link rel="icon" type="image/png" href="assets/Logos/Logo_Square.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CDR01PXKG0');
+</script>
+<style>
+/* Layout: full-screen story slides, Instagram-style progress bars, thumbnail rows scrolling like a gif behind big numbers */
+:root{
+  --ink:#12102b; --violet:#5b3df5; --coral:#ff5a4e; --lime:#c8f169; --sky:#7ad7ff; --cream:#fff4e0;
+  --display:'Bricolage Grotesque','Arial Black',system-ui,sans-serif;
+  --mono:'DM Mono',ui-monospace,Menlo,monospace;
+  --tile-w:clamp(150px,20vw,260px);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:var(--ink);color:var(--cream);font-family:var(--display);overflow:hidden}
+.stage{position:fixed;inset:0}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:72px max(20px,env(safe-area-inset-right)) 76px max(20px,env(safe-area-inset-left));text-align:center;
+  opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s;overflow:hidden}
+.slide.on{opacity:1;visibility:visible}
+.t-violet{background:var(--violet)} .t-coral{background:var(--coral)} .t-ink{background:var(--ink)}
+.t-lime{background:var(--lime);color:var(--ink)} .t-sky{background:var(--sky);color:var(--ink)}
+.content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vh,18px);max-width:960px;width:100%;min-width:0}
+.eyebrow{font-family:var(--mono);font-size:clamp(12px,1.5vw,16px);letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.big{font-weight:800;font-size:clamp(88px,26vw,340px);line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.h1{font-weight:800;font-size:clamp(44px,9vw,128px);line-height:.92;letter-spacing:-.03em;text-wrap:balance}
+.h2{font-weight:800;font-size:clamp(26px,4.4vw,56px);line-height:1;letter-spacing:-.02em;text-wrap:balance}
+.sub{font-size:clamp(16px,2.2vw,26px);font-weight:500;max-width:34ch;text-wrap:balance;opacity:.95}
+.plate{background:rgba(18,16,43,.78);backdrop-filter:blur(6px);padding:clamp(18px,3vw,36px) clamp(20px,4vw,52px);border-radius:28px}
+.t-lime .plate,.t-sky .plate{background:rgba(255,244,224,.82);color:var(--ink)}
+
+/* thumbnail rows */
+.wall{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:14px;z-index:1;transform:rotate(-6deg) scale(1.25)}
+.wall.dim{opacity:.3}
+.mrow{overflow:hidden;white-space:nowrap}
+.mtrack{display:inline-flex;gap:14px;animation:slide linear infinite;will-change:transform}
+.mrow.rev .mtrack{animation-direction:reverse}
+@keyframes slide{to{transform:translateX(calc(-50% - 7px))}}
+.tile{position:relative;flex:none;width:var(--tile-w);aspect-ratio:736/454;border-radius:12px;overflow:hidden;
+  background:hsl(var(--h) 70% 40%);display:flex;align-items:flex-end;padding:8px;white-space:normal;text-align:left;
+  font-size:12px;font-weight:800;line-height:1.1;color:#fff}
+a.tile,a.avc,a.av{text-decoration:none;color:inherit}
+a.tile[href]::after{content:"";position:absolute;inset:0;border:3px solid var(--hl);border-radius:inherit;opacity:0;pointer-events:none;transition:opacity .15s;z-index:2}
+a.tile[href]:hover::after,a.tile[href]:focus-visible::after{opacity:1}
+a.tile[href]:hover{filter:brightness(1.12)}
+a.avc[href]:hover,a.av[href]:hover,a.avc[href]:focus-visible,a.av[href]:focus-visible{outline:3px solid var(--hl);outline-offset:1px;z-index:5}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+
+/* progress + controls */
+.bars{position:fixed;top:calc(max(14px,env(safe-area-inset-top)) - 9px);left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));display:flex;gap:5px;z-index:20}
+.bar{flex:1;height:22px;padding:9px 0;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bar .trk{display:block;height:4px;border-radius:4px;background:rgba(255,255,255,.35);overflow:hidden;transition:height .12s,transform .12s}
+.bar:hover .trk,.bar:focus-visible .trk{height:6px;transform:translateY(-1px)}
+.bar:focus-visible{outline:2px solid var(--lime);outline-offset:-4px}
+.bar i{display:block;height:100%;width:0;background:#fff}
+.bar.done i{width:100%}
+.nav{position:fixed;left:0;right:0;bottom:max(10px,env(safe-area-inset-bottom));z-index:20;display:flex;justify-content:space-between;align-items:center;padding:0 max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left));pointer-events:none}
+.nav button{pointer-events:auto;display:flex;align-items:center;gap:8px;font:inherit;font-family:var(--mono);font-weight:500;font-size:14px;letter-spacing:.04em;color:var(--ink);background:var(--cream);border:0;border-radius:999px;padding:10px 20px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.3);-webkit-tap-highlight-color:transparent;transition:transform .15s,opacity .2s}
+.nav button:hover:not(:disabled){transform:scale(1.05)}
+.nav button:disabled{opacity:.3;cursor:default}
+.nav button:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+.nav .pos{font-family:var(--mono);font-size:12px;color:#fff;mix-blend-mode:difference;opacity:.8}
+.home-link{position:fixed;z-index:21;top:calc(max(14px,env(safe-area-inset-top)) + 18px);right:max(16px,env(safe-area-inset-right));display:flex;align-items:center;background:var(--ink);text-decoration:none;border-radius:999px;padding:6px 14px;box-shadow:0 4px 18px rgba(0,0,0,.3);transition:transform .15s}
+.home-link img{display:block;height:48px;width:auto}
+.home-link:hover,.home-link:focus-visible{transform:scale(1.05)}
+.home-link:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+@media (max-width:680px){
+  .home-link{padding:5px 12px}
+  .home-link img{height:40px}
+}
+
+/* month grid */
+.slide.full{padding:104px max(20px,env(safe-area-inset-right)) 66px max(20px,env(safe-area-inset-left))}
+.content.wide{max-width:none}
+.mrows{--rh:48px;--tg:6px;display:flex;flex-direction:column;gap:var(--tg);width:100%}
+.mr{display:flex;align-items:center;gap:clamp(8px,1.6vw,18px);height:var(--rh)}
+.mr .lab{flex:none;width:calc(var(--rh)*2.3);display:flex;flex-direction:column;justify-content:center;text-align:left;font-family:var(--mono);line-height:1.05}
+.mr .lab b{color:var(--lime);font-size:clamp(14px,calc(var(--rh)*.42),30px);letter-spacing:.06em}
+.mr .lab span{font-size:clamp(9px,calc(var(--rh)*.22),14px);opacity:.8;letter-spacing:.06em}
+.mr .view{text-align:left;flex:1;min-width:0;height:100%;overflow:hidden;white-space:nowrap}
+.mr .mtrack{display:inline-flex;height:100%;animation:none;gap:0}
+.mr .half{display:inline-flex;gap:var(--tg);padding-right:var(--tg);height:100%}
+.mr.run .mtrack{animation:msl var(--dur) linear infinite}
+.mr.rev .mtrack{animation-direction:reverse}
+.slide:not(.on) .mr .mtrack{animation-play-state:paused}
+@keyframes msl{to{transform:translateX(-50%)}}
+.mr .tile{height:100%;width:calc(var(--rh)*1.621);aspect-ratio:auto;padding:0;border-radius:6px}
+.mr .tile span{display:none}
+@media (prefers-reduced-motion:reduce){.mr.run .mtrack{animation-duration:600s}}
+
+/* top people */
+.cards{--th:calc((100vh - 250px)/var(--n) - 22px);display:flex;flex-direction:column;gap:clamp(6px,1.2vh,12px);width:100%}
+.card{background:rgba(18,16,43,.82);border-radius:18px;padding:8px 14px;display:flex;align-items:center;gap:14px;min-width:0}
+.card h3{flex:1;min-width:0;text-align:left;font-size:clamp(15px,2.4vw,28px);line-height:1;text-wrap:balance}
+.card h3 small{display:block;margin-top:5px;font-family:var(--mono);font-weight:400;font-size:clamp(10px,1.2vw,13px);letter-spacing:.08em;color:var(--lime)}
+.card .stack{flex:0 0 auto;width:min(68%,calc(var(--th)*1.621*4 + 24px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.card .tile{width:100%;font-size:10px;padding:5px;border-radius:8px}
+.card .tile span{display:none}
+@media (max-width:640px){.card{flex-direction:column;align-items:stretch;gap:6px}.card .stack{width:100%}.card h3 small{display:inline;margin-left:8px}}
+
+/* pyramid of profile photos */
+.pyr{--s:40px;--g:6px;display:flex;flex-direction:column;gap:12px;width:100%}
+.tier{display:flex;flex-direction:column;align-items:center;gap:5px}
+.tlab{display:flex;gap:12px;align-items:baseline;font-family:var(--mono);font-weight:500;font-size:clamp(13px,min(2vw,3.4vh),24px);letter-spacing:.04em}
+.tlab b{font-family:var(--display);font-weight:800;font-size:1.75em;line-height:1;letter-spacing:-.01em}
+.tcirc{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--g)}
+.avc.pc{position:relative;width:var(--s);height:var(--s);font-size:calc(var(--s)*.36);flex:none}
+/* top 10 lists */
+.tops{--rh:clamp(24px,calc((100vh - 235px)/10 - 6px),96px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.4vw,36px);width:100%;max-width:1500px}
+.tcol{display:flex;flex-direction:column;gap:6px;min-width:0}
+.tcol .h2{text-align:left;font-size:clamp(20px,min(3.4vw,6vh),48px);margin-bottom:2px}
+.trow{position:relative;display:flex;align-items:center;gap:clamp(6px,1vw,12px);height:var(--rh);background:rgba(18,16,43,.88);border-radius:12px;overflow:hidden;padding-right:clamp(8px,1.2vw,16px);text-align:left;color:var(--cream)}
+.rbar{position:absolute;inset:0 auto 0 0;width:var(--w);transform:scaleX(0);transform-origin:left;opacity:.3;z-index:0}
+.on .rbar{animation:grow .9s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes grow{to{transform:none}}
+.rbar.fv{background:var(--lime)} .rbar.vw{background:var(--sky)}
+.trow>*{position:relative;z-index:1}
+.trow>.rbar{position:absolute}
+.rk{flex:none;width:2.1ch;text-align:center;font-weight:800;font-size:clamp(16px,calc(var(--rh)*.5),44px);line-height:1;padding-left:6px}
+.rthumb{flex:none;height:100%;width:calc(var(--rh)*1.621)}
+.rthumb .tile{width:100%;height:100%;aspect-ratio:auto;border-radius:0;padding:3px;font-size:8px}
+.rthumb .tile span{display:none}
+.rtxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rtxt b{font-size:clamp(11px,calc(var(--rh)*.26),19px);line-height:1.1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rtxt span{font-family:var(--mono);font-size:clamp(9px,calc(var(--rh)*.19),13px);opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv{flex:none;font-weight:800;font-size:clamp(14px,calc(var(--rh)*.36),30px);font-variant-numeric:tabular-nums}
+.rv.fv{color:var(--lime)} .rv.vw{color:var(--sky)}
+@media (max-width:760px){
+  .tops{grid-template-columns:1fr;gap:8px;--rh:clamp(20px,calc((100vh - 285px)/20 - 4px),30px)}
+  .tcol{gap:4px}.tcol .h2{font-size:18px}
+  .rthumb,.rtxt span{display:none}
+  .rtxt b{-webkit-line-clamp:1;font-size:12px}
+}
+/* ticker */
+.ticker{position:absolute;left:0;right:0;bottom:clamp(40px,9vh,90px);z-index:3;overflow:hidden;white-space:nowrap;font-family:var(--mono);font-size:clamp(13px,1.8vw,18px)}
+.ticker .mtrack{gap:28px}
+.ticker span{color:var(--lime)}
+
+.pop{opacity:0;transform:translateY(24px) scale(.97)}
+.on .pop{animation:pop .7s cubic-bezier(.2,.9,.2,1) forwards;animation-delay:calc(var(--i,0)*.14s + .1s)}
+@keyframes pop{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.mtrack{animation-duration:400s!important}.pop{opacity:1;transform:none;animation:none!important}}
+.warn{position:fixed;left:50%;bottom:max(34px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;max-width:min(92vw,560px);background:var(--cream);color:var(--ink);padding:12px 16px;border-radius:14px;font-size:14px;font-weight:500;line-height:1.3;text-align:left;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.warn button{margin-top:8px;font:inherit;font-family:var(--mono);font-size:12px;border:0;background:var(--ink);color:var(--cream);border-radius:999px;padding:5px 12px;cursor:pointer}
+.team{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;width:100%;--cw:260px}
+.member{width:var(--cw);display:flex;flex-direction:column;gap:calc(var(--cw)*.04);padding:calc(var(--cw)*.05);border-radius:calc(var(--cw)*.07);background:rgba(255,244,224,.08);border:1px solid rgba(255,244,224,.22);min-width:0;text-align:left}
+.mhead{display:flex;align-items:center;gap:calc(var(--cw)*.04);min-width:0}
+.av{flex:none;width:calc(var(--cw)*.16);aspect-ratio:1;border-radius:50%;background:var(--violet);color:var(--cream);display:grid;place-items:center;font-weight:800;font-size:max(12px,calc(var(--cw)*.06));position:relative;overflow:hidden}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mtxt{min-width:0;display:flex;flex-direction:column;gap:calc(var(--cw)*.015)}
+.member h3{font-size:max(13px,calc(var(--cw)*.075));line-height:1;text-wrap:balance}
+.member .n{font-family:var(--mono);font-size:max(10px,calc(var(--cw)*.042));opacity:.9}
+.member .n b{color:var(--lime);font-size:1.5em;font-family:var(--display)}
+.mthumbs{display:flex;gap:calc(var(--cw)*.03);justify-content:center}
+.mthumbs .tile{flex:none;width:calc(var(--cw)*.28);font-size:9px;padding:4px;border-radius:calc(var(--cw)*.03)}
+.mthumbs .tile span{display:none}
+.member .vz{display:grid;place-items:center;min-height:calc(var(--cw)*.173);font-size:max(11px,calc(var(--cw)*.05));opacity:.75;border:1px dashed rgba(255,244,224,.25);border-radius:calc(var(--cw)*.03)}
+.avs{position:absolute;inset:0;z-index:1}
+.avs~.content{pointer-events:none}   /* the text box spans the slide width, so it must not block the circles behind it */
+.avc{position:absolute;border-radius:50%;overflow:hidden;background:hsl(var(--h) 65% 42%);color:#fff;display:grid;place-items:center;font-weight:800;border:2px solid var(--ink);opacity:0;transform:scale(0)}
+.avc.rep{border-color:var(--coral);border-width:3px}
+.legend{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--mono);font-size:clamp(11px,1.4vw,14px)}
+.legend i{display:inline-block;width:.9em;height:.9em;border-radius:50%;border:3px solid var(--ink);vertical-align:-.1em;margin-right:.4em}
+.legend i.rep{border-color:var(--coral)}
+.avc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.finder{pointer-events:auto;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.finder select{font-family:var(--display);font-weight:500;font-size:15px;letter-spacing:0;text-transform:none;color:var(--ink);background:var(--cream);border:0;border-radius:999px;padding:8px 14px;width:min(260px,78vw);box-shadow:0 4px 18px rgba(0,0,0,.25);cursor:pointer}
+.finder select:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+.avs.has-pick .avc{animation:none;opacity:.62;transform:none}
+.avs.has-pick .avc.pick{opacity:1;z-index:8;transform:scale(1.65);box-shadow:0 0 0 4px var(--hl),0 10px 22px rgba(18,16,43,.4)}
+.on .avc{animation:avpop .55s cubic-bezier(.2,1.5,.4,1) forwards;animation-delay:var(--d)}
+@keyframes avpop{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.avc{opacity:1;transform:none;animation:none!important}}
+.slide .mrow:hover .mtrack,.slide .mr:hover .mtrack{animation-play-state:paused}   /* hovering a row stops it so a viz can be clicked */
+.wall~.content{pointer-events:none}   /* text over the scrolling walls must not block hover and clicks on them */
+.slide{--hl:#c8f169}
+.t-lime{--hl:#12102b}   /* highlight colour: lime everywhere, ink on the lime slide so it still shows */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(8px,1.6vw,18px);width:100%;max-width:1200px}
+.stat{display:flex;flex-direction:column;justify-content:flex-start;gap:clamp(2px,.8vh,8px);text-align:left;min-width:0;min-height:clamp(120px,24vh,250px);padding:clamp(10px,2vh,18px) clamp(12px,2vw,22px);border-radius:20px;background:rgba(18,16,43,.45);border:1px solid rgba(255,244,224,.2)}
+.stat .k{font-family:var(--mono);font-size:clamp(10px,1.3vw,15px);letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+.stat{container-type:inline-size}
+.stat > b{font-weight:800;font-size:clamp(22px,min(3.6vw,7.5vh),72px);line-height:.95;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap}
+@supports (width:1cqw){.stat > b{font-size:min(12cqw,7.5vh)}}
+.stat > b.lime{color:var(--lime)}
+.stat small{font-family:var(--mono);font-size:clamp(9px,1.1vw,13px);opacity:.75}
+.mbars{display:flex;align-items:flex-end;gap:3px;height:clamp(46px,9vh,78px);margin-top:auto}
+button.mbar{appearance:none;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0;gap:3px;border:0;background:none;color:inherit;font:inherit;padding:2px 0;margin:0;cursor:pointer;border-radius:6px}
+button.mbar:hover i,button.mbar:focus-visible i{filter:brightness(1.25)}
+button.mbar:focus-visible{outline:2px solid var(--lime);outline-offset:1px}
+.mbar i{display:block;width:min(100%,16px);height:max(2px,calc(var(--p) * .72%));border-radius:3px 3px 0 0;background:rgba(255,244,224,.85)}
+.mbars.lime .mbar i{background:var(--lime)}
+.mbar b{font-family:var(--mono);font-weight:500;font-size:clamp(7px,1.5vw,10px);letter-spacing:.02em;line-height:1;opacity:.7}
+.mbox.wide{width:min(100%,860px)}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px 10px}
+.mcell{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.mcell .tile{width:100%;font-size:11px;padding:7px;border-radius:10px}
+.mcell .tile span{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-shadow:0 1px 2px rgba(0,0,0,.7)}
+.mcell > b{font-family:var(--mono);font-weight:500;font-size:12px;letter-spacing:.02em;line-height:1;font-variant-numeric:tabular-nums}
+.mcell > b.lime{color:var(--lime)}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.stat{min-height:clamp(108px,18vh,170px)}}
+/* viz popup */
+.modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left));background:rgba(10,8,30,.78);backdrop-filter:blur(6px)}
+.modal[hidden]{display:none}
+.mbox{position:relative;width:min(100%,600px);max-height:100%;overflow:auto;background:var(--ink);color:var(--cream);border:1px solid rgba(255,244,224,.25);border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.55);text-align:left;animation:mpop .25s cubic-bezier(.2,1.2,.3,1)}
+@keyframes mpop{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.mbox .mhero{position:relative;aspect-ratio:736/454;background:hsl(var(--h) 70% 40%)}
+.mbox .mhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mbox .mbody{display:flex;flex-direction:column;gap:12px;padding:clamp(16px,3vw,26px)}
+.mbox h3{font-size:clamp(20px,3.4vw,30px);line-height:1.05;text-wrap:balance}
+.mbox .by{font-family:var(--mono);font-size:14px;opacity:.9}
+.mbox .by a{color:var(--lime)}
+.mbox .mstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:6px}
+.mbox .mstats div{background:rgba(255,244,224,.08);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;gap:2px}
+.mbox .mstats b{font-size:clamp(18px,3vw,26px);font-variant-numeric:tabular-nums}
+.mbox .mstats span{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.mbox .go{align-self:flex-start;font-family:var(--mono);font-weight:500;font-size:14px;letter-spacing:.04em;color:var(--ink);background:var(--lime);border-radius:999px;padding:11px 22px;text-decoration:none}
+.mbox .go:hover,.mbox .go:focus-visible{outline:3px solid var(--cream);outline-offset:2px}
+.mbox .x{position:absolute;top:10px;right:10px;z-index:3;width:38px;height:38px;border-radius:50%;border:0;background:rgba(18,16,43,.85);color:var(--cream);font-size:22px;line-height:1;cursor:pointer}
+.mbox .x:hover,.mbox .x:focus-visible{background:var(--lime);color:var(--ink);outline:none}
+.mbox .phead{display:flex;align-items:center;gap:clamp(12px,2.4vw,20px);padding:clamp(18px,3vw,28px) clamp(54px,8vw,66px) 0 clamp(16px,3vw,26px)}
+.mbox .pav{position:relative;flex:none;width:clamp(64px,14vw,96px);aspect-ratio:1;border-radius:50%;overflow:hidden;background:hsl(var(--h) 65% 42%);display:grid;place-items:center;font-weight:800;font-size:28px;border:3px solid var(--lime)}
+.mbox .pav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mbox .pwho{display:flex;flex-direction:column;gap:6px;min-width:0;align-items:flex-start}
+.mbox .badge{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--lime);border-radius:999px;padding:3px 10px}
+.mbox .pbio{white-space:pre-line;overflow-wrap:anywhere;font-size:clamp(14px,1.9vw,16px);line-height:1.4;opacity:.95}
+.mbox .pvz{display:flex;flex-direction:column;gap:6px}
+.mbox .pvz .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.mbox .pthumbs{display:flex;flex-wrap:wrap;gap:6px}
+.mbox .pthumbs .tile{width:clamp(96px,22vw,128px);padding:0;border-radius:8px}
+.mbox .pthumbs .tile span{display:none}
+</style>
+</head>
+<body>
+<div class="stage" id="stage"></div>
+<div class="bars" id="bars" role="group" aria-label="Jump to slide"></div>
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="mTitle"><div class="mbox" id="mbox"></div></div>
+<a class="home-link" href="index.html" aria-label="The Data Taylor"><img src="assets/Logos/Logo_Square.png" alt="" width="1100" height="558"></a>
+<nav class="nav" aria-label="Slides"><button id="prev" type="button" aria-label="Previous slide">← Back</button><span class="pos" id="pos" aria-live="polite"></span><button id="next" type="button" aria-label="Next slide">Next →</button></nav>
+
+<script>
+const DATA = __DATA__;
+const R = DATA.rows, S = DATA.res, P = DATA.people;
+R.forEach((r, i) => r.i = i);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hue = s => { let h = 0; for (const c of s) h = (h*31 + c.charCodeAt(0)) % 360; return h; };
+// seeded shuffle so the walls look the same every visit
+function shuffle(a, seed){ a = a.slice(); let s = seed; const rnd = () => (s = (s*1664525 + 1013904223) % 4294967296) / 4294967296;
+  for (let i = a.length-1; i > 0; i--){ const j = Math.floor(rnd()*(i+1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const safe = u => /^https?:\/\//i.test(u || '') ? esc(u) : '';
+const lnk = (u, what) => safe(u) ? ` href="${safe(u)}" target="_blank" rel="noopener noreferrer" aria-label="${esc(what)}"` : '';
+const tile = r => `<a class="tile" data-i="${r.i}"${lnk(r.w, 'Open ' + r.t + ' on Tableau Public')} title="${esc(r.t)} by ${esc(r.n)}" style="--h:${hue(r.t)}"><span>${esc(r.t)}</span><img src="${esc(r.u)}" alt="${esc(r.t)} by ${esc(r.n)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"></a>`;
+function wall(rows, n, cls){   // deal every VOTD into exactly one row, so all of them appear and none repeat
+  const mix = shuffle(rows, 7), lanes = Array.from({length: n}, () => []);
+  mix.forEach((r, i) => lanes[i % n].push(r));
+  let out = `<div class="wall ${cls||''}" aria-hidden="true">`;
+  lanes.forEach((set, i) => {
+    while (set.length < 14) set = set.concat(set);   // only if a row would be too short to fill the screen
+    const html = set.map(tile).join('').replace(/<a class="tile"/g, '<a tabindex="-1" class="tile"');
+    out += `<div class="mrow ${i%2?'rev':''}"><div class="mtrack" style="animation-duration:${Math.round(set.length * 4.4 + i*17)}s">${html}${html}</div></div>`;
+  }); return out + '</div>';
+}
+const pl = (n, w) => n === 1 ? w : w + 's';
+const byPerson = {}; R.forEach(r => (byPerson[r.p] = byPerson[r.p] || []).push(r));
+const topP = Object.values(byPerson).filter(a => a.length > 2).sort((a, b) => b.length - a.length || a[0].n.localeCompare(b[0].n));   // everyone with 3 or more
+if (!topP.length) Object.values(byPerson).filter(a => a.length === S.top_n).forEach(a => topP.push(a));
+const fmt = n => n.toLocaleString('en-GB');
+const initials = nm => nm.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('');
+const avHTML = p => esc(initials(p.n)) + (p.av ? `<img src="${esc(p.av)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : '');
+
+const slides = [
+ { theme: 't-violet', html: () => wall(R, 5) + `<div class="content plate"><div class="eyebrow pop" style="--i:0">Tableau Public</div>
+   <h1 class="h1 pop" style="--i:1">VOTD<br>Wrapped<br>__YEAR__</h1><p class="sub pop" style="--i:2">A year of Visualizations of the Day, in numbers.</p></div>` },
+ { theme: 't-coral', html: () => wall(R, 5, 'dim') + `<div class="content"><div class="eyebrow pop" style="--i:0">This year there were</div>
+   <div class="big pop" style="--i:1" data-count="${S.total}">0</div><div class="h2 pop" style="--i:2">Visualizations of the Day</div></div>` },
+ { theme: 't-lime', layout: el => layoutAvatars(el, P), html: () => `<div class="avs" aria-hidden="true"></div><div class="content"><div class="eyebrow pop" style="--i:0">Created by</div>
+   <div class="big pop" style="--i:1" data-count="${S.people}">0</div><div class="h2 pop" style="--i:2">different people</div>
+   <p class="sub pop" style="--i:3">${S.total - S.people} VOTDs went to someone who had already won this year.</p>
+   <div class="legend pop" style="--i:4"><span><i></i>1 VOTD</span><span><i class="rep"></i>2 or more (${P.filter(p => p.c > 1).length} people)</span></div>${finder(P)}</div>` },
+ { theme: 't-ink full', layout: layoutMonths, html: () => { const MN = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'], by = {};
+   R.forEach(r => { const k = +r.d.slice(5, 7) - 1; (by[k] = by[k] || []).push(r); });
+   return `<div class="content wide"><div class="eyebrow pop" style="--i:0">Every VOTD of __YEAR__, month by month</div>
+   <div class="mrows">${Object.keys(by).map((k, j) => `<div class="mr pop" style="--i:${j + 1}"><div class="lab"><b>${MN[k]}</b><span>${by[k].length} VOTDs</span></div><div class="view"><div class="mtrack"><div class="half">${by[k].map(r => `<div title="${esc(r.t)} by ${esc(r.n)}">${tile(r)}</div>`).join('')}</div></div></div></div>`).join('')}</div></div>`; } },
+ { theme: 't-violet', html: () => `<div class="content"><div class="eyebrow pop" style="--i:0">Most VOTDs in __YEAR__</div>
+   <div class="h1 pop" style="--i:1;font-size:clamp(30px,5.4vw,68px)">${topP.length === 1 ? esc(topP[0][0].n) : topP.length + ' people had ' + Math.min(...topP.map(a => a.length)) + ' or more'}</div>
+   <div class="cards" style="--n:${topP.length}">${topP.map((a, k) => `<div class="card pop" style="--i:${k+2}"><h3>${esc(a[0].n)}<small>${a.length} VOTDs</small></h3><div class="stack">${a.map(tile).join('')}</div></div>`).join('')}</div></div>` },
+ { theme: 't-sky', layout: el => layoutAvatars(el, P.filter(p => p.ft)), html: () => `<div class="avs" aria-hidden="true"></div><div class="content"><div class="eyebrow pop" style="--i:0">Fresh faces</div>
+   <div class="big pop" style="--i:1" data-count="${S.first_timers}">0</div>
+   <div class="h2 pop" style="--i:2">people won their first ever VOTD this year</div>
+   <p class="sub pop" style="--i:3">${S.first_timers} of the ${S.people} people featured in __YEAR__ had never won before. The other ${S.returning} had.</p>
+   <div class="legend pop" style="--i:4"><span><i></i>1 VOTD in __YEAR__ (${S.first_single})</span><span><i class="rep"></i>2 or more (${S.first_timers - S.first_single})</span></div>${finder(P.filter(p => p.ft))}</div>` },
+ { theme: 't-lime full', layout: layoutPyramid, html: () => { const tiers = Object.keys(S.dist).map(Number).sort((a, b) => b - a), start = {}; let cum = 0;
+   tiers.slice().reverse().forEach(k => { start[k] = cum; cum += S.dist[k]; });   // the big bottom tier pops in first, the single top person last
+   return `<div class="content wide"><div class="eyebrow pop" style="--i:0">How many each person got</div><div class="h2 pop" style="--i:1;font-size:clamp(24px,min(5.6vw,9vh),72px)">Most people got one. A few got lucky.</div>
+   <div class="pyr">${tiers.map(k => { const list = P.filter(p => p.c === k);
+     return `<div class="tier" data-n="${list.length}"><div class="tlab"><b>${k} ${pl(k, 'VOTD')}</b><span>${list.length === 1 ? esc(list[0].n) : list.length + ' people'}</span></div>
+     <div class="tcirc">${list.map((p, i) => `<a class="avc pc${p.c > 1 ? ' rep' : ''}" data-p="${esc(p.id)}"${lnk(p.pu, '' + p.n + ' on Tableau Public')} title="${esc(p.n)}" style="--h:${hue(p.n)};--d:${300 + (start[k] + i) * 12}ms">${avHTML(p)}</a>`).join('')}</div></div>`; }).join('')}</div></div>`; } },
+ { theme: 't-coral full', html: () => { const top = k => R.slice().sort((a, b) => b[k] - a[k] || b.v - a.v).slice(0, 10), fav = top('f'), view = top('v');
+   const both = new Set(fav.map(r => r.t).filter(x => view.some(r => r.t === x)));
+   const col = (title, list, k, cls) => { const mx = list[0][k]; return `<div class="tcol"><div class="h2 pop" style="--i:1">${title}</div>${list.map((r, i) => `<div class="trow pop" style="--i:${i + 2};--w:${(r[k] / mx * 100).toFixed(1)}%">
+     <div class="rbar ${cls}" style="animation-delay:${.5 + i * .14}s"></div><span class="rk">${i + 1}</span><div class="rthumb">${tile(r)}</div>
+     <div class="rtxt"><b>${esc(r.t)}</b><span>${esc(r.n)}${both.has(r.t) ? ' · in both lists' : ''}</span></div><span class="rv ${cls}">${fmt(r[k])}</span></div>`).join('')}</div>`; };
+   return `<div class="content wide"><div class="eyebrow pop" style="--i:0">Top 10 lists for __YEAR__</div>
+   <div class="tops">${col('Most favourited', fav, 'f', 'fv')}${col('Most viewed', view, 'v', 'vw')}</div></div>`; } },
+ { theme: 't-violet', html: () => { const T = S.tot, n = S.total, all = T.favs + T.love + T.insightful + T.nominate;
+   const mo = R.map(r => +r.d.slice(5, 7)), first = Math.min(...mo), last = Math.max(...mo);
+   const ML = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+   const series = pick => { const vals = []; for (let m = first; m <= last; m++) vals.push(R.filter(r => +r.d.slice(5, 7) === m).reduce((a, r) => a + pick(r), 0)); return vals; };
+   const bars = (vals, lime, key) => { const mx = Math.max(...vals, 1); return `<div class="mbars${lime ? ' lime' : ''}">${vals.map((v, i) => `<button type="button" class="mbar" data-m="${first + i}" data-k="${key}" aria-label="Show the ${ML[first + i - 1]} VOTDs by ${MONTH_METRIC[key][0].toLowerCase()}" title="${ML[first + i - 1]}: ${fmt(v)}"><i style="--p:${(v / mx * 100).toFixed(1)}"></i><b>${ML[first + i - 1]}</b></button>`).join('')}</div>`; };
+   const items = [['Views', T.views, 'lime', r => r.v, 'v'], ['Favourites', T.favs, '', r => r.f, 'f'], ['Love reactions', T.love, '', r => r.rx[0], 'love'], ['Insightful reactions', T.insightful, '', r => r.rx[1], 'in'], ['Nominations', T.nominate, '', r => r.rx[2], 'nom'], ['Reactions in total', all, 'lime', r => r.f + r.rx[0] + r.rx[1] + r.rx[2], 'rx']];
+   return `<div class="content wide"><div class="eyebrow pop" style="--i:0">Overall interaction with the __YEAR__ VOTDs</div>
+   <div class="h1 pop" style="--i:1;font-size:clamp(28px,5vw,64px)">The community showed up.</div>
+   <div class="stats">${items.map((it, k) => `<div class="stat pop" style="--i:${k + 2}"><span class="k">${it[0]}</span><b class="${it[2]}" data-count="${it[1]}">0</b>${bars(series(it[3]), it[2], it[4])}<small>${fmt(Math.round(it[1] / n))} per VOTD on average</small></div>`).join('')}</div></div>`; } },
+ { theme: 't-ink full', layout: layoutTeam, html: () => { const T = DATA.team.slice().sort((a, b) => b.yr - a.yr || b.all - a.all), sum = T.reduce((a, m) => a + m.yr, 0), all = T.reduce((a, m) => a + m.all, 0);
+   const ini = n => n.split(' ').map(w => w[0]).join('');
+   return `<div class="content wide"><div class="eyebrow pop" style="--i:0">Tableau Public TUG team</div>
+   <div class="h1 pop" style="--i:1;font-size:clamp(34px,6vw,76px)">${sum} VOTDs in __YEAR__</div>
+   <div class="team">${T.map((m, k) => { const mine = R.filter(r => m.ps.includes(r.p)); return `<div class="member pop" style="--i:${k+2}"><div class="mhead"><a class="av" data-p="${esc(m.pid)}"${lnk(m.pu, m.n + ' on Tableau Public')} title="${esc(m.n)}">${ini(m.n)}${m.av ? `<img src="${esc(m.av)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}</a>
+     <div class="mtxt"><h3>${esc(m.n)}</h3><div class="n"><b>${m.yr}</b> in __YEAR__ · ${m.all} all time</div></div></div>
+     ${mine.length ? `<div class="mthumbs">${mine.map(tile).join('')}</div>` : `<div class="vz">No VOTD this year</div>`}</div>`; }).join('')}</div>
+   <p class="sub pop" style="--i:8">${all} VOTDs across the team, all time.</p></div>`; } },
+ { theme: 't-violet', html: () => { const names = shuffle(P, 3).map(p => esc(p.n)).join('</span> · <span>'); return wall(R, 6) +
+   `<div class="content plate" style="position:relative;z-index:3"><div class="eyebrow pop" style="--i:0">That's a wrap</div><h2 class="h1 pop" style="--i:1">Thank you, ${S.people} creators</h2>
+   <p class="sub pop" style="--i:2">${S.total} vizzes. One very good year.</p></div>
+   <div class="ticker"><div class="mtrack" style="animation-duration:240s"><span>${names}</span> · <span>${names}</span></div></div>`; } }
+];
+
+function finder(list){
+  const sorted = list.slice().sort((a, b) => a.n.localeCompare(b.n, 'en'));
+  const seen = new Set(), dups = new Set();
+  sorted.forEach(p => { if (seen.has(p.n)) dups.add(p.n); seen.add(p.n); });
+  const opts = sorted.map(p => `<option value="${esc(p.id)}">${esc(p.n)}${dups.has(p.n) ? ' · ' + p.c + ' VOTDs' : ''}</option>`).join('');
+  return `<label class="finder pop" style="--i:5"><span>Find a person</span><select aria-label="Find a person on this slide"><option value="">Everyone</option>${opts}</select></label>`;
+}
+function highlightPerson(el, id){
+  const box = el.querySelector('.avs'); if (!box) return;
+  box.classList.toggle('has-pick', !!id);
+  box.querySelectorAll('.avc').forEach(a => a.classList.toggle('pick', !!id && a.dataset.p === id));
+}
+// Circles of every person's profile photo, scattered at random (seeded), all the same size, around the text of the slide.
+function layoutAvatars(el, list){
+  const box = el.querySelector('.avs'), W = el.clientWidth, H = el.clientHeight, top = 26, bottom = H - 66, n = list.length;
+  const logoEl = document.querySelector('.home-link'), lr = logoEl ? logoEl.getBoundingClientRect() : null;
+  const logo = lr ? { l: lr.left - 12, r: lr.right + 8, t: lr.top - 8, b: lr.bottom + 12 } : null;
+  // text box from layout offsets, which ignore the pop-in transform that is still moving when this runs
+  const ct = el.querySelector('.content'), kids = [...ct.children];
+  const ex = { l: Math.min(...kids.map(k => ct.offsetLeft + k.offsetLeft)), r: Math.max(...kids.map(k => ct.offsetLeft + k.offsetLeft + k.offsetWidth)),
+               t: Math.min(...kids.map(k => ct.offsetTop + k.offsetTop)), b: Math.max(...kids.map(k => ct.offsetTop + k.offsetTop + k.offsetHeight)) };
+  const people = shuffle(list, 11);
+  let seed = 20260101; const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  const hitsLogo = (cx, cy, sz) => logo && cx + sz / 2 > logo.l && cx - sz / 2 < logo.r && cy + sz / 2 > logo.t && cy - sz / 2 < logo.b;
+  let placed = [];
+  for (let s = Math.max(24, Math.sqrt(W * (bottom - top) * .32 / n)); s >= 12; s -= 1){
+    seed = 20260101; placed = [];
+    const m = s * .9;   // clear space kept around the text
+    for (let i = 0; i < n; i++){
+      const sz = s; let ok = false;
+      for (let tries = 0; tries < 400 && !ok; tries++){
+        const cx = sz / 2 + rnd() * (W - sz), cy = top + sz / 2 + rnd() * (bottom - top - sz);
+        if (cx > ex.l - m - sz / 2 && cx < ex.r + m + sz / 2 && cy > ex.t - m - sz / 2 && cy < ex.b + m + sz / 2) continue;
+        if (hitsLogo(cx, cy, sz)) continue;
+        if (placed.some(q => Math.hypot(q.x - cx, q.y - cy) < (q.s + sz) / 2 + 3)) continue;
+        placed.push({ x: cx, y: cy, s: sz }); ok = true;
+      }
+      if (!ok) break;
+    }
+    if (placed.length === n) break;
+  }
+  const ini = nm => nm.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('');
+  box.innerHTML = people.slice(0, placed.length).map((p, i) => { const q = placed[i];
+    return `<a class="avc${p.c > 1 ? ' rep' : ''}" data-p="${esc(p.id)}"${lnk(p.pu, p.n + ' on Tableau Public')} title="${esc(p.n)}" style="left:${(q.x - q.s / 2).toFixed(1)}px;top:${(q.y - q.s / 2).toFixed(1)}px;width:${q.s.toFixed(1)}px;height:${q.s.toFixed(1)}px;font-size:${(q.s * .36).toFixed(1)}px;--h:${hue(p.n)};--d:${400 + i * 16}ms">${esc(ini(p.n))}${p.av ? `<img src="${esc(p.av)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}</a>`; }).join('');
+  const sel = el.querySelector('.finder select');
+  if (sel) highlightPerson(el, sel.value);
+}
+
+// One scrolling row per month, like the background walls. Row height is set so all months fill the screen;
+// a month with too few thumbnails to fill its row stays still, the rest scroll at a gentle constant speed
+function layoutMonths(el){
+  const g = el.querySelector('.mrows'), cs = getComputedStyle(el), rows = [...g.children], n = rows.length, tg = 6, SPEED = 38;   // px per second
+  const H = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - el.querySelector('.eyebrow').offsetHeight - 16 - 14;
+  const rh = Math.max(24, Math.min(110, Math.floor((H - (n - 1) * tg) / n)));
+  g.style.setProperty('--rh', rh + 'px'); g.style.setProperty('--tg', tg + 'px');
+  rows.forEach(r => {
+    const track = r.querySelector('.mtrack'), halves = track.querySelectorAll('.half');
+    for (let i = 1; i < halves.length; i++) halves[i].remove();   // so a resize starts clean
+    const half = track.querySelector('.half'), vw = r.querySelector('.view').clientWidth, tw = half.scrollWidth;
+    r.classList.remove('run');
+    if (tw > vw){ track.appendChild(half.cloneNode(true)); r.style.setProperty('--dur', Math.round(tw / SPEED) + 's'); r.classList.add('run'); }
+  });
+}
+
+// Size the circles of the pyramid so every tier fits on screen, biggest tier at the bottom
+function layoutPyramid(el){
+  const wrap = el.querySelector('.pyr'), cs = getComputedStyle(el), W = wrap.clientWidth, tiers = [...wrap.children].map(x => +x.dataset.n);
+  const H = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - el.querySelector('.eyebrow').offsetHeight - el.querySelector('.h2').offsetHeight - 44;
+  const labH = wrap.querySelector('.tlab').offsetHeight;
+  let s = 64, g = 8;
+  for (; s > 12; s -= 1){
+    g = Math.max(4, s * .12); const per = Math.max(1, Math.floor((W + g) / (s + g)));
+    const rows = tiers.reduce((a, n) => a + Math.ceil(n / per), 0), tot = rows * (s + g) + tiers.length * (labH + 5) + (tiers.length - 1) * 12;
+    if (tot <= H) break;
+  }
+  wrap.style.setProperty('--s', s + 'px'); wrap.style.setProperty('--g', g + 'px');
+}
+
+// Size the team cards so they fill the screen: try 1 to 5 columns and keep the arrangement with the biggest cards
+function layoutTeam(el){
+  const g = el.querySelector('.team'), ct = g.parentElement, cs = getComputedStyle(el), n = g.children.length, gap = 14;
+  const W = ct.clientWidth;
+  const used = [...ct.children].filter(c => c !== g).reduce((a, c) => a + c.offsetHeight, 0) + (ct.children.length - 1) * 16;
+  const H = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - used - 6;
+  const k = .1 + .16 + .04 + .1727;   // card height as a share of card width
+  let best = 0;
+  for (let cols = 1; cols <= Math.min(5, n); cols++){
+    const rows = Math.ceil(n / cols), cw = Math.min((W - (cols - 1) * gap) / cols, ((H - (rows - 1) * gap) / rows) / k, 760);
+    if (cw > best) best = cw;
+  }
+  g.style.setProperty('--cw', best + 'px');
+}
+
+const MONTH_METRIC = {
+  v: ['views', r => r.v], f: ['favourites', r => r.f], love: ['love reactions', r => r.rx[0]],
+  in: ['insightful reactions', r => r.rx[1]], nom: ['nominations', r => r.rx[2]],
+  rx: ['reactions in total', r => r.f + r.rx[0] + r.rx[1] + r.rx[2]]
+};
+const stage = document.getElementById('stage'), barsEl = document.getElementById('bars');
+slides.forEach((s, i) => {
+  const el = document.createElement('section'); el.className = 'slide ' + s.theme; el.innerHTML = s.html(); stage.appendChild(el); s.el = el;
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'bar'; b.setAttribute('aria-label', 'Go to slide ' + (i + 1)); b.innerHTML = '<span class="trk"><i></i></span>'; b.onclick = () => go(i); barsEl.appendChild(b); s.bar = b;
+});
+let cur = -1;
+function countUp(el){ const to = +el.dataset.count, t0 = performance.now(), D = 1400;
+  (function f(t){ const k = Math.min(1, (t - t0)/D), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(to*e).toLocaleString('en-GB'); if (k < 1) requestAnimationFrame(f); })(t0); }
+function go(n){
+  if (n < 0) n = 0; if (n >= slides.length) n = slides.length - 1;
+  slides.forEach((s, i) => { s.el.classList.toggle('on', i === n); s.bar.className = 'bar' + (i < n ? ' done' : ''); });
+  document.getElementById('prev').disabled = n === 0; document.getElementById('next').disabled = n === slides.length - 1; document.getElementById('pos').textContent = (n + 1) + ' / ' + slides.length;
+  const s = slides[n]; cur = n; void s.bar.offsetWidth;
+  s.bar.classList.add('done');
+  s.el.querySelectorAll('[data-count]').forEach(countUp);
+  if (s.layout) s.layout(s.el);
+}
+document.getElementById('next').onclick = () => go(cur + 1);
+document.getElementById('prev').onclick = () => go(cur - 1);
+// Clicking a viz thumbnail opens a card with its numbers; ctrl/cmd/middle-click still goes straight to Tableau Public
+const modal = document.getElementById('modal'), mbox = document.getElementById('mbox'); let lastFocus = null;
+function openViz(i){
+  const r = R[i]; lastFocus = document.activeElement; const d = new Date(r.d + 'T12:00:00');
+  const stat = (v, l) => `<div><b>${fmt(v)}</b><span>${l}</span></div>`;
+  mbox.classList.remove('wide');
+  mbox.innerHTML = `<button class="x" type="button" aria-label="Close">×</button>
+   <div class="mhero" style="--h:${hue(r.t)}"><img src="${esc(r.u)}" alt="${esc(r.t)}" referrerpolicy="no-referrer" onerror="this.remove()"></div>
+   <div class="mbody"><h3 id="mTitle">${esc(r.t)}</h3>
+   <div class="by">by ${safe(r.pu) || DATA.prof[r.p] ? `<a${DATA.prof[r.p] ? ` data-p="${esc(r.p)}"` : ''}${lnk(r.pu, r.n + ' on Tableau Public')}>${esc(r.n)}</a>` : esc(r.n)} · VOTD on ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+   <div class="mstats">${stat(r.v, 'Views')}${stat(r.f, 'Favourites')}${stat(r.rx[0], 'Love')}${stat(r.rx[1], 'Insightful')}${stat(r.rx[2], 'Nominations')}</div>
+   ${safe(r.w) ? `<a class="go" href="${safe(r.w)}" target="_blank" rel="noopener noreferrer">Open on Tableau Public ↗</a>` : ''}</div>`;
+  mbox.querySelector('.x').onclick = closeViz; modal.hidden = false; mbox.scrollTop = 0; (mbox.querySelector('.go') || mbox.querySelector('.x')).focus();
+}
+function openPerson(pid){
+  const q = DATA.prof[pid]; if (!q) return; lastFocus = document.activeElement || lastFocus;
+  const mine = R.filter(r => r.p === pid), stat = (v, l) => `<div><b>${fmt(v)}</b><span>${l}</span></div>`;
+  mbox.classList.remove('wide');
+  const sub = [q.job, q.org].filter(Boolean).map(esc).join(' · ');
+  mbox.innerHTML = `<button class="x" type="button" aria-label="Close">×</button>
+   <div class="phead"><div class="pav" style="--h:${hue(q.n)}">${esc(initials(q.n))}${q.av ? `<img src="${esc(q.av)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}</div>
+    <div class="pwho"><h3 id="mTitle">${esc(q.n)}</h3>${sub ? `<div class="by">${sub}</div>` : ''}${q.ft ? `<span class="badge">First ever VOTD in __YEAR__</span>` : ''}</div></div>
+   <div class="mbody">${q.bio ? `<p class="pbio">${esc(q.bio)}</p>` : ''}
+   <div class="mstats">${stat(q.yr, 'VOTDs in __YEAR__')}${stat(q.all, 'VOTDs all time')}${stat(q.fol, 'Followers')}${stat(q.fng, 'Following')}${stat(q.wb, 'Public workbooks')}</div>
+   ${mine.length ? `<div class="pvz"><span class="k">Their __YEAR__ VOTD${mine.length === 1 ? '' : 's'}</span><div class="pthumbs">${mine.map(tile).join('')}</div></div>` : ''}
+   ${safe(q.pu) ? `<a class="go" href="${safe(q.pu)}" target="_blank" rel="noopener noreferrer">View Tableau Public profile ↗</a>` : ''}</div>`;
+  mbox.querySelector('.x').onclick = closeViz; modal.hidden = false; mbox.scrollTop = 0; (mbox.querySelector('.go') || mbox.querySelector('.x')).focus();
+}
+function openMonth(m, key){
+  const name = ['January','February','March','April','May','June','July','August','September','October','November','December'][m - 1];
+  const spec = MONTH_METRIC[key] || MONTH_METRIC.v, pick = spec[1];
+  const mine = R.filter(r => +r.d.slice(5, 7) === m).sort((a, b) => pick(b) - pick(a) || (a.d < b.d ? -1 : a.d > b.d ? 1 : 0));
+  const num = n => `<b${key === 'v' || key === 'rx' ? ' class="lime"' : ''}>${fmt(n)}</b>`;
+  lastFocus = document.activeElement;
+  mbox.classList.add('wide');
+  mbox.innerHTML = `<button class="x" type="button" aria-label="Close">×</button>
+   <div class="mbody"><h3 id="mTitle">${name} __YEAR__</h3>
+   <div class="by">${mine.length} Visualization${mine.length === 1 ? '' : 's'} of the Day · by ${spec[0]}</div>
+   <div class="mgrid">${mine.map(r => `<div class="mcell">${tile(r)}${num(pick(r))}</div>`).join('')}</div></div>`;
+  mbox.querySelector('.x').onclick = closeViz; modal.hidden = false; mbox.scrollTop = 0; mbox.querySelector('.x').focus();
+}
+function closeViz(){ modal.hidden = true; mbox.classList.remove('wide'); mbox.innerHTML = ''; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+modal.addEventListener('click', e => { if (e.target === modal) closeViz(); });
+document.addEventListener('click', e => { const bar = e.target.closest && e.target.closest('.mbar');
+  if (bar) { openMonth(+bar.dataset.m, bar.dataset.k); return; }
+  const a = e.target.closest && e.target.closest('a[data-i],a[data-p]');
+  if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button) return; e.preventDefault();
+  if (a.dataset.p) openPerson(a.dataset.p); else openViz(+a.dataset.i); });
+document.addEventListener('change', e => { const sel = e.target.closest && e.target.closest('.finder select');
+  if (sel) highlightPerson(sel.closest('.slide'), sel.value); });
+addEventListener('keydown', e => { if (e.target.closest && e.target.closest('select, input, textarea, .mbar')) return;
+  if (!modal.hidden){ if (e.key === 'Escape') closeViz(); return; }
+  if (e.key === 'ArrowRight') go(cur + 1); else if (e.key === 'ArrowLeft') go(cur - 1); else if (e.key === ' '){ e.preventDefault(); go(cur + 1); } });
+let imgOk = 0, imgBad = 0;
+addEventListener('load', e => { if (e.target.tagName === 'IMG') imgOk++; }, true);
+addEventListener('error', e => { if (e.target.tagName === 'IMG') imgBad++; }, true);
+setTimeout(() => { if (imgOk === 0 && imgBad > 0){ const w = document.createElement('div'); w.className = 'warn'; w.style.zIndex = 40;
+  w.innerHTML = 'The thumbnails could not load (' + imgBad + ' blocked). Check your connection and refresh the page.<br><button type="button">Dismiss</button>';
+  w.querySelector('button').onclick = () => w.remove(); document.body.appendChild(w); } }, 5000);
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { const s = slides[cur]; if (s && s.layout) s.layout(s.el); }, 200); });
+go(0);
+</script>
+</body>
+</html>
