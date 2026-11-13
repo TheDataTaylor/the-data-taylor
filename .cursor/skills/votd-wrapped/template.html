@@ -305,7 +305,7 @@ const slides = [
  { theme: 't-lime full', layout: layoutPyramid, html: () => { const tiers = Object.keys(S.dist).map(Number).sort((a, b) => b - a), start = {}; let cum = 0;
    tiers.slice().reverse().forEach(k => { start[k] = cum; cum += S.dist[k]; });   // the big bottom tier pops in first, the single top person last
    return `<div class="content wide"><div class="eyebrow pop" style="--i:0">How many each person got</div><div class="h2 pop" style="--i:1;font-size:clamp(24px,min(5.6vw,9vh),72px)">Most people got one. A few got lucky.</div>
-   <div class="pyr">${tiers.map(k => { const list = P.filter(p => p.c === k);
+   <div class="pyr">${tiers.map(k => { const list = P.filter(p => p.c === k).sort((a, b) => a.n.localeCompare(b.n, 'en'));
      return `<div class="tier" data-n="${list.length}"><div class="tlab"><b>${k} ${pl(k, 'VOTD')}</b><span>${list.length === 1 ? esc(list[0].n) : list.length + ' people'}</span></div>
      <div class="tcirc">${list.map((p, i) => `<a class="avc pc${p.c > 1 ? ' rep' : ''}" data-p="${esc(p.id)}"${lnk(p.pu, '' + p.n + ' on Tableau Public')} title="${esc(p.n)}" style="--h:${hue(p.n)};--d:${300 + (start[k] + i) * 12}ms">${avHTML(p)}</a>`).join('')}</div></div>`; }).join('')}</div></div>`; } },
  { theme: 't-coral full', html: () => { const top = k => R.slice().sort((a, b) => b[k] - a[k] || b.v - a.v).slice(0, 10), fav = top('f'), view = top('v');
