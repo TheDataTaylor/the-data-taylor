@@ -27,21 +27,25 @@
   if (filterBar) {
     var buttons = filterBar.querySelectorAll(".filter-btn");
     var cards = document.querySelectorAll("[data-project-card]");
-    var primaryFilters = ["tableau", "alteryx", "databricks"];
+    var primaryFilters = ["tableau", "alteryx", "databricks", "data apps"];
+
+    function normFilter(value) {
+      return (value || "").toLowerCase().replace(/-/g, " ").trim();
+    }
 
     buttons.forEach(function (btn) {
       btn.addEventListener("click", function () {
-        var cat = btn.getAttribute("data-filter") || "all";
+        var cat = normFilter(btn.getAttribute("data-filter") || "all");
 
         buttons.forEach(function (b) {
           b.classList.toggle("is-active", b === btn);
         });
 
         cards.forEach(function (card) {
-          var c = (card.getAttribute("data-category") || "").toLowerCase();
+          var c = normFilter(card.getAttribute("data-category") || "");
           var techTagEls = Array.from(card.querySelectorAll(".tech-tag:not(.tech-tag-action)"));
           var techTags = techTagEls.map(function (tag) {
-            return (tag.textContent || "").trim().toLowerCase();
+            return normFilter(tag.textContent || "");
           });
 
           var matchesPrimary = c === cat || techTags.indexOf(cat) !== -1;

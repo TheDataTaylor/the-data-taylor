@@ -92,7 +92,7 @@
         <div class="container">
           <h1>Portfolio</h1>
           <p>
-            A selection of dashboards, workflows, and lakehouse work. Filter by stack to find relevant examples.
+            A selection of dashboards, workflows, and interactive pages. Filter by stack to find relevant examples.
           </p>
         </div>
       </header>
@@ -104,10 +104,68 @@
             <button type="button" class="filter-btn" data-filter="tableau">Tableau</button>
             <button type="button" class="filter-btn" data-filter="alteryx">Alteryx</button>
             <button type="button" class="filter-btn" data-filter="databricks">Databricks</button>
+            <button type="button" class="filter-btn" data-filter="data-apps">Data Apps</button>
             <button type="button" class="filter-btn" data-filter="other">Other</button>
           </div>
 
           <div class="project-grid">
+            <!-- 73 Years -->
+            <article class="project-card" data-project-card data-category="data-apps">
+              <div class="project-thumb">
+                <img
+                  src="assets/Public Thumbnails/wales-v-new-zealand-73-years.jpg"
+                  alt="73 Years. 34 Losses. One Roar. Wales against New Zealand, in red, white and green"
+                  width="1600"
+                  height="1000"
+                />
+              </div>
+              <div class="project-body">
+                <h3>73 Years. 34 Losses. One Roar.</h3>
+                <p>
+                  Wales beat New Zealand on 14 November 2026, the first time since 1953. 26,628 days and 34 defeats,
+                  told as four screens you scroll through.
+                </p>
+                <div class="project-meta-row">
+                  <div class="tech-tags">
+                    <span class="tech-tag">Data Apps</span>
+                    <span class="tech-tag">HTML</span>
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">Sports</span>
+                  </div>
+                </div>
+                <a class="btn btn-primary" href="portfolio002.html">View project</a>
+              </div>
+            </article>
+
+            <!-- The Six Majors -->
+            <article class="project-card" data-project-card data-category="data-apps">
+              <div class="project-thumb">
+                <img
+                  src="assets/Public Thumbnails/the-six-majors.jpg"
+                  alt="The Six Majors dashboard, with marathon winner pins on a globe"
+                  width="1600"
+                  height="1000"
+                />
+              </div>
+              <div class="project-body">
+                <h3>The Six Majors</h3>
+                <p>
+                  Marathon winners from Tokyo, Boston, London, Berlin, Chicago and New York, plotted on a globe from 2000 to 2026.
+                  Open a city, scrub the years, or follow one athlete from race to race.
+                </p>
+                <div class="project-meta-row">
+                  <div class="tech-tags">
+                    <span class="tech-tag">Data Apps</span>
+                    <span class="tech-tag">HTML</span>
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">d3</span>
+                    <span class="tech-tag">Sports</span>
+                  </div>
+                </div>
+                <a class="btn btn-primary" href="portfolio001.html">View project</a>
+              </div>
+            </article>
+
             <!-- FIFA World Cup 2026 -->
             <article class="project-card" data-project-card data-category="tableau">
               <div class="project-thumb">
@@ -570,6 +628,6 @@
       </div>
     </footer>
 
-    <script src="assets/js/main.js?v=7" defer></script>
+    <script src="assets/js/main.js?v=9" defer></script>
   </body>
 </html>

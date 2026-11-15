@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>73 Years. 34 Losses. One Roar. | The Data Taylor</title>
+    <meta
+      name="description"
+      content="Wales beat New Zealand on 14 November 2026, the first time since 1953. 26,628 days and 34 defeats, told as a scrolling story."
+    />
+    <link rel="icon" type="image/png" href="assets/Logos/Logo_Square.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Barlow+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+
+.wales-stage{position:relative;height:min(92vh,920px);margin:var(--space-6) 0 var(--space-4);border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;background:#D30731}
+.wales-story{position:relative;height:100%;overflow-x:hidden;overflow-y:auto;scroll-snap-type:y mandatory;scroll-behavior:smooth;scrollbar-width:none;font-family:var(--body);font-weight:500;font-size:18px;line-height:1.3;color:var(--white);background:var(--red)}
+.wales-story::-webkit-scrollbar{display:none}
+.wales-story h1,.wales-story h2,.wales-story h3,.wales-story h4{margin:0}
+.wales-story p{margin:0}
+.wales-story button{font:inherit;color:inherit;cursor:pointer}
+.wales-stage .dots-nav{position:absolute;right:8px;top:50%;transform:translateY(-50%);z-index:5;display:flex;flex-direction:column;gap:10px}
+.wales-stage .dots-nav button{width:14px;height:14px;border-radius:50%;border:3px solid var(--ink);background:var(--white);padding:0;transition:transform .25s,background .25s}
+.wales-stage .dots-nav button.on{background:var(--green);transform:scale(1.35)}
+@media (max-width:767px){
+  .wales-stage{width:100vw;max-width:100vw;height:100svh;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);border-left:0;border-right:0;border-radius:0}
+}
+
+.wales-stage{
+  --red:#D30731; --deep:#8F0420; --green:#00AB39; --forest:#00692A; --white:#FFFFFF; --ink:#16060A;
+  --display:'Anton','Impact',sans-serif; --body:'Barlow Condensed','Arial Narrow',sans-serif;
+}.wales-story button{font:inherit;color:inherit;cursor:pointer}.wales-story .slide{position:relative;height:100%;min-height:100%;overflow:hidden;scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px}.wales-story .flagbar{height:14px;background:linear-gradient(var(--white) 0 50%,var(--green) 50% 100%);position:absolute;left:0;right:0;top:0;z-index:4}.wales-story .dots-nav{position:fixed;right:8px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:10px}.wales-story .dots-nav button{width:14px;height:14px;border-radius:50%;border:3px solid var(--ink);background:var(--white);padding:0;transition:transform .25s,background .25s}.wales-story .dots-nav button.on{background:var(--green);transform:scale(1.35)}.wales-story .fx{opacity:0}.wales-story .active .fx{animation:fxup .6s cubic-bezier(.2,.9,.25,1.2) both;animation-delay:var(--d,0s)}.wales-story .active .fx.l{animation-name:fxl}.wales-story .active .fx.r{animation-name:fxr}.wales-story .active .fx.z{animation-name:fxz}.wales-story .active .fx.slam{animation-name:fxslam}@keyframes fxup{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}@keyframes fxl{from{opacity:0;transform:translateX(-90px)}to{opacity:1;transform:none}}@keyframes fxr{from{opacity:0;transform:translateX(90px)}to{opacity:1;transform:none}}@keyframes fxz{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:none}}@keyframes fxslam{from{opacity:0;transform:scale(2.8) rotate(-7deg)}to{opacity:1;transform:none}}.wales-story .cue{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-weight:700;letter-spacing:.2em;text-transform:uppercase;font-size:14px;opacity:0;transition:opacity .5s;pointer-events:none}.wales-story .cue.show{opacity:1}.wales-story .cue b{display:block;font-family:var(--display);font-size:34px;line-height:1;animation:bob 1.2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(8px)}}.wales-story .replay{position:absolute;top:26px;right:38px;z-index:5;font-size:13px}.wales-story .hero{background:var(--red);justify-content:center}.wales-story .hero .in{width:100%;max-width:1000px;margin:0 auto}.wales-story .kicker{font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-size:14px;display:flex;gap:10px;align-items:center;animation:in .8s .1s both}.wales-story .kicker i{display:inline-block;width:34px;height:6px;background:linear-gradient(var(--white) 0 50%,var(--green) 50% 100%)}.wales-story h1{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.88;margin:16px 0 20px;font-size:clamp(66px,22vw,200px);overflow:hidden}.wales-story h1 span{display:block;animation:slide .9s cubic-bezier(.2,.9,.25,1.1) both}.wales-story h1 span:nth-child(1){animation-delay:.15s;--from:-110vw}.wales-story h1 span:nth-child(2){animation-delay:.45s;--from:110vw;color:var(--green);text-shadow:3px 3px 0 var(--ink)}.wales-story h1 span:nth-child(3){animation-delay:.75s;--from:-110vw;color:transparent;-webkit-text-stroke:3px var(--white)}.wales-story .lede{font-size:clamp(20px,4.6vw,30px);font-weight:600;max-width:680px;line-height:1.2;animation:in .8s 1.2s both}.wales-story .lede b{background:var(--white);color:var(--red);padding:0 6px}.wales-story .counter{margin-top:22px;background:var(--green);color:var(--ink);display:inline-block;padding:10px 18px 12px;border:4px solid var(--ink);box-shadow:7px 7px 0 var(--ink);animation:in .8s 1.5s both}.wales-story .counter small{display:block;font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:13px}.wales-story .counter strong{font-family:var(--display);font-weight:400;font-size:clamp(48px,14vw,96px);line-height:1;display:block;font-variant-numeric:tabular-nums}.wales-story .hero .cue{opacity:0;animation:in .8s 2s both}@keyframes slide{from{transform:translateX(var(--from))}to{transform:none}}@keyframes in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}.wales-story .wait{background:var(--forest)}.wales-story .wait .inner{width:100%;max-width:640px;margin:0 auto;height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:10px;padding-top:10px}.wales-story .wait.done{transition:background 1s}.wales-story .hud{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}.wales-story .yr{font-family:var(--display);font-size:clamp(64px,20vw,120px);line-height:.85;font-variant-numeric:tabular-nums}.wales-story .yr small{display:block;font-family:var(--body);font-size:14px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:#e3f7ea;margin-top:6px}.wales-story .dc{text-align:right}.wales-story .dc b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(36px,10.5vw,66px);line-height:1;font-variant-numeric:tabular-nums}.wales-story .dc span{font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#e3f7ea;display:block}.wales-story .dc .def{margin-top:6px;display:inline-block;font-style:normal;background:var(--red);border:3px solid var(--ink);padding:0 8px;color:var(--white);font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase}.wales-story .years{display:grid;grid-template-columns:40px repeat(10,1fr);gap:3px;width:100%}.wales-story .hdr{font-weight:700;font-size:12px;text-align:center;color:#a9dcbb}.wales-story .dec{font-family:var(--display);font-size:17px;align-self:center;color:var(--white)}.wales-story .y{aspect-ratio:1;position:relative;font-family:var(--body);font-weight:700;font-size:11px;padding:2px 3px;color:#7fc698;background:#0c4d22;border:2px solid transparent;text-align:left;appearance:none;-webkit-appearance:none;cursor:pointer;transition:background .25s,color .25s,transform .25s;line-height:1}.wales-story .y:hover{filter:brightness(1.15)}.wales-story .y:focus-visible{outline:3px solid var(--white);outline-offset:2px}.wales-story .y.void{background:transparent;color:transparent;cursor:default;border-color:transparent}.wales-story .y.fut{background:transparent;border:2px dashed #2a8a4a;color:#3b9b5b}.wales-story .y.loss{background:var(--red);color:var(--white);border:2px solid var(--ink)}.wales-story .y.win{background:var(--white);color:var(--red);border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);z-index:2}.wales-story .y.now{outline:3px solid var(--white);outline-offset:1px;z-index:3;transform:scale(1.18)}.wales-story .y .dots{position:absolute;left:2px;right:2px;bottom:2px;display:flex;gap:2px;flex-wrap:wrap}.wales-story .y .dots i{width:5px;height:5px;border-radius:50%;background:var(--white)}.wales-story .y.win .dots i{background:var(--red)}.wales-story .card{background:var(--white);color:var(--ink);border:4px solid var(--ink);box-shadow:6px 6px 0 var(--ink);padding:8px 12px 8px;height:140px;overflow:hidden}.wales-story .latest{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;border-bottom:2px solid var(--ink);padding-bottom:5px;margin-bottom:6px}.wales-story .latest .res{padding:0 7px;border:2px solid var(--ink);background:var(--red);color:var(--white)}.wales-story .latest .res.w{background:var(--green);color:var(--ink)}.wales-story .stamp.pop{animation:stamp .35s cubic-bezier(.2,.9,.25,1.6)}@keyframes stamp{from{transform:scale(1.35);opacity:.2}to{transform:none;opacity:1}}.wales-story .cap h4{font-family:var(--display);font-weight:400;font-size:28px;text-transform:uppercase;color:var(--red);line-height:1}.wales-story .cap p{font-weight:600;font-size:18px;line-height:1.2;margin-top:3px}.wales-story .cap.swap{animation:swap .45s ease both}@keyframes swap{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}.wales-story .chain{display:flex;gap:2px;width:100%;cursor:pointer;touch-action:pan-y;user-select:none;-webkit-user-select:none}.wales-story .chain i{flex:1;height:22px;background:#0c4d22;border:2px solid rgba(255,255,255,.12);transition:background .2s,border-color .2s}.wales-story .chain i.lit{background:var(--red);border-color:var(--ink)}.wales-story .chain i.w.lit{background:var(--white)}.wales-story .ctrl{display:flex;gap:8px;align-items:center;margin-top:8px;padding-right:54px}.wales-story .ctrl button,.wales-story .replay{background:var(--white);color:var(--ink);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:14px;padding:1px 11px;line-height:1.3}.wales-story .ctrl button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}.wales-story .ctrl .hintt .lg{display:none}@media(min-width:520px){.wales-story .ctrl .hintt .lg{display:inline}.wales-story .ctrl .hintt .sh{display:none}}.wales-story .ctrl .hintt{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#e3f7ea;line-height:1.1}.wales-story .cue.mini{left:auto;right:10px;bottom:10px;width:46px;height:46px;border-radius:50%;background:var(--white);color:var(--ink);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);display:flex;align-items:center;justify-content:center;padding:0;pointer-events:auto}.wales-story .cue.mini b{font-size:24px;animation:bob 1.2s ease-in-out infinite}.wales-story .m{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 8px;border-top:2px solid var(--ink);padding:3px 0}.wales-story .m:first-child{border-top:0}.wales-story .m b{font-size:20px;text-transform:uppercase}.wales-story .m small{font-weight:600;font-size:15px;color:#6a4a50}.wales-story .m small.full{width:100%}.wales-story .m .res{font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:0 7px;border:2px solid var(--ink);background:var(--red);color:var(--white)}.wales-story .m .res.w{background:var(--green);color:var(--ink)}.wales-story .chip.btn{background:var(--white);text-align:left;cursor:pointer;font-family:var(--body);color:var(--ink)}.wales-story .chip.btn:hover{background:#ffe9ee}.wales-story .marg{background:var(--white);color:var(--ink);justify-content:flex-start;padding-top:36px}.wales-story .marg .inner{width:100%;max-width:820px}.wales-story .sec-title{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(38px,10vw,70px);line-height:.95;color:var(--red)}.wales-story .sec-sub{font-weight:600;font-size:18px;margin:6px 0 12px;color:#3a2025;max-width:600px}.wales-story .bars{display:flex;align-items:flex-end;gap:3px;height:28vh;height:28svh;border-bottom:4px solid var(--ink)}.wales-story .bar{flex:1;min-width:0;background:var(--red);border:0;transform:scaleY(0);transform-origin:bottom;transition:transform .5s cubic-bezier(.2,.9,.25,1.2)}.wales-story .bar.up{transform:scaleY(1)}.wales-story .bar.close{background:var(--ink)}.wales-story .bar.win{background:var(--green);outline:3px solid var(--ink)}.wales-story .bar.sel{outline:3px solid var(--green);outline-offset:1px;z-index:2}.wales-story .axis{display:flex;justify-content:space-between;font-weight:700;font-size:14px;letter-spacing:.08em;margin-top:5px;color:#6a4a50}.wales-story .readout{margin-top:10px;border:4px solid var(--ink);box-shadow:5px 5px 0 var(--ink);padding:6px 12px;font-weight:700;font-size:20px;text-transform:uppercase;display:flex;justify-content:space-between;gap:8px;min-height:46px}.wales-story .readout span{color:#6a4a50;font-size:15px;align-self:center}.wales-story .chips{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px;opacity:0;transform:translateY(40px);transition:opacity .5s,transform .6s cubic-bezier(.2,.9,.25,1.2)}.wales-story .chips.show{opacity:1;transform:none}@media(min-width:700px){.wales-story .chips{grid-template-columns:repeat(4,1fr)}}.wales-story .chip{border:4px solid var(--ink);padding:5px 10px;box-shadow:4px 4px 0 var(--ink)}.wales-story .chip b{font-family:var(--display);font-weight:400;font-size:36px;line-height:1;color:var(--red);display:block}.wales-story .chip span{font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:12px;line-height:1.1;display:block}.wales-story .fin{background:var(--red);gap:10px}.wales-story .big-date{font-family:var(--display);text-transform:uppercase;font-size:clamp(36px,10vw,72px);line-height:.95;text-align:center}.wales-story .paper{width:100%;max-width:300px;border:4px solid var(--ink);box-shadow:7px 7px 0 var(--ink);background:var(--white);color:var(--ink)}.wales-story .paper header{padding:6px 12px;display:flex;justify-content:space-between;align-items:baseline;background:var(--green);color:var(--ink)}.wales-story .paper.w header{background:var(--red);color:var(--white)}.wales-story .paper h3{font-family:var(--display);font-weight:400;font-size:26px;text-transform:uppercase;line-height:1}.wales-story .paper header em{font-style:normal;font-weight:700;letter-spacing:.1em;font-size:13px;text-transform:uppercase}.wales-story .grid7{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}.wales-story .dow{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:4px 0;border-bottom:2px solid var(--ink);color:#6a4a50}.wales-story .d{padding:4px 0;font-weight:600;font-size:15px;position:relative;font-variant-numeric:tabular-nums;color:#4a3036}.wales-story .d.hit{color:var(--white);font-weight:700;z-index:1}.wales-story .d.hit::before{content:"";position:absolute;inset:1px 6%;background:var(--red);border:3px solid var(--ink);border-radius:50%;z-index:-1;transform:scale(0);transition:transform .5s cubic-bezier(.2,.9,.25,1.5)}.wales-story .ring .d.hit::before{transform:scale(1)}@media(max-height:760px){.wales-story .fin .paper{display:none}}.wales-story .huge{font-family:var(--display);text-transform:uppercase;font-size:clamp(84px,28vw,210px);line-height:.85;text-align:center;color:var(--white);text-shadow:5px 5px 0 var(--ink)}.wales-story .huge span{color:var(--green)}.wales-story .fin .line{font-family:var(--display);text-transform:uppercase;text-align:center;font-size:clamp(24px,6.5vw,44px);line-height:1}.wales-story .fin .sub{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:16px;text-align:center}.wales-story .facts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:640px}.wales-story .facts span{background:var(--white);color:var(--ink);border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:14px;padding:1px 9px}.wales-story .fin .src{font-weight:600;font-size:12px;max-width:560px;text-align:center;opacity:.9}.wales-story .conf{position:absolute;top:-24px;width:10px;height:16px;animation:fall linear forwards;z-index:5;pointer-events:none}@keyframes fall{to{transform:translate3d(var(--dx),115vh,0) rotate(720deg)}}@media (prefers-reduced-motion:reduce){.wales-story .kicker,.wales-story .lede,.wales-story .counter,.wales-story .cue,.wales-story h1 span,.wales-story .cue b,.wales-story .hero .cue{animation:none!important;opacity:1}.wales-story .active .fx{animation:none!important;opacity:1}}
+.wales-story h1{font-size:clamp(52px,7.5vw,108px)}
+.wales-story .huge{font-size:clamp(64px,14vw,150px)}
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CDR01PXKG0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("js", new Date());
+      gtag("config", "G-CDR01PXKG0");
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="logo-link">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="200" height="60" />
+        </a>
+        <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+          <svg class="nav-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <nav id="site-nav" class="site-nav" aria-label="Primary">
+          <a href="index.html">Home</a>
+          <a href="portfolio.html" class="active">Portfolio</a>
+          <a href="blog.html">Blog</a>
+          <a href="about.html">About</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <article class="article-wrap article-wrap--tight-end">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a> · <a href="portfolio.html">Portfolio</a> · <span>73 Years. 34 Losses. One Roar.</span>
+        </nav>
+        <header class="article-header">
+          <h1>73 Years. 34 Losses. One Roar.</h1>
+          <div class="article-meta">
+            <span>Published 15th November 2026</span>
+            <span class="tag">Interactive</span>
+            <span>~4 min read</span>
+          </div>
+        </header>
+        <div class="prose">
+          <p>
+            Wales had not beaten New Zealand since 19 December 1953. On 14 November 2026 they did, 35–28 in Cardiff.
+            That is 26,628 days, and 34 defeats in between. A sentence can hold the number. It cannot hold the wait.
+          </p>
+          <p>
+            So the piece below is four screens you move through. The headline. A clock that runs from that December
+            in Cardiff to this November, filling a year at a time. Every Test in between, drawn by how much it was won
+            by. Then the Saturday it ended.
+          </p>
+          <div class="callout">
+            <strong>The gap:</strong> two Welsh wins in the fixture since 1953. The closest defeats were by a single
+            point, in 1978 and again in 2004. The widest was 52 points, 55–3 in Hamilton in 2003.
+          </div>
+          <div class="wales-stage">
+            <nav class="dots-nav" aria-label="Sections"></nav>
+            <div class="wales-story" id="wales-story">
+
+
+
+<!-- 1. HERO -->
+<section class="slide hero" id="hero">
+  <div class="flagbar"></div>
+  <div class="in">
+    <div class="kicker"><i></i>Wales v New Zealand · Men’s rugby union</div>
+    <h1><span>73 years.</span><span>34 losses.</span><span>One roar.</span></h1>
+    <p class="lede">On <b>14 November 2026</b> Wales beat the All Blacks 35–28 in Cardiff. The last time? <b>19 December 1953.</b></p>
+    <div class="counter"><small>Days between Welsh wins</small><strong id="count">26,628</strong></div>
+  </div>
+  <div class="cue" style="opacity:1">Scroll to start the clock<b>↓</b></div>
+</section>
+
+<!-- 2. THE WAIT -->
+<section class="slide wait" id="waitS">
+  <div class="flagbar"></div>
+    <div class="inner">
+    <div class="hud">
+      <div class="yr"><span id="yr">1953</span><small id="mon">December</small></div>
+      <div class="dc"><b id="dd">0</b><span>days since the last win</span><em class="def" id="def">0 defeats in a row</em></div>
+    </div>
+    <div class="years" id="years" role="img" aria-label="Year-by-year wall calendar filling in as the years pass"></div>
+    <div class="card">
+      <div class="latest stamp" id="latest"></div>
+      <div class="cap" id="cap"></div>
+    </div>
+    <div>
+      <div class="chain" id="chain" title="Drag across the defeats"></div>
+      <div class="ctrl">
+        <button type="button" id="prevB" aria-label="Previous Test">‹</button>
+        <button type="button" id="playB">⏸ Pause</button>
+        <button type="button" id="nextB" aria-label="Next Test">›</button>
+        <span class="hintt"><span class="sh">Tap a year</span><span class="lg">Tap a year · drag the chain</span></span>
+      </div>
+    </div>
+  </div>
+  <button class="cue mini" id="cueW" type="button" aria-label="Next section"><b>↓</b></button>
+</section>
+
+<!-- 3. MARGINS -->
+<section class="slide marg" id="margS">
+  <div class="flagbar"></div>
+  <button class="replay" type="button" data-replay="margS">↻ Replay</button>
+  <div class="inner">
+    <h2 class="sec-title fx l" style="--d:.05s">34 defeats,<br>by the inch</h2>
+    <p class="sec-sub fx" style="--d:.2s">Every Test since 1953, sized by winning margin. Tap any bar. Black bars are the nail-biters; green are the two Welsh wins.</p>
+    <div class="bars" id="bars" role="group" aria-label="Winning margin of each Test"></div>
+    <div class="axis"><span>1953</span><span>2026</span></div>
+    <div class="readout" id="readout"><b>&nbsp;</b></div>
+    <div class="chips" id="chips"></div>
+  </div>
+  <button class="cue mini" id="cueM" type="button" aria-label="Next section"><b>↓</b></button>
+</section>
+
+<!-- 4. LATEST RESULT -->
+<section class="slide fin" id="finS">
+  <div class="flagbar"></div>
+  <div class="sub fx" style="--d:.05s">Full time · Principality Stadium, Cardiff</div>
+  <div class="big-date fx l" style="--d:.15s">14 November 2026</div>
+  <div class="paper w fx z" id="calB" style="--d:.3s"></div>
+  <div class="huge fx slam" style="--d:.8s">35 <span>–</span> 28</div>
+  <div class="line fx" style="--d:1.3s">Wales beat New Zealand</div>
+  <div class="facts fx" style="--d:1.6s"><span>Nations Championship</span><span>Half-time 21–21</span><span>Five tries to four</span><span>First win since 1953</span></div>
+  <div class="line fx" style="--d:1.9s;color:var(--ink)">26,628 days. 34 defeats. Done.</div>
+  <p class="src fx" style="--d:2.1s">Result as reported on the day, 14 Nov 2026 (Kickoff, allblacks.com, TNT Sports). Earlier results: Wikipedia’s Wales–New Zealand Test history (mirror), checked against NZ Herald, RTÉ. Full Tests only; Wales first.</p>
+  <button class="replay" type="button" id="toTop" style="top:auto;bottom:16px;right:38px">↑ From the top</button>
+</section>
+
+
+            </div>
+          </div>
+          <div class="project-embed-actions">
+            <span>Scroll inside the frame. The dots on the right move between the four screens, and the page carries on below it.</span>
+          </div>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">How I did it</h3>
+          <p>
+            This one is not a Tableau workbook, and it is not a dashboard you filter. It is a short story with four
+            full-height screens, and there is no library in it. The screens snap as you scroll, and each one starts
+            its own animation when it comes into view.
+          </p>
+          <p>
+            The results are one list. Date, venue, Wales's score, New Zealand's score, and the occasion: a tour, a
+            World Cup, an autumn Test. A win is just Wales scoring more. From that list the page gets the day count,
+            the defeat streak, the margins, and which years to colour. Full Tests only, Wales named first. The 2026
+            score is the one reported on the day. The earlier ones are the Wales–New Zealand Test history, checked
+            against the match reports.
+          </p>
+          <p>
+            The first screen counts 26,628 up from zero. The second plays the years. I placed the captions by hand,
+            on the beats worth stopping for: the one-point games, the 1988 tour, Hamilton, Tom Rogers' hat-trick in
+            2025, and then Cardiff. The clock pauses on each of those. A year turns red for a defeat and white for a
+            win. The background drifts from green toward black as the wait gets longer, and snaps to red when the
+            2026 result lands. You can pause it, step a Test at a time, tap a year, or drag along the chain of defeats.
+          </p>
+          <p>
+            The third screen is the same list as bars. The height is the winning margin. Black bars are the games
+            decided by three points or fewer. The two green bars are the Welsh wins. They grow in order, and the
+            chips underneath jump you to the closest loss, the biggest, and the one that ended it.
+          </p>
+          <p>
+            The last screen is the Saturday. A calendar for November 2026, weekday names in Welsh, the 14th circled,
+            and then the score. If reduced motion is on, the count-up, the year play and the confetti are skipped
+            and the finished state is shown instead.
+          </p>
+
+          <h3 style="color: var(--color-accent); margin-top: var(--space-6)">The Last Thread</h3>
+          <p>
+            Thirty-four defeats is a number you can put in a headline. The useful bit was making someone sit through
+            the years before the score arrived. The roar only lands if the clock has been running.
+          </p>
+          <p>Rob.</p>
+        </div>
+        <div class="author-box author-box--logo">
+          <img src="assets/Logos/Long_Logo.png" alt="The Data Taylor" width="260" height="78" />
+        </div>
+      </article>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <img src="assets/Logos/Logo_Square.png" alt="The Data Taylor" width="200" height="60" />
+          <p>Crafted Insights: data analytics with editorial clarity.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="portfolio.html">Portfolio</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <div class="social-row">
+            <a href="https://www.linkedin.com/in/robert-taylor-32b779252" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            <a href="https://github.com/TheDataTaylor" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            </a>
+            <a href="https://x.com/trebor_rolyat" aria-label="X (Twitter)">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a class="social-tableau" href="https://public.tableau.com/app/profile/rob.taylor6175/vizzes" aria-label="Tableau Public portfolio" rel="noopener noreferrer">
+              <img src="assets/Logos/tableau-logo.png" alt="" width="72" height="28" decoding="async" />
+            </a>
+          </div>
+        </div>
+        <p class="footer-copy">© 2026 The Data Taylor. Crafted Insights.</p>
+      </div>
+    </footer>
+    <script>
+
+(function(){
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root=document.getElementById("wales-story");
+  function goTo(el){var top=el.getBoundingClientRect().top-root.getBoundingClientRect().top+root.scrollTop;root.scrollTo({top:top,behavior:reduce?"auto":"smooth"});}
+  var clamp=function(x,a,b){return Math.max(a,Math.min(b,x))};
+  var fmt=function(n){return n.toLocaleString("en-GB")};
+  var MON=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var CYM=["Ionawr","Chwefror","Mawrth","Ebrill","Mai","Mehefin","Gorffennaf","Awst","Medi","Hydref","Tachwedd","Rhagfyr"];
+  var DOW=["Llun","Maw","Mer","Iau","Gwe","Sad","Sul"];
+
+  var T=[
+  ["1953-12-19","Cardiff",13,8,"NZ tour"],["1963-12-21","Cardiff",0,6,"NZ tour"],["1967-11-11","Cardiff",6,13,"NZ tour"],
+  ["1969-05-31","Christchurch",0,19,"Wales tour"],["1969-06-14","Auckland",12,33,"Wales tour"],["1972-12-02","Cardiff",16,19,"NZ tour"],
+  ["1978-11-11","Cardiff",12,13,"NZ tour"],["1980-11-01","Cardiff",3,23,"NZ tour"],["1987-06-14","Brisbane",6,49,"World Cup"],
+  ["1988-05-28","Christchurch",3,52,"Wales tour"],["1988-06-11","Auckland",9,54,"Wales tour"],["1989-11-04","Cardiff",9,34,"NZ tour"],
+  ["1995-05-31","Johannesburg",9,34,"World Cup"],["1997-11-29","Wembley",7,42,"NZ tour"],["2002-11-23","Cardiff",17,43,"Autumn Test"],
+  ["2003-06-21","Hamilton",3,55,"Wales tour"],["2003-11-02","Sydney",37,53,"World Cup"],["2004-11-20","Cardiff",25,26,"Autumn Test"],
+  ["2005-11-05","Cardiff",3,41,"Autumn Test"],["2006-11-25","Cardiff",10,45,"Autumn Test"],["2008-11-22","Cardiff",9,29,"Autumn Test"],
+  ["2009-11-07","Cardiff",12,19,"Autumn Test"],["2010-06-19","Dunedin",9,42,"Wales tour"],["2010-06-26","Hamilton",10,29,"Wales tour"],
+  ["2010-11-27","Cardiff",25,37,"Autumn Test"],["2012-11-24","Cardiff",10,33,"Autumn Test"],["2014-11-22","Cardiff",16,34,"Autumn Test"],
+  ["2016-06-11","Auckland",21,39,"Wales tour"],["2016-06-18","Wellington",22,36,"Wales tour"],["2016-06-25","Dunedin",6,46,"Wales tour"],
+  ["2017-11-25","Cardiff",18,33,"Autumn Test"],["2019-11-01","Tokyo",17,40,"World Cup bronze final"],["2021-10-30","Cardiff",16,54,"Autumn Test"],
+  ["2022-11-05","Cardiff",23,55,"Autumn Test"],["2025-11-22","Cardiff",26,52,"Autumn Nations Series"],["2026-11-14","Cardiff",35,28,"Nations Championship"]
+  ].map(function(r){var d=new Date(r[0]+"T00:00:00Z");return{iso:r[0],d:d,t:d.getTime(),y:d.getUTCFullYear(),v:r[1],w:r[2],n:r[3],c:r[4],win:r[2]>r[3]};});
+  var first=T[0], last=T[T.length-1];
+  var days=Math.round((last.t-first.t)/864e5);
+  var losses=T.filter(function(m){return !m.win});
+
+  var CAPS=[
+    ["1953-12-19","The last win","Cardiff, 13–8. The clock starts here."],
+    ["1954-06-01","Ten years of silence","No Test at all. The next meeting is December 1963."],
+    ["1963-12-21","Defeat number 1","0–6 in Cardiff. The streak begins."],
+    ["1967-11-11","Cardiff, again","6–13. Another tour, another defeat."],
+    ["1978-11-11","One point","12–13 in Cardiff. So close."],
+    ["1988-05-28","The 1988 tour","52–3 in Christchurch, then 54–9 in Auckland."],
+    ["1995-05-31","World Cup, Johannesburg","9–34. Their second World Cup meeting."],
+    ["2003-06-21","The widest gap","55–3 in Hamilton: a 52-point margin."],
+    ["2004-11-20","One point. Again.","25–26 in Cardiff. Agonisingly close."],
+    ["2010-06-19","Back to New Zealand","Dunedin 9–42, Hamilton 10–29."],
+    ["2016-06-11","Three-Test series","Auckland, Wellington, Dunedin. 3–0 to the All Blacks."],
+    ["2019-11-01","Tokyo","World Cup bronze final. 17–40."],
+    ["2025-11-22","Tom Rogers’ hat-trick","The first Welsh hat-trick against NZ, and Wales’s best Cardiff score in the fixture. Still lost 26–52."],
+    ["2026-11-14","The wait is over","Cardiff. 35–28. Wales win."]
+  ].map(function(c){return {t:new Date(c[0]+"T00:00:00Z").getTime(),tag:c[1],txt:c[2]}});
+
+  // ---------- builders ----------
+  (function(){
+    var m=last,y=m.y,mo=m.d.getUTCMonth(),hit=m.d.getUTCDate();
+    var start=(new Date(Date.UTC(y,mo,1)).getUTCDay()+6)%7, n=new Date(Date.UTC(y,mo+1,0)).getUTCDate();
+    var h='<header><h3>'+MON[mo]+' '+y+'</h3><em>'+CYM[mo]+'</em></header><div class="grid7">';
+    DOW.forEach(function(d){h+='<div class="dow">'+d+'</div>'});
+    for(var i=0;i<start;i++)h+='<div class="d"></div>';
+    for(var d=1;d<=n;d++)h+='<div class="d'+(d===hit?' hit':'')+'">'+d+'</div>';
+    document.getElementById("calB").innerHTML=h+'</div>';
+  })();
+
+  var cEl=document.getElementById("count");
+  var countRaf=0, countTimer=0;
+  function stopCount(){ cancelAnimationFrame(countRaf); clearTimeout(countTimer); }
+  function playCount(){
+    stopCount();
+    if(reduce){ cEl.textContent=fmt(days); return; }
+    cEl.textContent="0";
+    countTimer=setTimeout(function(){
+      var t0=null;
+      (function step(ts){
+        if(t0===null)t0=ts; var p=Math.min(1,(ts-t0)/1800), e=1-Math.pow(1-p,3);
+        cEl.textContent=fmt(Math.round(days*e));
+        if(p<1) countRaf=requestAnimationFrame(step);
+      })(performance.now());
+    },1500);
+  }
+  if(reduce) cEl.textContent=fmt(days); else cEl.textContent="0";
+
+  var yrs=document.getElementById("years"), cells={};
+  var h='<div></div>'; for(var i=0;i<10;i++)h+='<div class="hdr">'+i+'</div>';
+  yrs.innerHTML=h;
+  for(var dec=1950;dec<=2020;dec+=10){
+    var lab=document.createElement("div"); lab.className="dec"; lab.textContent=dec+"s"; yrs.appendChild(lab);
+    for(var k=0;k<10;k++){
+      var y=dec+k, el;
+      if(y>=1953&&y<=2026){
+        el=document.createElement("button"); el.type="button"; el.className="y fut";
+        el.innerHTML="’"+String(y).slice(2)+'<span class="dots"></span>';
+        el.setAttribute("aria-label","Year "+y);
+        (function(y){el.addEventListener("click",function(){pickYear(y)})})(y);
+      } else { el=document.createElement("div"); el.className="y void"; }
+      yrs.appendChild(el); cells[y]=el;
+    }
+  }
+  var chain=document.getElementById("chain"), boxes=[];
+  for(var b=0;b<T.length-1;b++){var bi=document.createElement("i"); if(b===T.length-2)bi.className="w"; chain.appendChild(bi); boxes.push(bi);}
+
+  var bars=document.getElementById("bars"), barEls=[], maxM=0;
+  T.forEach(function(m){maxM=Math.max(maxM,Math.abs(m.w-m.n))});
+  var readout=document.getElementById("readout"), bsel=null;
+  function showBar(i){
+    var m=T[i], mg=Math.abs(m.w-m.n);
+    readout.innerHTML='<b>Wales '+m.w+'–'+m.n+' NZ</b><span>'+m.y+' · '+m.v+' · '+(m.win?'Won by ':'Lost by ')+mg+'</span>';
+    if(bsel)bsel.classList.remove("sel"); bsel=barEls[i]; barEls[i].classList.add("sel");
+  }
+  T.forEach(function(m,i){
+    var mg=Math.abs(m.w-m.n), b=document.createElement("button"); b.type="button";
+    b.className="bar"+(m.win?" win":(mg<=3?" close":""));
+    b.style.height=Math.max(3,Math.round(mg/maxM*100))+"%";
+    b.setAttribute("aria-label",m.y+": Wales "+m.w+" New Zealand "+m.n);
+    b.addEventListener("click",function(){finishMarg(i)});
+    b.addEventListener("mouseenter",function(){ if(window.matchMedia("(hover:hover)").matches&&b.classList.contains("up"))showBar(i)});
+    bars.appendChild(b); barEls.push(b);
+  });
+  var close=Math.min.apply(null,losses.map(function(m){return m.n-m.w}));
+  var big=Math.max.apply(null,losses.map(function(m){return m.n-m.w}));
+  var bigM=losses.filter(function(m){return m.n-m.w===big})[0];
+  var cl=losses.filter(function(m){return m.n-m.w===close}).map(function(m){return m.y}).join(" & ");
+  var chipsEl=document.getElementById("chips");
+  var closeIdx=T.indexOf(losses.filter(function(m){return m.n-m.w===close})[0]), bigIdx=T.indexOf(bigM);
+  chipsEl.innerHTML=[[String(losses.length),"Straight defeats, 1963–2025",-1],[close+" pt","Closest loss ("+cl+") · tap",closeIdx],[big+" pts","Biggest loss ("+bigM.y+") · tap",bigIdx],["2 of "+T.length,"Welsh wins since 1953 · tap",T.length-1]]
+    .map(function(c){return c[2]<0?'<div class="chip"><b>'+c[0]+'</b><span>'+c[1]+'</span></div>':'<button type="button" class="chip btn" data-i="'+c[2]+'"><b>'+c[0]+'</b><span>'+c[1]+'</span></button>'}).join("");
+  Array.prototype.forEach.call(chipsEl.querySelectorAll("[data-i]"),function(b){b.addEventListener("click",function(){finishMarg(+b.getAttribute("data-i"))})});
+
+  // ---------- THE WAIT: auto-run ----------
+  var waitS=document.getElementById("waitS");
+  var yrEl=document.getElementById("yr"), monEl=document.getElementById("mon"), ddEl=document.getElementById("dd"), defEl=document.getElementById("def");
+  var latestEl=document.getElementById("latest"), capEl=document.getElementById("cap"), cueW=document.getElementById("cueW");
+  var key="", capIdx=-1, latIdx=-1, raf=0, elapsed=0, lastNow=0, curMs=first.t, paused=false, sel=null;
+  var playB=document.getElementById("playB");
+  var FOREST=[0,105,42], DARK=[5,28,13], RED=[211,7,49];
+  var mix=function(a,b,f){return "rgb("+a.map(function(v,i){return Math.round(v+(b[i]-v)*f)}).join(",")+")"};
+  var byYear={}; T.forEach(function(m,i){(byYear[m.y]=byYear[m.y]||[]).push(i)});
+  var DAYN=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  function resultTag(m){return '<span class="res'+(m.win?' w':'')+'">'+(m.win?'Win':'Lost by '+(m.n-m.w))+'</span>'}
+  function renderSel(){
+    var ts=sel.tests.map(function(i){return T[i]});
+    latestEl.innerHTML='<span>Selected · '+(sel.title)+'</span><span>'+ts.length+' Test'+(ts.length===1?'':'s')+'</span>';
+    if(!ts.length){capEl.innerHTML='<h4>No Test this year</h4><p>The wait goes on.</p>';return;}
+    capEl.innerHTML=ts.map(function(m){
+      var d=m.d.getUTCDate()+" "+MON[m.d.getUTCMonth()].slice(0,3);
+      if(ts.length===1) return '<div class="m"><b>Wales '+m.w+'–'+m.n+' NZ</b>'+resultTag(m)+'<small class="full">'+DAYN[m.d.getUTCDay()]+" "+d+" "+m.y+' · '+m.v+' · '+m.c+'</small></div>';
+      return '<div class="m"><b>Wales '+m.w+'–'+m.n+'</b><small>'+d+' · '+m.v+'</small>'+resultTag(m)+'</div>';
+    }).join("");
+  }
+
+  function updWait(ms){
+    var cur=new Date(ms), cy=cur.getUTCFullYear(), passed=0, defeats=0;
+    for(var i=0;i<T.length;i++){ if(T[i].t<=ms){passed++; if(!T[i].win)defeats++;} }
+    yrEl.textContent=cy; monEl.textContent=MON[cur.getUTCMonth()];
+    ddEl.textContent=fmt(Math.round((ms-first.t)/864e5));
+    defEl.textContent=defeats+" defeat"+(defeats===1?"":"s")+" in a row";
+    var k=cy+"|"+passed;
+    if(k!==key){
+      key=k;
+      for(var y=1953;y<=2026;y++){
+        var el=cells[y], ts=T.filter(function(m){return m.y===y&&m.t<=ms}), cls="y";
+        if(y>cy)cls+=" fut";
+        else{
+          var won=ts.some(function(m){return m.win}), lost=ts.some(function(m){return !m.win});
+          cls+= won?" win":(lost?" loss":"");
+          if(y===cy)cls+=" now";
+        }
+        el.className=cls;
+        el.lastChild.innerHTML=ts.map(function(){return "<i></i>"}).join("");
+      }
+      for(var b=0;b<boxes.length;b++){boxes[b].classList.toggle("lit",b<passed-1)}
+      if(!sel && passed-1!==latIdx){
+        latIdx=passed-1; var m=T[latIdx];
+        latestEl.innerHTML='<span>Latest Test · '+m.y+'</span><span><b>Wales '+m.w+'–'+m.n+'</b></span>'+resultTag(m).replace('<span class="res','<span class="res');
+        if(!reduce){latestEl.classList.remove("pop");void latestEl.offsetWidth;latestEl.classList.add("pop");}
+      }
+    }
+    if(sel){ if(capIdx!==-2){capIdx=-2;renderSel();} }
+    else{
+      var ci=0; for(var c=0;c<CAPS.length;c++){ if(CAPS[c].t<=ms)ci=c; }
+      if(ci!==capIdx){
+        capIdx=ci; capEl.innerHTML='<h4>'+CAPS[ci].tag+'</h4><p>'+CAPS[ci].txt+'</p>';
+        if(!reduce){capEl.classList.remove("swap");void capEl.offsetWidth;capEl.classList.add("swap");}
+      }
+    }
+    waitS.style.background= ms>=last.t ? "rgb("+RED.join(",")+")" : mix(FOREST,DARK,clamp((ms-first.t)/(last.t-first.t),0,1)*0.95);
+  }
+
+  // schedule: run between story beats, pause on each beat
+  var SEGS=(function(){
+    var s=[{hold:true,dur:1.4,t:first.t}], prev=first.t;
+    for(var i=1;i<CAPS.length;i++){
+      var yrsGap=(CAPS[i].t-prev)/(365.25*864e5);
+      s.push({a:prev,b:CAPS[i].t,dur:Math.max(0.7,yrsGap*0.2)});
+      prev=CAPS[i].t; s.push({hold:true,dur:1.15,t:prev});
+    }
+    return s;
+  })();
+  function simAt(sec){
+    var acc=0;
+    for(var i=0;i<SEGS.length;i++){
+      var s=SEGS[i];
+      if(sec<acc+s.dur){ return {ms:s.hold?s.t:s.a+(s.b-s.a)*((sec-acc)/s.dur),done:false}; }
+      acc+=s.dur;
+    }
+    return {ms:last.t,done:true};
+  }
+  function secAt(ms){  // inverse of simAt: where in the schedule is this date?
+    var acc=0;
+    for(var i=0;i<SEGS.length;i++){
+      var s=SEGS[i];
+      if(s.hold){ if(ms===s.t)return acc; }
+      else if(ms>=s.a&&ms<s.b){ return acc+(ms-s.a)/(s.b-s.a)*s.dur; }
+      acc+=s.dur;
+    }
+    return acc;
+  }
+  function setBtn(){ playB.textContent = paused ? (curMs>=last.t?"↻ Replay":"▶ Play") : "⏸ Pause"; }
+  function dirty(){key="";capIdx=-1;latIdx=-1;}
+  function tick(now){
+    if(lastNow)elapsed+=(now-lastNow)/1000; lastNow=now;
+    var s=simAt(elapsed); curMs=s.ms;
+    if(s.done){finishWait();return;}
+    updWait(s.ms); raf=requestAnimationFrame(tick);
+  }
+  function startRun(fromSec){ elapsed=fromSec; lastNow=0; paused=false; setBtn(); raf=requestAnimationFrame(tick); }
+  function resetWait(){
+    cancelAnimationFrame(raf); sel=null; dirty(); waitS.classList.remove("done"); cueW.classList.remove("show");
+    curMs=first.t; updWait(first.t);
+  }
+  function finishWait(){
+    cancelAnimationFrame(raf); sel=null; dirty(); paused=true; curMs=last.t;
+    waitS.classList.add("done"); updWait(last.t); cueW.classList.add("show"); setBtn();
+  }
+  function playWait(){ resetWait(); if(reduce){finishWait();return;} startRun(0); }
+  function setManual(ms,s){
+    cancelAnimationFrame(raf); paused=true; sel=s||null; curMs=ms; dirty();
+    waitS.classList.remove("done"); updWait(ms); cueW.classList.add("show"); setBtn();
+  }
+  function selectTest(i){ setManual(T[i].t,{tests:[i],title:T[i].y}); }
+  function pickYear(y){
+    var ix=byYear[y]||[];
+    if(ix.length) setManual(T[ix[ix.length-1]].t,{tests:ix,title:y});
+    else setManual(clamp(Date.UTC(y,11,31),first.t,last.t),{tests:[],title:y});
+  }
+  function curTestIdx(){ var n=-1; for(var i=0;i<T.length;i++){ if(T[i].t<=curMs)n=i; } return Math.max(0,n); }
+  function step(d){ selectTest(clamp(curTestIdx()+d,0,T.length-1)); }
+  playB.addEventListener("click",function(){
+    if(!paused){ cancelAnimationFrame(raf); paused=true; setBtn(); return; }
+    if(curMs>=last.t){ playWait(); return; }
+    sel=null; dirty(); waitS.classList.remove("done"); cueW.classList.remove("show");
+    startRun(secAt(curMs));
+  });
+  document.getElementById("prevB").addEventListener("click",function(){step(-1)});
+  document.getElementById("nextB").addEventListener("click",function(){step(1)});
+  document.addEventListener("keydown",function(e){
+    if(!waitS.classList.contains("active"))return;
+    if(e.key==="ArrowRight"){step(1);e.preventDefault();} else if(e.key==="ArrowLeft"){step(-1);e.preventDefault();}
+  });
+  // drag across the chain of defeats
+  var dragging=false, lastPick=-1;
+  function chainPick(e){
+    var r=chain.getBoundingClientRect(), i=clamp(Math.floor((e.clientX-r.left)/r.width*boxes.length),0,boxes.length-1);
+    if(i+1!==lastPick){lastPick=i+1; selectTest(i+1);}
+  }
+  chain.addEventListener("pointerdown",function(e){dragging=true;lastPick=-1;try{chain.setPointerCapture(e.pointerId)}catch(x){} chainPick(e)});
+  chain.addEventListener("pointermove",function(e){if(dragging)chainPick(e)});
+  chain.addEventListener("pointerup",function(){dragging=false});
+  chain.addEventListener("pointercancel",function(){dragging=false});
+
+  // ---------- MARGINS: auto-run ----------
+  var margS=document.getElementById("margS"), cueM=document.getElementById("cueM"), mTimer=0, mTimeout=0;
+  function resetMarg(){
+    clearInterval(mTimer); clearTimeout(mTimeout);
+    barEls.forEach(function(b){b.classList.remove("up")});
+    readout.innerHTML="<b>&nbsp;</b>"; if(bsel){bsel.classList.remove("sel");bsel=null;}
+    chipsEl.classList.remove("show"); cueM.classList.remove("show");
+  }
+  function finishMarg(idx){
+    clearInterval(mTimer); clearTimeout(mTimeout);
+    barEls.forEach(function(b){b.classList.add("up")});
+    showBar(typeof idx==="number"?idx:T.length-1); chipsEl.classList.add("show"); cueM.classList.add("show");
+  }
+  function playMarg(){
+    resetMarg();
+    if(reduce){finishMarg();return;}
+    var n=0;
+    mTimeout=setTimeout(function(){
+      mTimer=setInterval(function(){
+        barEls[n].classList.add("up"); showBar(n); n++;
+        if(n>=T.length){clearInterval(mTimer); mTimeout=setTimeout(function(){chipsEl.classList.add("show");cueM.classList.add("show");},500);}
+      },210);
+    },700);
+  }
+
+  // ---------- FINALE ----------
+  var finS=document.getElementById("finS"), ft1=0, ft2=0;
+  function playFin(){
+    clearTimeout(ft1);clearTimeout(ft2);
+    finS.classList.remove("ring");
+    ft1=setTimeout(function(){finS.classList.add("ring")},900);
+    if(reduce){finS.classList.add("ring");return;}
+    ft2=setTimeout(function(){
+      var cols=["#ffffff","#00AB39","#16060A","#ffffff","#00AB39"];
+      for(var i=0;i<90;i++){
+        var c=document.createElement("i"); c.className="conf";
+        c.style.left=Math.random()*100+"%"; c.style.background=cols[i%cols.length];
+        c.style.setProperty("--dx",(Math.random()*120-60)+"px");
+        c.style.animationDuration=(2.2+Math.random()*2.4)+"s"; c.style.animationDelay=(Math.random()*0.8)+"s";
+        finS.appendChild(c); setTimeout((function(n){return function(){n.remove()}})(c),6000);
+      }
+    },900);
+  }
+  function stopFin(){clearTimeout(ft1);clearTimeout(ft2);finS.classList.remove("ring");}
+
+  // ---------- slide controller ----------
+  var slides=[
+    {el:document.getElementById("hero"),enter:playCount,leave:stopCount},
+    {el:waitS,enter:playWait,leave:function(){cancelAnimationFrame(raf);paused=true}},
+    {el:margS,enter:playMarg,leave:resetMarg},
+    {el:finS,enter:playFin,leave:stopFin}
+  ];
+  var nav=document.querySelector(".dots-nav"), dots=[];
+  slides.forEach(function(s,i){
+    var b=document.createElement("button"); b.type="button"; b.setAttribute("aria-label","Go to section "+(i+1));
+    b.addEventListener("click",function(){goTo(s.el)});
+    nav.appendChild(b); dots.push(b);
+  });
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      var i=slides.findIndex(function(s){return s.el===e.target});
+      if(e.isIntersecting){
+        e.target.classList.add("active"); dots.forEach(function(d,j){d.classList.toggle("on",j===i)}); slides[i].enter();
+      } else { e.target.classList.remove("active"); slides[i].leave(); }
+    });
+  },{root:root,threshold:0.6});
+  slides.forEach(function(s){io.observe(s.el)});
+  document.querySelectorAll("[data-replay]").forEach(function(b){
+    b.addEventListener("click",function(){ var i=slides.findIndex(function(s){return s.el.id===b.getAttribute("data-replay")}); slides[i].enter(); });
+  });
+  [["cueW","margS"],["cueM","finS"]].forEach(function(p){document.getElementById(p[0]).addEventListener("click",function(){goTo(document.getElementById(p[1]))})});
+  document.getElementById("toTop").addEventListener("click",function(){goTo(document.getElementById("hero"))});
+  updWait(first.t);
+})();
+
+    </script>
+    <script src="assets/js/main.js?v=9" defer></script>
+  </body>
+</html>
