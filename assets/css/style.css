@@ -1896,6 +1896,13 @@ a.btn {
   border: 0;
 }
 
+.project-embed--fit {
+  aspect-ratio: auto;
+  max-height: none;
+  height: 1280px;
+  background: #f4f9fe;
+}
+
 .project-embed-actions {
   display: flex;
   flex-wrap: wrap;
